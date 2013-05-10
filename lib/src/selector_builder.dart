@@ -2,14 +2,11 @@ part of mongo_dart_query;
 
 SelectorBuilder get where => new SelectorBuilder();
 
-class _ExtParams {
-  int skip = 0;
-  int limit = 0;
-  Map fields;
-}
 class SelectorBuilder{
   Map map = {};
-  _ExtParams extParams = new _ExtParams();
+  int paramSkip = 0;
+  int paramLimit = 0;
+  Map paramFields;
 
   toString()=>"SelectorBuilder($map)";
 
@@ -141,33 +138,33 @@ class SelectorBuilder{
 
 
   SelectorBuilder fields(List<String> fields) {
-     if (extParams.fields != null) {
+     if (paramFields != null) {
        throw 'Fields parameter may be set only once for selector';
      }
-     extParams.fields = {};
+     paramFields = {};
      for (var field in fields) {
-       extParams.fields[field] = 1;
+       paramFields[field] = 1;
      }
      return this;
   }
   SelectorBuilder excludeFields(List<String> fields) {
-    if (extParams.fields != null) {
+    if (paramFields != null) {
       throw 'Fields parameter may be set only once for selector';
     }
-    extParams.fields = {};
+    paramFields = {};
     for (var field in fields) {
-      extParams.fields[field] = -1;
+      paramFields[field] = -1;
     }
     return this;
   }
 
   SelectorBuilder limit(int limit) {
-    extParams.limit = limit;
+    paramLimit = limit;
     return this;
   }
 
   SelectorBuilder skip(int skip) {
-    extParams.skip = skip;
+    paramSkip = skip;
     return this;
   }
 
@@ -175,5 +172,17 @@ class SelectorBuilder{
     map = rawSelector;
     return this;
   }
-
+  SelectorBuilder within(String propertyName, value){
+    map[propertyName] = {"\$within":{"\$box":value}};
+    return this;
+  }
+  SelectorBuilder near(String propertyName, var value, [double maxDistance]){
+    if (maxDistance != null){
+      map[propertyName] = {"\$near":value};
+    } else {
+      map[propertyName] = {"\$near":value,"\$maxDistance":maxDistance};
+    }
+    return this;
+  }
+ 
 }
