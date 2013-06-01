@@ -4,68 +4,95 @@ SelectorBuilder get where => new SelectorBuilder();
 
 class SelectorBuilder{
   Map map = {};
+  bool _isQuerySet = false;
+  Map get _query {
+    if (!_isQuerySet) {
+      map['\$query'] = {};
+      _isQuerySet = true;
+    }
+    return map['\$query'];
+  }
   int paramSkip = 0;
   int paramLimit = 0;
   Map paramFields;
 
   toString()=>"SelectorBuilder($map)";
 
+  _addExpression(String fieldName, value) {
+    Map exprMap = {};
+    exprMap[fieldName] = value;
+    if (_query.isEmpty) {
+      _query[fieldName] = value;
+    } else {
+      _addExpressionMap(exprMap);
+    }
+  }
+  _addExpressionMap(Map expr) {
+    if (_query.containsKey('\$and')) {
+      List expressions = _query['\$and'];
+      expressions.add(expr);
+    } else {
+      var expressions = [_query];
+      expressions.add(expr);
+      map['\$query'] = {'\$and': expressions};
+    }
+  }
 
   SelectorBuilder eq(String fieldName,value){
-    map[fieldName] = value;
+    _addExpression(fieldName,value);
     return this;
   }
   SelectorBuilder id(ObjectId value){
-    map["_id"] = value;
+    _addExpression('_id', value);
     return this;
   }
   SelectorBuilder ne(String fieldName, value){
-    map[fieldName] = {"\$ne":value};
+    _addExpression(fieldName,{"\$ne":value});
     return this;
   }
   SelectorBuilder gt(String fieldName,value){
-    map[fieldName] = {"\$gt":value};
+    _addExpression(fieldName,{"\$gt":value});
     return this;
   }
   SelectorBuilder lt(String fieldName,value){
-    map[fieldName] = {"\$lt":value};
+    _addExpression(fieldName,{"\$lt":value});
     return this;
   }
   SelectorBuilder gte(String fieldName,value){
-    map[fieldName] = {"\$gte":value};
+    _addExpression(fieldName,{"\$gte":value});
     return this;
   }
   SelectorBuilder lte(String fieldName,value){
-    map[fieldName] = {"\$lte":value};
+    _addExpression(fieldName,{"\$lte":value});
     return this;
   }
   SelectorBuilder all(String fieldName, List values){
-    map[fieldName] = {"\$all":values};
+    _addExpression(fieldName,{"\$all":values});
     return this;
   }
   SelectorBuilder nin(String fieldName, List values){
-    map[fieldName] = {"\$nin":values};
+    _addExpression(fieldName,{"\$nin":values});
     return this;
   }
   SelectorBuilder oneFrom(String fieldName, List values){
-    map[fieldName] = {"\$in":values};
+    _addExpression(fieldName,{"\$in":values});
     return this;
   }
   SelectorBuilder exists(String fieldName){
-    map[fieldName] = {"\$exists":true};
+    _addExpression(fieldName,{"\$exists":true});
     return this;
   }
   SelectorBuilder notExists(String fieldName){
-    map[fieldName] = {"\$exists":false};
+    _addExpression(fieldName,{"\$exists":false});
     return this;
   }
   SelectorBuilder mod(String fieldName, int value){
-    map[fieldName] = {"\$mod":[value,0]};
+    _addExpression(fieldName,{"\$mod":[value,0]});
     return this;
   }
   SelectorBuilder match(String fieldName, String pattern,{bool multiLine, bool caseInsensitive, bool dotAll, bool extended}){
-    map[fieldName] = {'\$regex': new BsonRegexp(pattern,multiLine:multiLine, caseInsensitive:caseInsensitive,
-        dotAll:dotAll,extended:extended)};
+    _addExpression(fieldName,{'\$regex': new BsonRegexp(pattern,multiLine:multiLine, caseInsensitive:caseInsensitive,
+        dotAll:dotAll,extended:extended)});
     return this;
   }
   
@@ -83,18 +110,11 @@ class SelectorBuilder{
     else{
       rangeMap["\$lt"] = max;
     }
-    map[fieldName] = rangeMap;
+    _addExpression(fieldName,rangeMap);
     return this;
   }
-  _internQueryMap(){
-    if (!map.containsKey("query")){
-      Map queryMap = new Map.from(map);
-      map.clear();
-      map["query"] = queryMap;
-    }
-  }
   SelectorBuilder sortBy(String fieldName, {bool descending: false}){
-    _internQueryMap();
+    _query;
     if (!map.containsKey("orderby")){
       map["orderby"] = new Map();
     }
@@ -106,33 +126,33 @@ class SelectorBuilder{
     return this;
   }
   SelectorBuilder comment(String commentStr){
-    _internQueryMap();
+    _query;
     map["\$comment"] = commentStr;
     return this;
   }
   SelectorBuilder explain(){
-    _internQueryMap();
+    _query;
     map["\$explain"] = true;
     return this;
   }
   SelectorBuilder snapshot(){
-    _internQueryMap();
+    _query;
     map["\$snapshot"] = true;
     return this;
   }
   SelectorBuilder showDiskLoc(){
-    _internQueryMap();
+    _query;
     map["\$showDiskLoc"] = true;
     return this;
   }
   SelectorBuilder returnKey(){
-    _internQueryMap();
+    _query;
     map["\$sreturnKey"] = true;
     return this;
   }
  
   SelectorBuilder jsQuery(String javaScriptCode){
-    map["\$where"] = new BsonCode(javaScriptCode);
+    _query["\$where"] = new BsonCode(javaScriptCode);
     return this;
   }
 
@@ -172,17 +192,58 @@ class SelectorBuilder{
     map = rawSelector;
     return this;
   }
-  SelectorBuilder within(String propertyName, value){
-    map[propertyName] = {"\$within":{"\$box":value}};
+  SelectorBuilder within(String fieldName, value){
+    _addExpression(fieldName,{"\$within":{"\$box":value}});
     return this;
   }
-  SelectorBuilder near(String propertyName, var value, [double maxDistance]){
+  SelectorBuilder near(String fieldName, var value, [double maxDistance]){
     if (maxDistance != null){
-      map[propertyName] = {"\$near":value};
+      _addExpression(fieldName,{"\$near":value});
     } else {
-      map[propertyName] = {"\$near":value,"\$maxDistance":maxDistance};
+      _addExpression(fieldName,{"\$near":value,"\$maxDistance":maxDistance});
     }
     return this;
   }
- 
+/// Combine current expression with expression in parameter. 
+/// [See MongoDB doc](http://docs.mongodb.org/manual/reference/operator/and/#op._S_and)
+/// [SelectorBuilder] provides implicit `and` operator for chained queries so these two expression will produce
+/// identical MongoDB queries
+///  
+///     where.eq('price', 1.99).lt('qty', 20).eq('sale', true);
+///     where.eq('price', 1.99).and(where.lt('qty',20)).and(where.eq('sale', true))
+///
+/// Both these queries would produce json map:
+///  
+///     {'\$query': {'\$and': [{'price':1.99},{'qty': {'\$lt': 20 }}, {'sale': true }]}}
+  SelectorBuilder and(SelectorBuilder other) {
+    if (_query.isEmpty) {
+      throw new StateError('`And` opertion is not supported on empty query');
+    }
+    _addExpressionMap(other._query);
+    return this;
+  }
+/// Combine current expression with expression in parameter by logical operator **OR**. 
+/// [See MongoDB doc](http://docs.mongodb.org/manual/reference/operator/and/#op._S_or)
+/// For example  
+///    inventory.find(where.eq('price', 1.99).and(where.lt('qty',20).or(where.eq('sale', true))));
+/// 
+/// This query will select all documents in the inventory collection where:
+/// * the **price** field value equals 1.99 and
+/// * either the **qty** field value is less than 20 or the **sale** field value is true 
+/// MongoDB json query from this expression would be
+///      {'\$query': {'\$and': [{'price':1.99}, {'\$or': [{'qty': {'\$lt': 20 }}, {'sale': true }]}]}}
+  SelectorBuilder or(SelectorBuilder other) {
+    if (_query.isEmpty) {
+      throw new StateError('`And` opertion is not supported on empty query');
+    }
+    if (_query.containsKey('\$or')) {
+      List expressions = _query['\$or'];
+      expressions.add(other._query);
+    } else {
+      var expressions = [_query];
+      expressions.add(other._query);
+      map['\$query'] = {'\$or': expressions};
+    }
+    return this;
+  }
 }

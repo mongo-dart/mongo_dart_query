@@ -28,6 +28,7 @@ class ModifierBuilder{
   }
 
   ModifierBuilder push(String fieldName, value) {
+    _query;
     map['\$push'] = _pair2Map(fieldName, value);
     return this;
   }
