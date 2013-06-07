@@ -125,6 +125,19 @@ class SelectorBuilder{
     map["orderby"][fieldName] = order;
     return this;
   }
+  SelectorBuilder hint(String fieldName, {bool descending: false}){
+    _query;
+    if (!map.containsKey("\$hint")){
+      map["\$hint"] = new Map();
+    }
+    int order = 1;
+    if (descending){
+      order = -1;
+    }
+    map["\$hint"][fieldName] = order;
+    return this;
+  }
+  
   SelectorBuilder comment(String commentStr){
     _query;
     map["\$comment"] = commentStr;

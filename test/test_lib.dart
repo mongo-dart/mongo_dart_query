@@ -17,14 +17,17 @@ testSelectorBuilderOnObjectId(){
 
 testQueries() {
   var selector = where.gt("my_field", 995).sortBy('my_field');
-  expect(selector.map,equals({r'$query': {'my_field': {r'$gt': 995}}, 'orderby': {'my_field': 1}}));
+  expect(selector.map,{r'$query': {'my_field': {r'$gt': 995}}, 'orderby': {'my_field': 1}});
   selector = where.inRange("my_field", 700, 703, minInclude: false).sortBy('my_field');
-  expect(selector.map,equals({r'$query': {'my_field': {r'$gt': 700, r'$lt': 703}}, 'orderby': {'my_field': 1}}));
+  expect(selector.map,{r'$query': {'my_field': {r'$gt': 700, r'$lt': 703}}, 'orderby': {'my_field': 1}});
   selector = where.eq("my_field", 17).fields(['str_field']);
-  expect(selector.map,equals({r'$query': {'my_field': 17}}));
-  expect(selector.paramFields,equals({'str_field':1}));
+  expect(selector.map,{r'$query': {'my_field': 17}});
+  expect(selector.paramFields,{'str_field':1});
   selector = where.sortBy('a').skip(300);
   expect(selector.map,equals({'\$query': {}, 'orderby': {'a': 1}}));
+  selector = where.hint('bar').hint('baz', descending: true).explain();
+  expect(selector.map,equals({'\$query': {}, '\$hint': {'bar': 1, 'baz': -1}, '\$explain': true}));
+  
 }
 
 testQueryComposition() {
@@ -51,5 +54,5 @@ run(){
   test("testSelectorBuilderCreation",testSelectorBuilderCreation);
   test("testSelectorBuilderOnObjectId",testSelectorBuilderOnObjectId);
   test("testQueries",testQueries);
-  solo_test('testQueryComposition',testQueryComposition);
+  test('testQueryComposition',testQueryComposition);
 }
