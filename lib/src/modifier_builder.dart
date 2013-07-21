@@ -18,7 +18,12 @@ class ModifierBuilder{
   }
 
   ModifierBuilder set(String fieldName,value) {
-    map['\$set'] = _pair2Map(fieldName,value);
+    Map setMap = map['\$set'];
+    if (setMap == null) {
+      setMap = {};
+    }
+    setMap[fieldName] = value;
+    map['\$set'] = setMap;
     return this;
   }
 

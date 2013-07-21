@@ -49,10 +49,16 @@ testQueryComposition() {
   expect(selector.map, {'\$query': {'\$and': [{'price':1.99},{'qty': {'\$lt': 20 }}, {'sale': true }]}});
 }
 
+testModifierBuilder() {
+  var modifier = modify.set("a", 995).set('b', 'bbb');
+  expect(modifier.map,equals({r'$set': {'a': 995, 'b':'bbb'}}));
+  
+}
 
 run(){
   test("testSelectorBuilderCreation",testSelectorBuilderCreation);
   test("testSelectorBuilderOnObjectId",testSelectorBuilderOnObjectId);
   test("testQueries",testQueries);
   test('testQueryComposition',testQueryComposition);
+  test('testModifierBuilder',testModifierBuilder);
 }
