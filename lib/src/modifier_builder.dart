@@ -28,7 +28,12 @@ class ModifierBuilder{
   }
 
   ModifierBuilder unset(String fieldName) {
-    map['\$unset'] = _pair2Map(fieldName, 1);
+    Map unSetMap = map['\$unset'];
+    if (unSetMap == null) {
+      unSetMap = {};
+    }
+    unSetMap[fieldName] = 1;
+    map['\$unset'] = unSetMap;
     return this;
   }
 

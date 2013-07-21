@@ -52,7 +52,8 @@ testQueryComposition() {
 testModifierBuilder() {
   var modifier = modify.set("a", 995).set('b', 'bbb');
   expect(modifier.map,equals({r'$set': {'a': 995, 'b':'bbb'}}));
-  
+  modifier = modify.unset("a").unset('b');
+  expect(modifier.map,equals({r'$unset': {'a': 1, 'b':1}}));
 }
 
 run(){
