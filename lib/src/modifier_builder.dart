@@ -1,4 +1,4 @@
-part of mongo_dart;
+part of mongo_dart_query;
 
 
 ModifierBuilder get modify => new ModifierBuilder();
@@ -28,7 +28,6 @@ class ModifierBuilder{
   }
 
   ModifierBuilder push(String fieldName, value) {
-    _query;
     map['\$push'] = _pair2Map(fieldName, value);
     return this;
   }
