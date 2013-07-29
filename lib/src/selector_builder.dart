@@ -116,7 +116,7 @@ class SelectorBuilder{
   SelectorBuilder sortBy(String fieldName, {bool descending: false}){
     _query;
     if (!map.containsKey("orderby")){
-      map["orderby"] = new Map();
+      map["orderby"] = new LinkedHashMap();
     }
     int order = 1;
     if (descending){
@@ -128,7 +128,7 @@ class SelectorBuilder{
   SelectorBuilder hint(String fieldName, {bool descending: false}){
     _query;
     if (!map.containsKey("\$hint")){
-      map["\$hint"] = new Map();
+      map["\$hint"] = new LinkedHashMap();
     }
     int order = 1;
     if (descending){
