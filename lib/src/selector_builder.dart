@@ -17,6 +17,7 @@ class SelectorBuilder{
   Map paramFields;
 
   toString()=>"SelectorBuilder($map)";
+  getQueryString()=>JSON.encode(map);
 
   _addExpression(String fieldName, value) {
     Map exprMap = {};

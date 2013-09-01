@@ -31,13 +31,15 @@ testQueries() {
 }
 
 testQueryComposition() {
-  var selector = where.gt("a", 995).eq('b', 'bbb');
+  SelectorBuilder selector = where.gt("a", 995).eq('b', 'bbb');
   expect(selector.map,equals({r'$query': {'\$and': [{'a':{ r'$gt': 995}},{'b':'bbb'}]}}));
   selector = where.gt('a', 995).lt('a', 1000);
   expect(selector.map,equals({r'$query': {'\$and': [{'a':{ r'$gt': 995}},{'a':{ r'$lt': 1000}}]}}));
   selector = where.gt('a', 995).and(where.lt('b', 1000).or(where.gt('c', 2000)));
   expect(selector.map,{'\$query': {'\$and': [{'a': {'\$gt': 995}}, {'\$or': [{'b': {'\$lt': 1000}}, {'c': {'\$gt': 2000}}]}]}});
   selector = where.lt('b', 1000).or(where.gt('c', 2000)).and(where.gt('a', 995));
+  expect(selector.map,{'\$query': {'\$and': [{'\$or': [{'b': {'\$lt': 1000}}, {'c': {'\$gt': 2000}}]},{'a': {'\$gt': 995}}]}});
+  selector = where.lt('b', 1000).or(where.gt('c', 2000)).gt('a', 995);
   expect(selector.map,{'\$query': {'\$and': [{'\$or': [{'b': {'\$lt': 1000}}, {'c': {'\$gt': 2000}}]},{'a': {'\$gt': 995}}]}});
   selector = where.lt('b', 1000).or(where.gt('c', 2000)).or(where.gt('a', 995));
   expect(selector.map,{'\$query': {'\$or': [{'b': {'\$lt': 1000}}, {'c': {'\$gt': 2000}} ,{'a': {'\$gt': 995}}]}});
@@ -47,6 +49,8 @@ testQueryComposition() {
   expect(selector.map, {'\$query': {'\$and': [{'price':1.99},{'qty': {'\$lt': 20 }}, {'sale': true }]}});
   selector = where.eq('price', 1.99).lt('qty', 20).eq('sale', true);
   expect(selector.map, {'\$query': {'\$and': [{'price':1.99},{'qty': {'\$lt': 20 }}, {'sale': true }]}});
+  selector = where.eq('foo', 'bar').or(where.eq('foo', 'baz')).eq('name', 'jack');
+  print(selector.getQueryString());
 }
 
 testModifierBuilder() {
