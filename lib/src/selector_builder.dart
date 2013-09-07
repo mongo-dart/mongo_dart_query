@@ -3,6 +3,7 @@ part of mongo_dart_query;
 SelectorBuilder get where => new SelectorBuilder();
 
 class SelectorBuilder{
+  static final RegExp objectIdRegexp = new RegExp(".ObjectId...([0-9a-f]{24})....");
   Map map = {};
   bool _isQuerySet = false;
   Map get _query {
@@ -16,8 +17,7 @@ class SelectorBuilder{
   int paramLimit = 0;
   Map paramFields;
 
-  toString()=>"SelectorBuilder($map)";
-  getQueryString()=>JSON.encode(map);
+  String toString()=>"SelectorBuilder($map)";
 
   _addExpression(String fieldName, value) {
     Map exprMap = {};
@@ -260,4 +260,11 @@ class SelectorBuilder{
     }
     return this;
   }
+  
+  String getQueryString(){
+    var result = JSON.encode(map);
+    result = result.replaceAllMapped(objectIdRegexp, (Match match)=>'ObjectId("${match.group(1)}")');
+    return result;
+  }  
+
 }

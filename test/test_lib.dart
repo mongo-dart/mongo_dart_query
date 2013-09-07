@@ -50,7 +50,7 @@ testQueryComposition() {
   selector = where.eq('price', 1.99).lt('qty', 20).eq('sale', true);
   expect(selector.map, {'\$query': {'\$and': [{'price':1.99},{'qty': {'\$lt': 20 }}, {'sale': true }]}});
   selector = where.eq('foo', 'bar').or(where.eq('foo', 'baz')).eq('name', 'jack');
-  print(selector.getQueryString());
+
 }
 
 testModifierBuilder() {
@@ -60,10 +60,23 @@ testModifierBuilder() {
   expect(modifier.map,equals({r'$unset': {'a': 1, 'b':1}}));
 }
 
+testGetQueryString() {
+  var selector = where.eq('foo', 'bar');
+  expect(selector.getQueryString(),r'{"$query":{"foo":"bar"}}');
+  selector = where.lt('foo', 2);
+  expect(selector.getQueryString(), r'{"$query":{"foo":{"$lt":2}}}');
+  var id = new ObjectId();
+  selector = where.id(id);
+  expect(selector.getQueryString(),'{"\$query":{"_id":$id}}');
+//  var dbPointer = new DbRef('Dummy',id);
+//  selector = where.eq('foo',dbPointer);
+//  expect(selector.getQueryString(),'{"\$query":{"foo":$dbPointer}}');
+}
 run(){
   test("testSelectorBuilderCreation",testSelectorBuilderCreation);
   test("testSelectorBuilderOnObjectId",testSelectorBuilderOnObjectId);
   test("testQueries",testQueries);
   test('testQueryComposition',testQueryComposition);
   test('testModifierBuilder',testModifierBuilder);
+  test('testGetQueryString',testGetQueryString);
 }
