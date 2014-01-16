@@ -187,7 +187,7 @@ class SelectorBuilder{
     }
     paramFields = {};
     for (var field in fields) {
-      paramFields[field] = -1;
+      paramFields[field] = 0;
     }
     return this;
   }
