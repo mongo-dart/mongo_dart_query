@@ -138,6 +138,11 @@ class SelectorBuilder{
     map["\$hint"][fieldName] = order;
     return this;
   }
+  SelectorBuilder hintIndex(String indexName){
+    _query;
+    map["\$hint"] = indexName;
+    return this;
+  }
 
   SelectorBuilder comment(String commentStr){
     _query;
