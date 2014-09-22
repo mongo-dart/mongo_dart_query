@@ -96,7 +96,7 @@ class SelectorBuilder{
         dotAll:dotAll,extended:extended)});
     return this;
   }
-  
+
   SelectorBuilder inRange(String fieldName, min, max, {bool minInclude: true, bool maxInclude: false}) {
     Map rangeMap = {};
     if (minInclude){
@@ -138,7 +138,7 @@ class SelectorBuilder{
     map["\$hint"][fieldName] = order;
     return this;
   }
-  
+
   SelectorBuilder comment(String commentStr){
     _query;
     map["\$comment"] = commentStr;
@@ -164,7 +164,7 @@ class SelectorBuilder{
     map["\$sreturnKey"] = true;
     return this;
   }
- 
+
   SelectorBuilder jsQuery(String javaScriptCode){
     _query["\$where"] = new BsonCode(javaScriptCode);
     return this;
@@ -172,20 +172,18 @@ class SelectorBuilder{
 
 
   SelectorBuilder fields(List<String> fields) {
-     if (paramFields != null) {
-       throw 'Fields parameter may be set only once for selector';
-     }
-     paramFields = {};
-     for (var field in fields) {
-       paramFields[field] = 1;
-     }
-     return this;
+    if (paramFields == null) {
+      paramFields = {};
+    }
+    for (var field in fields) {
+      paramFields[field] = 1;
+    }
+    return this;
   }
   SelectorBuilder excludeFields(List<String> fields) {
-    if (paramFields != null) {
-      throw 'Fields parameter may be set only once for selector';
+    if (paramFields == null) {
+      paramFields = {};
     }
-    paramFields = {};
     for (var field in fields) {
       paramFields[field] = 0;
     }
@@ -218,16 +216,16 @@ class SelectorBuilder{
     }
     return this;
   }
-/// Combine current expression with expression in parameter. 
+/// Combine current expression with expression in parameter.
 /// [See MongoDB doc](http://docs.mongodb.org/manual/reference/operator/and/#op._S_and)
 /// [SelectorBuilder] provides implicit `and` operator for chained queries so these two expression will produce
 /// identical MongoDB queries
-///  
+///
 ///     where.eq('price', 1.99).lt('qty', 20).eq('sale', true);
 ///     where.eq('price', 1.99).and(where.lt('qty',20)).and(where.eq('sale', true))
 ///
 /// Both these queries would produce json map:
-///  
+///
 ///     {'\$query': {'\$and': [{'price':1.99},{'qty': {'\$lt': 20 }}, {'sale': true }]}}
   SelectorBuilder and(SelectorBuilder other) {
     if (_query.isEmpty) {
@@ -236,14 +234,14 @@ class SelectorBuilder{
     _addExpressionMap(other._query);
     return this;
   }
-/// Combine current expression with expression in parameter by logical operator **OR**. 
+/// Combine current expression with expression in parameter by logical operator **OR**.
 /// [See MongoDB doc](http://docs.mongodb.org/manual/reference/operator/and/#op._S_or)
-/// For example  
+/// For example
 ///    inventory.find(where.eq('price', 1.99).and(where.lt('qty',20).or(where.eq('sale', true))));
-/// 
+///
 /// This query will select all documents in the inventory collection where:
 /// * the **price** field value equals 1.99 and
-/// * either the **qty** field value is less than 20 or the **sale** field value is true 
+/// * either the **qty** field value is less than 20 or the **sale** field value is true
 /// MongoDB json query from this expression would be
 ///      {'\$query': {'\$and': [{'price':1.99}, {'\$or': [{'qty': {'\$lt': 20 }}, {'sale': true }]}]}}
   SelectorBuilder or(SelectorBuilder other) {
@@ -260,11 +258,11 @@ class SelectorBuilder{
     }
     return this;
   }
-  
+
   String getQueryString(){
     var result = JSON.encode(map);
     result = result.replaceAllMapped(objectIdRegexp, (Match match)=>'ObjectId("${match.group(1)}")');
     return result;
-  }  
+  }
 
 }
