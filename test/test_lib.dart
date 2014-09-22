@@ -27,7 +27,8 @@ testQueries() {
   expect(selector.map,equals({'\$query': {}, 'orderby': {'a': 1}}));
   selector = where.hint('bar').hint('baz', descending: true).explain();
   expect(selector.map,equals({'\$query': {}, '\$hint': {'bar': 1, 'baz': -1}, '\$explain': true}));
-  
+  selector = where.hintIndex('foo');
+  expect(selector.map,equals({'\$query': {}, '\$hint': "foo"}));
 }
 
 testQueryComposition() {
