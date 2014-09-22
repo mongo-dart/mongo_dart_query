@@ -177,20 +177,18 @@ class SelectorBuilder{
 
 
   SelectorBuilder fields(List<String> fields) {
-     if (paramFields != null) {
-       throw 'Fields parameter may be set only once for selector';
-     }
-     paramFields = {};
-     for (var field in fields) {
-       paramFields[field] = 1;
-     }
-     return this;
+    if (paramFields == null) {
+      paramFields = {};
+    }
+    for (var field in fields) {
+      paramFields[field] = 1;
+    }
+    return this;
   }
   SelectorBuilder excludeFields(List<String> fields) {
-    if (paramFields != null) {
-      throw 'Fields parameter may be set only once for selector';
+    if (paramFields == null) {
+      paramFields = {};
     }
-    paramFields = {};
     for (var field in fields) {
       paramFields[field] = 0;
     }
