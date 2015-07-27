@@ -4,3 +4,6 @@ packages
 *.md.html
 *.dart.js.deps
 /*.project
+*.json
+/.idea/
+/.pub/
