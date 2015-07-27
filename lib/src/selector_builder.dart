@@ -214,7 +214,7 @@ class SelectorBuilder{
     return this;
   }
   SelectorBuilder near(String fieldName, var value, [double maxDistance]){
-    if (maxDistance != null){
+    if (maxDistance == null){
       _addExpression(fieldName,{"\$near":value});
     } else {
       _addExpression(fieldName,{"\$near":value,"\$maxDistance":maxDistance});
