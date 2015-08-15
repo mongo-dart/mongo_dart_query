@@ -266,7 +266,6 @@ class SelectorBuilder{
 
   String getQueryString(){
     var result = JSON.encode(map);
-    result = result.replaceAllMapped(objectIdRegexp, (Match match)=>'ObjectId("${match.group(1)}")');
     return result;
   }
 
