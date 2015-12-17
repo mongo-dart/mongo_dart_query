@@ -39,6 +39,19 @@ class SelectorBuilder{
     }
   }
 
+  void _ensureParamFields() {
+    if (paramFields == null) {
+      paramFields = {};
+    }
+  }
+
+  void _ensureOrderBy() {
+    _query;
+    if (!map.containsKey("orderby")){
+      map["orderby"] = new LinkedHashMap();
+    }
+  }
+
   SelectorBuilder eq(String fieldName,value){
     _addExpression(fieldName,value);
     return this;
@@ -115,15 +128,17 @@ class SelectorBuilder{
     return this;
   }
   SelectorBuilder sortBy(String fieldName, {bool descending: false}){
-    _query;
-    if (!map.containsKey("orderby")){
-      map["orderby"] = new LinkedHashMap();
-    }
+    _ensureOrderBy();
     int order = 1;
     if (descending){
       order = -1;
     }
     map["orderby"][fieldName] = order;
+    return this;
+  }
+  SelectorBuilder sortByMetaTextScore(String fieldName){
+    _ensureOrderBy();
+    map["orderby"][fieldName] = {'\$meta' : "textScore"};
     return this;
   }
   SelectorBuilder hint(String fieldName, {bool descending: false}){
@@ -175,20 +190,21 @@ class SelectorBuilder{
     return this;
   }
 
+  SelectorBuilder metaTextScore(String fieldName) {
+    _ensureParamFields();
+    paramFields[fieldName] = {'\$meta' : "textScore"};
+  }
 
   SelectorBuilder fields(List<String> fields) {
-    if (paramFields == null) {
-      paramFields = {};
-    }
+    _ensureParamFields();
     for (var field in fields) {
       paramFields[field] = 1;
     }
     return this;
   }
+
   SelectorBuilder excludeFields(List<String> fields) {
-    if (paramFields == null) {
-      paramFields = {};
-    }
+    _ensureParamFields();
     for (var field in fields) {
       paramFields[field] = 0;
     }
