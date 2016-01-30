@@ -1,13 +1,15 @@
 name: mongo_dart_query
-version: 0.2.1
-author: Vadim Tsushko <vadimtsushko@gmail.com>
+version: 0.2.2
+authors:
+- Vadim Tsushko <vadimtsushko@gmail.com>
+- Joel Trottier-Hebert <iamquebecois@gmail.com>
 description: Query builder for mongo_dart and objectory
-homepage: https://github.com/vadimtsushko/mongo_dart_query
+homepage: https://github.com/mongo-dart/mongo_dart_query
 environment:
   sdk: '>=1.10.0 <2.0.0'
 dependencies:
   bson: '^0.2.0'
 dev_dependencies:
   browser: '^0.10.0'
-  test: "^0.12.0-rc.1"
+  test: "^0.12.8"
   dart_coveralls: ">=0.1.11"
