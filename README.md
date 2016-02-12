@@ -1,4 +1,5 @@
 mongo_dart_query
 ================
-[![Build Status](https://drone.io/github.com/vadimtsushko/mongo_dart_query/status.png)](https://drone.io/github.com/vadimtsushko/mongo_dart_query/latest)
+https://travis-ci.org/mongo-dart/mongo_dart_query.svg?branch=master
+
 Query builder for mongo_dart and objectory
