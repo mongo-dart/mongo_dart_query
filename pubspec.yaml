@@ -8,7 +8,7 @@ homepage: https://github.com/mongo-dart/mongo_dart_query
 environment:
   sdk: '>=1.10.0 <2.0.0'
 dependencies:
-  bson: '^0.2.0'
+  bson: '^0.3.0'
 dev_dependencies:
   browser: '>=0.10.0'
   test: ">=0.12.10+2"
