@@ -8,13 +8,7 @@ class ModifierBuilder{
   Map map = {};
 
   toString() => "ModifierBuilder($map)";
-  
-  Map _pair2Map(String fieldName, value) {
-    var res = {};
-    res[fieldName] = value;
-    return res;
-  }
-  
+
   void _updateOperation(String operator, String fieldName, value) {
     Map opMap = map[operator];
     if (opMap == null) {
