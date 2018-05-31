@@ -5,14 +5,14 @@ ModifierBuilder get modify => new ModifierBuilder();
 
 class ModifierBuilder{
   
-  Map map = {};
+  Map<String, dynamic> map = {};
 
   toString() => "ModifierBuilder($map)";
 
   void _updateOperation(String operator, String fieldName, value) {
-    Map opMap = map[operator];
+    Map<String, dynamic> opMap = map[operator];
     if (opMap == null) {
-      opMap = {};
+      opMap = <String, dynamic>{};
       map[operator] = opMap;
     }
     opMap[fieldName] = value;

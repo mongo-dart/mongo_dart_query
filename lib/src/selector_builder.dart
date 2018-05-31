@@ -5,11 +5,11 @@ SelectorBuilder get where => new SelectorBuilder();
 class SelectorBuilder {
   static final RegExp objectIdRegexp =
       new RegExp(".ObjectId...([0-9a-f]{24})....");
-  Map map = {};
+  Map<String, dynamic> map = {};
   bool _isQuerySet = false;
-  Map get _query {
+  Map<String, dynamic> get _query {
     if (!_isQuerySet) {
-      map['\$query'] = {};
+      map['\$query'] = <String, dynamic>{};
       _isQuerySet = true;
     }
     return map['\$query'];
@@ -17,12 +17,12 @@ class SelectorBuilder {
 
   int paramSkip = 0;
   int paramLimit = 0;
-  Map paramFields;
+  Map<String, dynamic> paramFields;
 
   String toString() => "SelectorBuilder($map)";
 
   _addExpression(String fieldName, value) {
-    Map exprMap = {};
+    Map<String, dynamic> exprMap = {};
     exprMap[fieldName] = value;
     if (_query.isEmpty) {
       _query[fieldName] = value;
@@ -31,7 +31,7 @@ class SelectorBuilder {
     }
   }
 
-  _addExpressionMap(Map expr) {
+  _addExpressionMap(Map<String, dynamic> expr) {
     if (_query.containsKey('\$and')) {
       List expressions = _query['\$and'];
       expressions.add(expr);
@@ -44,14 +44,14 @@ class SelectorBuilder {
 
   void _ensureParamFields() {
     if (paramFields == null) {
-      paramFields = {};
+      paramFields = <String, dynamic>{};
     }
   }
 
   void _ensureOrderBy() {
     _query;
     if (!map.containsKey("orderby")) {
-      map["orderby"] = new LinkedHashMap();
+      map["orderby"] = <String, dynamic>{};
     }
   }
 
@@ -136,7 +136,7 @@ class SelectorBuilder {
 
   SelectorBuilder inRange(String fieldName, min, max,
       {bool minInclude: true, bool maxInclude: false}) {
-    Map rangeMap = {};
+    Map<String, dynamic> rangeMap = {};
     if (minInclude) {
       rangeMap["\$gte"] = min;
     } else {
@@ -163,14 +163,14 @@ class SelectorBuilder {
 
   SelectorBuilder sortByMetaTextScore(String fieldName) {
     _ensureOrderBy();
-    map["orderby"][fieldName] = {'\$meta': "textScore"};
+    map["orderby"][fieldName] = <String, dynamic>{'\$meta': "textScore"};
     return this;
   }
 
   SelectorBuilder hint(String fieldName, {bool descending: false}) {
     _query;
     if (!map.containsKey("\$hint")) {
-      map["\$hint"] = new LinkedHashMap();
+      map["\$hint"] = <String, dynamic>{};
     }
     int order = 1;
     if (descending) {
@@ -254,7 +254,7 @@ class SelectorBuilder {
     return this;
   }
 
-  SelectorBuilder raw(Map rawSelector) {
+  SelectorBuilder raw(Map<String, dynamic> rawSelector) {
     map = rawSelector;
     return this;
   }
