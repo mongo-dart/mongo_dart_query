@@ -321,7 +321,7 @@ class SelectorBuilder {
   }
 
   String getQueryString() {
-    var result = JSON.encode(map);
+    var result = json.encode(map);
     return result;
   }
 }
