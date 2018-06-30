@@ -12,7 +12,7 @@ class SelectorBuilder {
       map['\$query'] = <String, dynamic>{};
       _isQuerySet = true;
     }
-    return map['\$query'];
+    return map['\$query'] as Map<String, dynamic>;
   }
 
   int paramSkip = 0;
