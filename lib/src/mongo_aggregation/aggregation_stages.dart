@@ -61,7 +61,7 @@ class AddFields extends AggregationStage {
 ///
 /// Dart code:
 /// ```
-/// Set({
+/// SetStage({
 ///   'totalHomework': Sum(Field('homework')),
 ///   'totalQuiz': Sum(Field('quiz'))
 /// }).build()
@@ -76,9 +76,9 @@ class AddFields extends AggregationStage {
 /// }
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/set/
-class Set extends AggregationStage {
+class SetStage extends AggregationStage {
   /// Creates `$set` aggregation stage
-  Set(Map<String, dynamic> fields) : super('set', AEObject(fields));
+  SetStage(Map<String, dynamic> fields) : super('set', AEObject(fields));
 }
 
 /// `$unset` aggregation stage

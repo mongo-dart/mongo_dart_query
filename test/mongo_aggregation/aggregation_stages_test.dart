@@ -20,7 +20,7 @@ main() {
 
   test('set', () {
     expect(
-        Set({
+        SetStage({
           'totalHomework': Sum(Field('homework')),
           'totalQuiz': Sum(Field('quiz'))
         }).build(),
