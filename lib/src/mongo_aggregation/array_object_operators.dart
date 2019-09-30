@@ -133,7 +133,8 @@ class MapOp extends Operator {
 class ObjectToArray extends Operator {
   /// Creates `$objectToArray` operator expression
   ObjectToArray(expr)
-      : super('objectToArray', expr is Map<String, dynamic> ? AEObject(expr) : expr);
+      : super('objectToArray',
+            expr is Map<String, dynamic> ? AEObject(expr) : expr);
 }
 
 /// `$range` operator
@@ -287,6 +288,7 @@ class MergeObjects extends Accumulator {
       : super(
             'mergeObjects',
             objects is List
-                ? AEList(objects.map((obj) => obj is Map<String, dynamic> ? AEObject(obj) : obj))
+                ? AEList(objects.map(
+                    (obj) => obj is Map<String, dynamic> ? AEObject(obj) : obj))
                 : objects);
 }

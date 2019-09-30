@@ -87,7 +87,8 @@ class AEObject extends Iterable<MapEntry<String, dynamic>>
           if (entry.value is List)
             return MapEntry(entry.key, AEList(entry.value as List));
           if (entry.value is Map<String, dynamic>)
-            return MapEntry(entry.key, AEObject(entry.value as Map<String, dynamic>));
+            return MapEntry(
+                entry.key, AEObject(entry.value as Map<String, dynamic>));
           return entry;
         });
   @override

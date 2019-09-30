@@ -212,7 +212,7 @@ class Bucket extends AggregationStage {
 /// lower bound and the exclusive upper bound for the bucket, and a count
 /// field that contains the number of documents in the bucket. The count
 /// field is included by default when the output is not specified.
-/// 
+///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/bucketAuto/
 class BucketAuto extends AggregationStage {
   /// Creates `$bucketAuto` aggregation stage
@@ -324,7 +324,7 @@ class BucketAuto extends AggregationStage {
 /// often adhere to the POWERSOF2 set of preferred numbers:
 ///
 /// 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, and so on….
-/// 
+///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/bucketAuto/#granularity
 class Granularity extends Const {
   static final r5 = Granularity._('R5');
@@ -349,7 +349,7 @@ class Granularity extends Const {
 ///
 /// Passes a document to the next stage that contains a count of the number of
 /// documents input to the stage.
-/// 
+///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/count/
 class Count extends AggregationStage {
   /// Creates `$count` aggregation stage
@@ -701,8 +701,10 @@ class ReplaceWith extends AggregationStage {
 class Group extends AggregationStage {
   /// Creates `$group` aggregation stage
   Group({@required id, Map<String, Accumulator> fields = const {}})
-      : super('group',
-            AEObject({'_id': id is Map<String, dynamic> ? AEObject(id) : id}..addAll(fields)));
+      : super(
+            'group',
+            AEObject({'_id': id is Map<String, dynamic> ? AEObject(id) : id}
+              ..addAll(fields)));
 }
 
 /// `$match` aggregation stage
@@ -996,7 +998,7 @@ class Project extends AggregationStage {
 ///
 /// Skips over the specified number of documents that pass into the stage and
 /// passes the remaining documents to the next stage in the pipeline.
-/// 
+///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/skip/
 class Skip extends AggregationStage {
   /// Creates `$skip` aggregation stage
@@ -1011,7 +1013,7 @@ class Skip extends AggregationStage {
 /// ### Stage description
 ///
 /// Limits the number of documents passed to the next stage in the pipeline.
-/// 
+///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/limit/
 class Limit extends AggregationStage {
   /// Creates `$limit` aggregation stage
@@ -1066,7 +1068,7 @@ class Sort extends AggregationStage {
 /// documents belonging to that grouping or category.
 ///
 /// The documents are sorted by count in descending order.
-/// 
+///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/sortByCount/
 class SortByCount extends AggregationStage {
   /// Creates `$sortByCount` aggregation stage

@@ -1,7 +1,7 @@
 /// Mongodb aggregation library
-/// 
+///
 /// Simplifies to create aggregation pipelines using Dart code.
-/// 
+///
 /// Basic usage:
 /// ```
 /// final db = Db('mongodb://127.0.0.1/testdb');

@@ -12,7 +12,7 @@ main() {
   });
 
   test("testSelectorBuilderOnObjectId", () {
-    ObjectId id = new ObjectId();
+    ObjectId id = ObjectId();
     SelectorBuilder selector = where.id(id);
     expect(selector.map is Map, isTrue);
     expect(selector.map.length, greaterThan(0));
@@ -241,7 +241,7 @@ main() {
     expect(selector.getQueryString(), r'{"$query":{"foo":"bar"}}');
     selector = where.lt('foo', 2);
     expect(selector.getQueryString(), r'{"$query":{"foo":{"$lt":2}}}');
-    var id = new ObjectId();
+    var id = ObjectId();
     selector = where.id(id);
     expect(
         selector.getQueryString(), '{"\$query":{"_id":"${id.toHexString()}"}}');

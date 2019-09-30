@@ -1,10 +1,9 @@
 part of mongo_dart_query;
 
-SelectorBuilder get where => new SelectorBuilder();
+SelectorBuilder get where => SelectorBuilder();
 
 class SelectorBuilder {
-  static final RegExp objectIdRegexp =
-      new RegExp(".ObjectId...([0-9a-f]{24})....");
+  static final RegExp objectIdRegexp = RegExp(".ObjectId...([0-9a-f]{24})....");
   Map<String, dynamic> map = {};
   bool _isQuerySet = false;
   Map<String, dynamic> get _query {
@@ -33,7 +32,7 @@ class SelectorBuilder {
 
   _addExpressionMap(Map<String, dynamic> expr) {
     if (_query.containsKey('\$and')) {
-      List expressions = _query['\$and'];
+      List expressions = _query['\$and'] as List;
       expressions.add(expr);
     } else {
       var expressions = [_query];
@@ -125,7 +124,7 @@ class SelectorBuilder {
   SelectorBuilder match(String fieldName, String pattern,
       {bool multiLine, bool caseInsensitive, bool dotAll, bool extended}) {
     _addExpression(fieldName, {
-      '\$regex': new BsonRegexp(pattern,
+      '\$regex': BsonRegexp(pattern,
           multiLine: multiLine,
           caseInsensitive: caseInsensitive,
           dotAll: dotAll,
@@ -135,7 +134,7 @@ class SelectorBuilder {
   }
 
   SelectorBuilder inRange(String fieldName, min, max,
-      {bool minInclude: true, bool maxInclude: false}) {
+      {bool minInclude = true, bool maxInclude = false}) {
     Map<String, dynamic> rangeMap = {};
     if (minInclude) {
       rangeMap["\$gte"] = min;
@@ -151,7 +150,7 @@ class SelectorBuilder {
     return this;
   }
 
-  SelectorBuilder sortBy(String fieldName, {bool descending: false}) {
+  SelectorBuilder sortBy(String fieldName, {bool descending = false}) {
     _ensureOrderBy();
     int order = 1;
     if (descending) {
@@ -167,7 +166,7 @@ class SelectorBuilder {
     return this;
   }
 
-  SelectorBuilder hint(String fieldName, {bool descending: false}) {
+  SelectorBuilder hint(String fieldName, {bool descending = false}) {
     _query;
     if (!map.containsKey("\$hint")) {
       map["\$hint"] = <String, dynamic>{};
@@ -217,7 +216,7 @@ class SelectorBuilder {
   }
 
   SelectorBuilder jsQuery(String javaScriptCode) {
-    _query["\$where"] = new BsonCode(javaScriptCode);
+    _query["\$where"] = BsonCode(javaScriptCode);
     return this;
   }
 
@@ -289,7 +288,7 @@ class SelectorBuilder {
   ///     {'\$query': {'\$and': [{'price':1.99},{'qty': {'\$lt': 20 }}, {'sale': true }]}}
   SelectorBuilder and(SelectorBuilder other) {
     if (_query.isEmpty) {
-      throw new StateError('`And` opertion is not supported on empty query');
+      throw StateError('`And` opertion is not supported on empty query');
     }
     _addExpressionMap(other._query);
     return this;
@@ -307,10 +306,10 @@ class SelectorBuilder {
   ///      {'\$query': {'\$and': [{'price':1.99}, {'\$or': [{'qty': {'\$lt': 20 }}, {'sale': true }]}]}}
   SelectorBuilder or(SelectorBuilder other) {
     if (_query.isEmpty) {
-      throw new StateError('`And` opertion is not supported on empty query');
+      throw StateError('`And` opertion is not supported on empty query');
     }
     if (_query.containsKey('\$or')) {
-      List expressions = _query['\$or'];
+      List expressions = _query['\$or'] as List;
       expressions.add(other._query);
     } else {
       var expressions = [_query];

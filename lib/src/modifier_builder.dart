@@ -1,6 +1,6 @@
 part of mongo_dart_query;
 
-ModifierBuilder get modify => new ModifierBuilder();
+ModifierBuilder get modify => ModifierBuilder();
 
 class ModifierBuilder {
   Map<String, dynamic> map = {};
@@ -8,7 +8,7 @@ class ModifierBuilder {
   toString() => "ModifierBuilder($map)";
 
   void _updateOperation(String operator, String fieldName, value) {
-    Map<String, dynamic> opMap = map[operator];
+    Map<String, dynamic> opMap = map[operator] as Map<String, dynamic>;
     if (opMap == null) {
       opMap = <String, dynamic>{};
       map[operator] = opMap;
