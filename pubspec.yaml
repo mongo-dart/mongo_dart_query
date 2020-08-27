@@ -3,7 +3,7 @@ version: 0.4.2
 description: Query builder for mongo_dart and objectory
 homepage: https://github.com/mongo-dart/mongo_dart_query
 environment:
-  sdk: ">=2.0.0-dev.69.0 <3.0.0"
+  sdk: ">=2.5.2 <3.0.0"
 dependencies:
   bson: "^0.3.2"
   meta: ^1.1.7

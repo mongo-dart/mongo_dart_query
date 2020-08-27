@@ -5,6 +5,7 @@
 * Fixed problem in SelectorBuilder:
 if you set a raw map, then you couldn't add any new query expression or you loose the inital raw map "query" section.
 * Lint clean-up
+* Updated sdk constraint to 2.5.2
 
 ## 0.4.1
 
