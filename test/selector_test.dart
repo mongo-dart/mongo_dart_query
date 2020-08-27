@@ -4,16 +4,16 @@ import 'package:test/test.dart';
 import 'package:bson/bson.dart';
 import 'package:mongo_dart_query/mongo_dart_query.dart';
 
-main() {
-  test("SelectorBuilder Creation", () {
-    SelectorBuilder selector = where;
+void main() {
+  test('SelectorBuilder Creation', () {
+    var selector = where;
     expect(selector.map is Map, isTrue);
     expect(selector.map, isEmpty);
   });
 
-  test("testSelectorBuilderOnObjectId", () {
-    ObjectId id = ObjectId();
-    SelectorBuilder selector = where.id(id);
+  test('testSelectorBuilderOnObjectId', () {
+    var id = ObjectId();
+    var selector = where.id(id);
     expect(selector.map is Map, isTrue);
     expect(selector.map.length, greaterThan(0));
     expect(
@@ -23,8 +23,29 @@ main() {
         }));
   });
 
-  test("testQueries", () {
-    var selector = where.gt("my_field", 995).sortBy('my_field');
+  test('testSelectorBuilderRawMap', () {
+    var selector = where.raw({
+      r'$query': {'name': 'joe'}
+    });
+
+    var id = ObjectId();
+    selector.id(id);
+    expect(selector.map is Map, isTrue);
+    expect(selector.map.length, 1);
+    expect(
+        selector.map,
+        equals({
+          r'$query': {
+            r'$and': [
+              {'name': 'joe'},
+              {'_id': id}
+            ]
+          }
+        }));
+  });
+
+  test('testQueries', () {
+    var selector = where.gt('my_field', 995).sortBy('my_field');
     expect(selector.map, {
       r'$query': {
         'my_field': {r'$gt': 995}
@@ -32,7 +53,7 @@ main() {
       'orderby': {'my_field': 1}
     });
     selector = where
-        .inRange("my_field", 700, 703, minInclude: false)
+        .inRange('my_field', 700, 703, minInclude: false)
         .sortBy('my_field');
     expect(selector.map, {
       r'$query': {
@@ -40,7 +61,7 @@ main() {
       },
       'orderby': {'my_field': 1}
     });
-    selector = where.eq("my_field", 17).fields(['str_field']);
+    selector = where.eq('my_field', 17).fields(['str_field']);
     expect(selector.map, {
       r'$query': {'my_field': 17}
     });
@@ -61,11 +82,11 @@ main() {
           '\$explain': true
         }));
     selector = where.hintIndex('foo');
-    expect(selector.map, equals({'\$query': {}, '\$hint': "foo"}));
+    expect(selector.map, equals({'\$query': {}, '\$hint': 'foo'}));
   });
 
-  test("testQueryComposition", () {
-    SelectorBuilder selector = where.gt("a", 995).eq('b', 'bbb');
+  test('testQueryComposition', () {
+    var selector = where.gt('a', 995).eq('b', 'bbb');
     expect(
         selector.map,
         equals({
@@ -221,14 +242,14 @@ main() {
         where.eq('foo', 'bar').or(where.eq('foo', 'baz')).eq('name', 'jack');
   });
 
-  test("testModifierBuilder", () {
-    var modifier = modify.set("a", 995).set('b', 'bbb');
+  test('testModifierBuilder', () {
+    var modifier = modify.set('a', 995).set('b', 'bbb');
     expect(
         modifier.map,
         equals({
           r'$set': {'a': 995, 'b': 'bbb'}
         }));
-    modifier = modify.unset("a").unset('b');
+    modifier = modify.unset('a').unset('b');
     expect(
         modifier.map,
         equals({
@@ -236,7 +257,7 @@ main() {
         }));
   });
 
-  test("testGetQueryString", () {
+  test('testGetQueryString', () {
     var selector = where.eq('foo', 'bar');
     expect(selector.getQueryString(), r'{"$query":{"foo":"bar"}}');
     selector = where.lt('foo', 2);
@@ -250,7 +271,7 @@ main() {
 //  expect(selector.getQueryString(),'{"\$query":{"foo":$dbPointer}}');
   });
 
-  test("sortByMetaTextScore", () {
+  test('sortByMetaTextScore', () {
     var fieldName = 'fName';
     var searchText = 'sText';
     var selector = where

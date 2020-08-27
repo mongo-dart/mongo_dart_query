@@ -2,7 +2,7 @@ import 'package:mongo_dart_query/src/mongo_aggregation/aggregation_base.dart';
 import 'package:mongo_dart_query/src/mongo_aggregation/logic_operators.dart';
 import 'package:test/test.dart';
 
-main() {
+void main() {
   test('and', () {
     expect(And([TestExpr(), false]).build(), {
       '\$and': ['\$field', false]

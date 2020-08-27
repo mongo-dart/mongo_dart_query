@@ -2,7 +2,7 @@ import 'package:mongo_dart_query/src/mongo_aggregation/aggregation_base.dart';
 import 'package:mongo_dart_query/src/mongo_aggregation/string_operators.dart';
 import 'package:test/test.dart';
 
-main() {
+void main() {
   test('concat', () {
     expect(Concat([TestExpr(), 'string']).build(), {
       '\$concat': ['\$field', 'string']

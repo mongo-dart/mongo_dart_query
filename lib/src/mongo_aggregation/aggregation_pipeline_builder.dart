@@ -17,6 +17,7 @@ class AggregationPipelineBuilder implements Builder {
   ///
   /// Returns aggregation pipeline in format suitable for mongodb aggregate
   /// query
+  @override
   List<Map<String, dynamic>> build() =>
       stages.map((stage) => stage.build()).toList();
 }

@@ -5,10 +5,11 @@ ModifierBuilder get modify => ModifierBuilder();
 class ModifierBuilder {
   Map<String, dynamic> map = {};
 
-  toString() => "ModifierBuilder($map)";
+  @override
+  String toString() => 'ModifierBuilder($map)';
 
   void _updateOperation(String operator, String fieldName, value) {
-    Map<String, dynamic> opMap = map[operator] as Map<String, dynamic>;
+    var opMap = map[operator] as Map<String, dynamic>;
     if (opMap == null) {
       opMap = <String, dynamic>{};
       map[operator] = opMap;

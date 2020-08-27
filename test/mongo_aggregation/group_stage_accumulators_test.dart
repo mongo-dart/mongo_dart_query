@@ -2,7 +2,7 @@ import 'package:mongo_dart_query/src/mongo_aggregation/aggregation_base.dart';
 import 'package:mongo_dart_query/src/mongo_aggregation/group_stage_accumulators.dart';
 import 'package:test/test.dart';
 
-main() {
+void main() {
   test('addToSet', () {
     expect(AddToSet(TestExpr()).build(), {'\$addToSet': '\$field'});
   });

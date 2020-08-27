@@ -3,7 +3,7 @@ import 'package:mongo_dart_query/mongo_aggregation.dart';
 import 'package:mongo_dart_query/mongo_dart_query.dart';
 import 'package:test/test.dart' hide Skip;
 
-main() {
+void main() {
   test('addFields', () {
     expect(
         AddFields({
@@ -33,7 +33,7 @@ main() {
   });
 
   test('unset', () {
-    expect(Unset(["isbn", "author.first", "copies.warehouse"]).build(), {
+    expect(Unset(['isbn', 'author.first', 'copies.warehouse']).build(), {
       '\$unset': ['isbn', 'author.first', 'copies.warehouse']
     });
   });
@@ -43,7 +43,7 @@ main() {
         Bucket(
             groupBy: Field('price'),
             boundaries: [0, 200, 400],
-            defaultId: "Other",
+            defaultId: 'Other',
             output: {'count': Sum(1), 'titles': Push(Field('title'))}).build(),
         {
           '\$bucket': {

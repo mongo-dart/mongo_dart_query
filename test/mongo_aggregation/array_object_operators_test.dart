@@ -1,7 +1,7 @@
 import 'package:mongo_dart_query/mongo_aggregation.dart';
 import 'package:test/test.dart';
 
-main() {
+void main() {
   test('arrayToObjects', () {
     expect(ArrayToObject(Field('products')).build(),
         {'\$arrayToObject': '\$products'});

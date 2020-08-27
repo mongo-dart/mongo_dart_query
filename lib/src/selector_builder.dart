@@ -1,27 +1,27 @@
 part of mongo_dart_query;
 
 SelectorBuilder get where => SelectorBuilder();
+const keyQuery = r'$query';
 
 class SelectorBuilder {
-  static final RegExp objectIdRegexp = RegExp(".ObjectId...([0-9a-f]{24})....");
+  static final RegExp objectIdRegexp = RegExp('.ObjectId...([0-9a-f]{24})....');
   Map<String, dynamic> map = {};
-  bool _isQuerySet = false;
   Map<String, dynamic> get _query {
-    if (!_isQuerySet) {
-      map['\$query'] = <String, dynamic>{};
-      _isQuerySet = true;
+    if (!map.containsKey(keyQuery)) {
+      map[keyQuery] = <String, dynamic>{};
     }
-    return map['\$query'] as Map<String, dynamic>;
+    return map[keyQuery] as Map<String, dynamic>;
   }
 
   int paramSkip = 0;
   int paramLimit = 0;
   Map<String, dynamic> paramFields;
 
-  String toString() => "SelectorBuilder($map)";
+  @override
+  String toString() => 'SelectorBuilder($map)';
 
-  _addExpression(String fieldName, value) {
-    Map<String, dynamic> exprMap = {};
+  void _addExpression(String fieldName, value) {
+    var exprMap = <String, dynamic>{};
     exprMap[fieldName] = value;
     if (_query.isEmpty) {
       _query[fieldName] = value;
@@ -30,9 +30,9 @@ class SelectorBuilder {
     }
   }
 
-  _addExpressionMap(Map<String, dynamic> expr) {
+  void _addExpressionMap(Map<String, dynamic> expr) {
     if (_query.containsKey('\$and')) {
-      List expressions = _query['\$and'] as List;
+      var expressions = _query['\$and'] as List;
       expressions.add(expr);
     } else {
       var expressions = [_query];
@@ -41,16 +41,12 @@ class SelectorBuilder {
     }
   }
 
-  void _ensureParamFields() {
-    if (paramFields == null) {
-      paramFields = <String, dynamic>{};
-    }
-  }
+  void _ensureParamFields() => paramFields ??= <String, dynamic>{};
 
   void _ensureOrderBy() {
     _query;
-    if (!map.containsKey("orderby")) {
-      map["orderby"] = <String, dynamic>{};
+    if (!map.containsKey('orderby')) {
+      map['orderby'] = <String, dynamic>{};
     }
   }
 
@@ -65,58 +61,58 @@ class SelectorBuilder {
   }
 
   SelectorBuilder ne(String fieldName, value) {
-    _addExpression(fieldName, {"\$ne": value});
+    _addExpression(fieldName, {'\$ne': value});
     return this;
   }
 
   SelectorBuilder gt(String fieldName, value) {
-    _addExpression(fieldName, {"\$gt": value});
+    _addExpression(fieldName, {'\$gt': value});
     return this;
   }
 
   SelectorBuilder lt(String fieldName, value) {
-    _addExpression(fieldName, {"\$lt": value});
+    _addExpression(fieldName, {'\$lt': value});
     return this;
   }
 
   SelectorBuilder gte(String fieldName, value) {
-    _addExpression(fieldName, {"\$gte": value});
+    _addExpression(fieldName, {'\$gte': value});
     return this;
   }
 
   SelectorBuilder lte(String fieldName, value) {
-    _addExpression(fieldName, {"\$lte": value});
+    _addExpression(fieldName, {'\$lte': value});
     return this;
   }
 
   SelectorBuilder all(String fieldName, List values) {
-    _addExpression(fieldName, {"\$all": values});
+    _addExpression(fieldName, {'\$all': values});
     return this;
   }
 
   SelectorBuilder nin(String fieldName, List values) {
-    _addExpression(fieldName, {"\$nin": values});
+    _addExpression(fieldName, {'\$nin': values});
     return this;
   }
 
   SelectorBuilder oneFrom(String fieldName, List values) {
-    _addExpression(fieldName, {"\$in": values});
+    _addExpression(fieldName, {'\$in': values});
     return this;
   }
 
   SelectorBuilder exists(String fieldName) {
-    _addExpression(fieldName, {"\$exists": true});
+    _addExpression(fieldName, {'\$exists': true});
     return this;
   }
 
   SelectorBuilder notExists(String fieldName) {
-    _addExpression(fieldName, {"\$exists": false});
+    _addExpression(fieldName, {'\$exists': false});
     return this;
   }
 
   SelectorBuilder mod(String fieldName, int value) {
     _addExpression(fieldName, {
-      "\$mod": [value, 0]
+      '\$mod': [value, 0]
     });
     return this;
   }
@@ -135,16 +131,16 @@ class SelectorBuilder {
 
   SelectorBuilder inRange(String fieldName, min, max,
       {bool minInclude = true, bool maxInclude = false}) {
-    Map<String, dynamic> rangeMap = {};
+    var rangeMap = <String, dynamic>{};
     if (minInclude) {
-      rangeMap["\$gte"] = min;
+      rangeMap['\$gte'] = min;
     } else {
-      rangeMap["\$gt"] = min;
+      rangeMap['\$gt'] = min;
     }
     if (maxInclude) {
-      rangeMap["\$lte"] = max;
+      rangeMap['\$lte'] = max;
     } else {
-      rangeMap["\$lt"] = max;
+      rangeMap['\$lt'] = max;
     }
     _addExpression(fieldName, rangeMap);
     return this;
@@ -152,77 +148,77 @@ class SelectorBuilder {
 
   SelectorBuilder sortBy(String fieldName, {bool descending = false}) {
     _ensureOrderBy();
-    int order = 1;
+    var order = 1;
     if (descending) {
       order = -1;
     }
-    map["orderby"][fieldName] = order;
+    map['orderby'][fieldName] = order;
     return this;
   }
 
   SelectorBuilder sortByMetaTextScore(String fieldName) {
     _ensureOrderBy();
-    map["orderby"][fieldName] = <String, dynamic>{'\$meta': "textScore"};
+    map['orderby'][fieldName] = <String, dynamic>{'\$meta': 'textScore'};
     return this;
   }
 
   SelectorBuilder hint(String fieldName, {bool descending = false}) {
     _query;
-    if (!map.containsKey("\$hint")) {
-      map["\$hint"] = <String, dynamic>{};
+    if (!map.containsKey('\$hint')) {
+      map['\$hint'] = <String, dynamic>{};
     }
-    int order = 1;
+    var order = 1;
     if (descending) {
       order = -1;
     }
-    map["\$hint"][fieldName] = order;
+    map['\$hint'][fieldName] = order;
     return this;
   }
 
   SelectorBuilder hintIndex(String indexName) {
     _query;
-    map["\$hint"] = indexName;
+    map['\$hint'] = indexName;
     return this;
   }
 
   SelectorBuilder comment(String commentStr) {
     _query;
-    map["\$comment"] = commentStr;
+    map['\$comment'] = commentStr;
     return this;
   }
 
   SelectorBuilder explain() {
     _query;
-    map["\$explain"] = true;
+    map['\$explain'] = true;
     return this;
   }
 
   SelectorBuilder snapshot() {
     _query;
-    map["\$snapshot"] = true;
+    map['\$snapshot'] = true;
     return this;
   }
 
   SelectorBuilder showDiskLoc() {
     _query;
-    map["\$showDiskLoc"] = true;
+    map['\$showDiskLoc'] = true;
     return this;
   }
 
   SelectorBuilder returnKey() {
     _query;
-    map["\$sreturnKey"] = true;
+    map['\$sreturnKey'] = true;
     return this;
   }
 
   SelectorBuilder jsQuery(String javaScriptCode) {
-    _query["\$where"] = BsonCode(javaScriptCode);
+    _query['\$where'] = BsonCode(javaScriptCode);
     return this;
   }
 
   SelectorBuilder metaTextScore(String fieldName) {
     _ensureParamFields();
-    paramFields[fieldName] = {'\$meta': "textScore"};
+    paramFields[fieldName] = {'\$meta': 'textScore'};
 
     return this;
   }
@@ -260,17 +256,17 @@ class SelectorBuilder {
 
   SelectorBuilder within(String fieldName, value) {
     _addExpression(fieldName, {
-      "\$within": {"\$box": value}
+      '\$within': {'\$box': value}
     });
     return this;
   }
 
   SelectorBuilder near(String fieldName, var value, [double maxDistance]) {
     if (maxDistance == null) {
-      _addExpression(fieldName, {"\$near": value});
+      _addExpression(fieldName, {'\$near': value});
     } else {
       _addExpression(
-          fieldName, {"\$near": value, "\$maxDistance": maxDistance});
+          fieldName, {'\$near': value, '\$maxDistance': maxDistance});
     }
     return this;
   }
@@ -309,7 +305,7 @@ class SelectorBuilder {
       throw StateError('`And` opertion is not supported on empty query');
     }
     if (_query.containsKey('\$or')) {
-      List expressions = _query['\$or'] as List;
+      var expressions = _query['\$or'] as List;
       expressions.add(other._query);
     } else {
       var expressions = [_query];

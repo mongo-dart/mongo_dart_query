@@ -2,7 +2,7 @@ import 'package:mongo_dart_query/src/mongo_aggregation/aggregation_base.dart';
 import 'package:mongo_dart_query/src/mongo_aggregation/comparison_operators.dart';
 import 'package:test/test.dart';
 
-main() {
+void main() {
   test('cmp', () {
     expect(Cmp(TestExpr(), 5).build(), {
       '\$cmp': ['\$field', 5]

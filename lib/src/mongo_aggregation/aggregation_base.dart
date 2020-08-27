@@ -42,6 +42,7 @@ class AEList extends Iterable implements AggregationExpr {
   @protected
   AEList.internal(this._iterable);
 
+  @override
   _AEIterator get iterator => _AEIterator(_iterable);
   @override
   List build() => _iterable
@@ -67,6 +68,7 @@ class _AEIterator<T> implements Iterator<T> {
     return true;
   }
 
+  @override
   T get current => _current;
 }
 
@@ -84,11 +86,13 @@ class AEObject extends Iterable<MapEntry<String, dynamic>>
   @protected
   AEObject.internal(Map<String, dynamic> map)
       : _iterable = map.entries.where(_valueIsNotNull).map((entry) {
-          if (entry.value is List)
+          if (entry.value is List) {
             return MapEntry(entry.key, AEList(entry.value as List));
-          if (entry.value is Map<String, dynamic>)
+          }
+          if (entry.value is Map<String, dynamic>) {
             return MapEntry(
                 entry.key, AEObject(entry.value as Map<String, dynamic>));
+          }
           return entry;
         });
   @override

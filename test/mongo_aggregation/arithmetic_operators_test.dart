@@ -2,7 +2,7 @@ import 'package:mongo_dart_query/src/mongo_aggregation/aggregation_base.dart';
 import 'package:mongo_dart_query/src/mongo_aggregation/arithmetic_operators.dart';
 import 'package:test/test.dart';
 
-main() {
+void main() {
   test('abs', () {
     expect(Abs(TestExpr()).build(), {'\$abs': '\$field'});
   });
