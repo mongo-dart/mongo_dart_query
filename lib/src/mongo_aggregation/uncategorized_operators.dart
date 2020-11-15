@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 import 'aggregation_base.dart';
 
 /// `$expr` operator
@@ -26,7 +24,7 @@ class Let extends Operator {
   /// have no meaning outside the in expression, not even within the vars block
   /// itself.
   /// * [inExpr] - The expression to evaluate.
-  Let({@required Map<String, dynamic> vars, @required inExpr})
+  Let({required Map<String, dynamic> vars, required inExpr})
       : super('let', AEObject({'vars': AEObject(vars), 'in': inExpr}));
 }
 

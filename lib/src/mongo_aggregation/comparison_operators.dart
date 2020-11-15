@@ -120,7 +120,7 @@ class Switch extends Operator {
   /// * [defaultExpr] - Optional. The path to take if no branch case expression
   /// evaluates to true. Although optional, if default is unspecified and no
   /// branch case evaluates to true, $switch returns an error.
-  Switch({@required List<Case> branches, defaultExpr})
+  Switch({required List<Case> branches, defaultExpr})
       : super('switch',
             AEObject({'branches': AEList(branches), 'default': defaultExpr}));
 }
@@ -132,6 +132,6 @@ class Case extends AEObject {
   /// * [caseExpr] - Can be any valid expression that resolves to a boolean. If
   /// the result is not a boolean, it is coerced to a boolean value.
   /// * [thenExpr] - Can be any valid expression.
-  Case({@required AggregationExpr caseExpr, @required thenExpr})
+  Case({required AggregationExpr caseExpr, @required thenExpr})
       : super.internal({'case': caseExpr, 'then': thenExpr});
 }

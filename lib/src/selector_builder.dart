@@ -15,7 +15,8 @@ class SelectorBuilder {
 
   int paramSkip = 0;
   int paramLimit = 0;
-  Map<String, dynamic> paramFields;
+  Map<String, dynamic>? _paramFields;
+  Map<String, dynamic> get paramFields => _paramFields ??= <String, dynamic>{};
 
   @override
   String toString() => 'SelectorBuilder($map)';
@@ -41,7 +42,7 @@ class SelectorBuilder {
     }
   }
 
-  void _ensureParamFields() => paramFields ??= <String, dynamic>{};
+  //void _ensureParamFields() => paramFields /* ??= <String, dynamic>{} */;
 
   void _ensureOrderBy() {
     _query;
@@ -118,7 +119,7 @@ class SelectorBuilder {
   }
 
   SelectorBuilder match(String fieldName, String pattern,
-      {bool multiLine, bool caseInsensitive, bool dotAll, bool extended}) {
+      {bool? multiLine, bool? caseInsensitive, bool? dotAll, bool? extended}) {
     _addExpression(fieldName, {
       '\$regex': BsonRegexp(pattern,
           multiLine: multiLine,
@@ -217,14 +218,12 @@ class SelectorBuilder {
   }
 
   SelectorBuilder metaTextScore(String fieldName) {
-    _ensureParamFields();
     paramFields[fieldName] = {'\$meta': 'textScore'};
 
     return this;
   }
 
   SelectorBuilder fields(List<String> fields) {
-    _ensureParamFields();
     for (var field in fields) {
       paramFields[field] = 1;
     }
@@ -232,7 +231,6 @@ class SelectorBuilder {
   }
 
   SelectorBuilder excludeFields(List<String> fields) {
-    _ensureParamFields();
     for (var field in fields) {
       paramFields[field] = 0;
     }
@@ -261,7 +259,7 @@ class SelectorBuilder {
     return this;
   }
 
-  SelectorBuilder near(String fieldName, var value, [double maxDistance]) {
+  SelectorBuilder near(String fieldName, var value, [double? maxDistance]) {
     if (maxDistance == null) {
       _addExpression(fieldName, {'\$near': value});
     } else {

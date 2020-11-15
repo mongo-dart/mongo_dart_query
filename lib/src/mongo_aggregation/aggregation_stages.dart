@@ -184,17 +184,17 @@ class Bucket extends AggregationStage {
   /// the output documents in addition to the _id field. To specify the field
   /// to include, you must use accumulator expressions.
   Bucket(
-      {@required AggregationExpr groupBy,
-      @required List boundaries,
+      {required AggregationExpr groupBy,
+      required List boundaries,
       defaultId,
-      Map<String, Accumulator> output})
+      Map<String, Accumulator>? output})
       : super(
             'bucket',
             AEObject({
               'groupBy': groupBy,
               'boundaries': AEList(boundaries),
-              'default': defaultId,
-              'output': AEObject(output)
+              if (defaultId != null) 'default': defaultId,
+              if (output != null) 'output': AEObject(output)
             }));
 }
 
@@ -228,17 +228,17 @@ class BucketAuto extends AggregationStage {
   /// number series to use to ensure that the calculated boundary edges end on
   /// preferred round numbers or their powers of 10.
   BucketAuto(
-      {@required AggregationExpr groupBy,
-      @required int buckets,
-      Map<String, Accumulator> output,
-      Granularity granularity})
+      {required AggregationExpr groupBy,
+      required int buckets,
+      Map<String, Accumulator>? output,
+      Granularity? granularity})
       : super(
             'bucketAuto',
             AEObject({
               'groupBy': groupBy,
               'buckets': buckets,
-              'output': AEObject(output),
-              'granularity': granularity
+              if (output != null) 'output': AEObject(output),
+              if (granularity != null) 'granularity': granularity
             }));
 }
 
@@ -849,10 +849,10 @@ class Lookup extends AggregationStage {
   /// from collection. If the specified name already exists in the input
   /// document, the existing field is overwritten.
   Lookup(
-      {@required String from,
-      @required String localField,
-      @required String foreignField,
-      @required String as})
+      {required String from,
+      required String localField,
+      required String foreignField,
+      required String as})
       : super(
             'lookup',
             AEObject({
@@ -892,10 +892,10 @@ class Lookup extends AggregationStage {
   /// from collection. If the specified name already exists in the input
   /// document, the existing field is overwritten.
   Lookup.withPipeline(
-      {@required String from,
-      @required Map<String, dynamic> let,
-      @required List<AggregationStage> pipeline,
-      @required String as})
+      {required String from,
+      required Map<String, dynamic> let,
+      required List<AggregationStage> pipeline,
+      required String as})
       : super(
             'lookup',
             AEObject({
@@ -938,13 +938,15 @@ class Unwind extends AggregationStage {
   /// `false`, `$unwind` does not output a document if the path is `null`,
   /// missing, or an empty array. The default value is `false`.
   Unwind(Field field,
-      {String includeArrayIndex, bool preserveNullAndEmptyArrays})
+      {String? includeArrayIndex, bool? preserveNullAndEmptyArrays})
       : super(
             'unwind',
             AEObject({
               'path': field,
-              'includeArrayIndex': includeArrayIndex,
-              'preserveNullAndEmptyArrays': preserveNullAndEmptyArrays
+              if (includeArrayIndex != null)
+                'includeArrayIndex': includeArrayIndex,
+              if (preserveNullAndEmptyArrays != null)
+                'preserveNullAndEmptyArrays': preserveNullAndEmptyArrays
             }));
 }
 

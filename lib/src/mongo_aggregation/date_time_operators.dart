@@ -89,7 +89,7 @@ class DateToParts extends Operator {
   /// to true to return the parts representing an ISO week date instead. This will
   /// return a document where the properties are isoWeekYear, isoWeek,
   /// isoDayOfWeek, hour, minute, second and millisecond.
-  DateToParts(date, {timezone, bool iso8601})
+  DateToParts(date, {timezone, bool iso8601 = false})
       : super('dateToParts',
             AEObject({'date': date, 'timezone': timezone, 'iso8601': iso8601}));
 }

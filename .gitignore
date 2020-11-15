@@ -1,5 +1,3 @@
-.idea/
-
 ### Dart template
 # Don’t commit the following directories created by pub.
 .buildlog
@@ -18,3 +16,7 @@ packages
 pubspec.lock
 
 .dart_tool
+
+# Ide folders
+.idea/
+.vscode/

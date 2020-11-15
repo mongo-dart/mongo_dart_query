@@ -32,7 +32,7 @@ abstract class Accumulator extends Operator {
 class AEList extends Iterable implements AggregationExpr {
   final Iterable _iterable;
   factory AEList(Iterable iterable) {
-    if (iterable == null) return null;
+    //if (iterable == null) return null;
     return AEList.internal(iterable.where(_valueIsNotNull).map((value) {
       if (value is List) return AEList(value);
       if (value is Map<String, dynamic>) return AEObject(value);
@@ -54,7 +54,7 @@ class AEList extends Iterable implements AggregationExpr {
 class _AEIterator<T> implements Iterator<T> {
   final Iterable<T> _iterable;
   int _currentIndex = -1;
-  T _current;
+  T? _current;
 
   _AEIterator(this._iterable);
 
@@ -69,7 +69,13 @@ class _AEIterator<T> implements Iterator<T> {
   }
 
   @override
-  T get current => _current;
+  T get current {
+    if (_current == null) {
+      throw StateError('The current object is unspecified. '
+          'Check NoveNext() return value before calling the "current" getter.');
+    }
+    return _current!;
+  }
 }
 
 /// Aggregation expression's object
@@ -80,7 +86,7 @@ class AEObject extends Iterable<MapEntry<String, dynamic>>
   final Iterable<MapEntry<String, dynamic>> _iterable;
 
   factory AEObject(Map<String, dynamic> map) {
-    if (map == null) return null;
+    //if (map == null) return null;
     return AEObject.internal(map);
   }
   @protected
@@ -101,7 +107,7 @@ class AEObject extends Iterable<MapEntry<String, dynamic>>
   @override
   Map<String, dynamic> build() =>
       Map.fromEntries(_iterable).map((argName, argValue) => MapEntry(
-          argName, argValue is AggregationExpr ? argValue?.build() : argValue));
+          argName, argValue is AggregationExpr ? argValue.build() : argValue));
 }
 
 /// Returns `true` if value is not null

@@ -57,8 +57,9 @@ class Filter extends Operator {
   /// if an element should be included in the output array. The expression
   /// references each element of the input array individually with the variable
   /// name specified in [as].
-  Filter({@required input, String as, @required cond})
-      : super('filter', AEObject({'input': input, 'as': as, 'cond': cond}));
+  Filter({required input, String? as, required cond})
+      : super('filter',
+            AEObject({'input': input, if (as != null) 'as': as, 'cond': cond}));
 }
 
 /// `$in` operator
@@ -112,12 +113,12 @@ class MapOp extends Operator {
   /// defaults to `this`.
   /// * [inExpr] - An expression that is applied to each element of the input
   /// array. The expression references each element individually with the variable
-  MapOp({@required input, String as, @required inExpr})
+  MapOp({@required input, String? as, @required inExpr})
       : super(
             'map',
             AEObject({
               'input': input is List ? AEList(input) : input,
-              'as': as,
+              if (as != null) 'as': as,
               'in': inExpr
             }));
 }
@@ -256,14 +257,15 @@ class Zip extends Operator {
   /// `true` but [defaults] is empty or not specified, `$zip` uses `null` as the
   /// default value. If specifying a non-empty [defaults], you must specify a
   /// default for each input array or else `$zip` will return an error.
-  Zip({@required List inputs, bool useLongestLength = false, List defaults})
+  Zip({required List inputs, bool useLongestLength = false, List? defaults})
       : super(
             'zip',
             AEObject({
               'inputs': AEList(
                   inputs.map((elem) => elem is List ? AEList(elem) : elem)),
               'useLongestLength': useLongestLength,
-              'defaults': AEList(defaults)
+              if (defaults != null && defaults.isNotEmpty)
+                'defaults': AEList(defaults)
             }));
 }
 

@@ -9,7 +9,7 @@ class ModifierBuilder {
   String toString() => 'ModifierBuilder($map)';
 
   void _updateOperation(String operator, String fieldName, value) {
-    var opMap = map[operator] as Map<String, dynamic>;
+    var opMap = map[operator] as Map<String, dynamic>?;
     if (opMap == null) {
       opMap = <String, dynamic>{};
       map[operator] = opMap;
