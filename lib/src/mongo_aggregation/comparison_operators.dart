@@ -121,8 +121,12 @@ class Switch extends Operator {
   /// evaluates to true. Although optional, if default is unspecified and no
   /// branch case evaluates to true, $switch returns an error.
   Switch({required List<Case> branches, defaultExpr})
-      : super('switch',
-            AEObject({'branches': AEList(branches), 'default': defaultExpr}));
+      : super(
+            'switch',
+            AEObject({
+              'branches': AEList(branches),
+              if (defaultExpr != null) 'default': defaultExpr
+            }));
 }
 
 /// Case branch for [Switch] operator

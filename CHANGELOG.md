@@ -2,6 +2,12 @@
 
 ## 1.0.0-nullsafety
 
+### Potential breaking changes
+
+* `AEList` and `AEObject` constructors do not accept null parameters
+* The `AEList` iterator `current` getter now throws instead of returning null if `current` is undefined (`moveNext` not called or end of Iterable)
+* In `SelectorBuilder` the `paramFields` map cannot be set directly any more, but the related method must be used (fields, excludeFields and metaTextScore)
+
 ## 0.4.2
 
 * Fixed problem in SelectorBuilder:
