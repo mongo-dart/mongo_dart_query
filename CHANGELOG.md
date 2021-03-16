@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-nullsafety.2
+
+- updated dependencies
+
 ## 1.0.0-nullsafety
 
 ### Potential breaking changes
