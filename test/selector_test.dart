@@ -239,24 +239,53 @@ void main() {
       }
     });
     selector =
-        where.eq('foo', 'bar').or(where.eq('foo', 'baz')).eq('name', 'jack');
+        where.eq('foo', 'bar').or(where.eq('foo', null)).eq('name', 'jack');
+    expect(selector.map, {
+      r'$query': {
+        r'$and': [
+          {
+            r'$or': [
+              {'foo': 'bar'},
+              {'foo': null}
+            ]
+          },
+          {'name': 'jack'}
+        ]
+      }
+    });
   });
 
-  test('testModifierBuilder', () {
-    var modifier = modify.set('a', 995).set('b', 'bbb');
-    expect(
-        modifier.map,
-        equals({
-          r'$set': {'a': 995, 'b': 'bbb'}
-        }));
-    modifier = modify.unset('a').unset('b');
-    expect(
-        modifier.map,
-        equals({
-          r'$unset': {'a': 1, 'b': 1}
-        }));
+  group('Modifier Builder', () {
+    test('set unset', () {
+      var modifier = modify.set('a', 995).set('b', 'bbb');
+      expect(
+          modifier.map,
+          equals({
+            r'$set': {'a': 995, 'b': 'bbb'}
+          }));
+      modifier = modify.unset('a').unset('b');
+      expect(
+          modifier.map,
+          equals({
+            r'$unset': {'a': 1, 'b': 1}
+          }));
+    });
+    test('mul', () {
+      var modifier = modify.set('a', 995).mul('b', 5);
+      expect(
+          modifier.map,
+          equals({
+            r'$set': {'a': 995},
+            r'$mul': {'b': 5}
+          }));
+      modifier = modify.mul('a', 7.0).mul('b', 3);
+      expect(
+          modifier.map,
+          equals({
+            r'$mul': {'a': 7.0, 'b': 3}
+          }));
+    });
   });
-
   test('testGetQueryString', () {
     var selector = where.eq('foo', 'bar');
     expect(selector.getQueryString(), r'{"$query":{"foo":"bar"}}');

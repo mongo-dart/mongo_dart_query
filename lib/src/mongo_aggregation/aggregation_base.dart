@@ -221,10 +221,13 @@ class Var extends AggregationExpr {
 /// Aggregation stage base
 abstract class AggregationStage implements AggregationExpr {
   final String _name;
-  final _content;
+  final Object _content;
   AggregationStage(this._name, this._content);
 
   @override
-  Map<String, dynamic> build() =>
-      {'\$$_name': _content is AggregationExpr ? _content.build() : _content};
+  Map<String, Object> build() => {
+        '\$$_name': _content is AggregationExpr
+            ? (_content as AggregationExpr).build()
+            : _content
+      };
 }

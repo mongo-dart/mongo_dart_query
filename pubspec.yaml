@@ -1,5 +1,5 @@
 name: mongo_dart_query
-version: 1.0.0
+version: 1.0.1
 description: Query builder for mongo_dart and objectory
 homepage: https://github.com/mongo-dart/mongo_dart_query
 environment:

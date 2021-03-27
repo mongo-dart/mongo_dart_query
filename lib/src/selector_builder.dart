@@ -15,8 +15,8 @@ class SelectorBuilder {
 
   int paramSkip = 0;
   int paramLimit = 0;
-  Map<String, dynamic>? _paramFields;
-  Map<String, dynamic> get paramFields => _paramFields ??= <String, dynamic>{};
+  Map<String, Object>? _paramFields;
+  Map<String, Object> get paramFields => _paramFields ??= <String, Object>{};
 
   @override
   String toString() => 'SelectorBuilder($map)';
