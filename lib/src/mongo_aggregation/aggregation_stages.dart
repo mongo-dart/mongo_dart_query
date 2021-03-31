@@ -340,6 +340,7 @@ class Granularity extends Const {
   static final e96 = Granularity._('E96');
   static final e192 = Granularity._('E192');
   static final powersof2 = Granularity._('POWERSOF2');
+
   Granularity._(String value) : super(value);
 }
 
@@ -1104,4 +1105,94 @@ class SortByCount extends AggregationStage {
   /// { $sortByCount: { $mergeObjects: [ "$employee", "$business" ] } }
   /// ```
   SortByCount(expression) : super('sortByCount', expression);
+}
+
+/// `$geoNear`
+///
+/// ### Stage description
+/// Outputs documents in order of nearest to farthest from a specified point.
+/// [see mongo db documentation](https://docs.mongodb.com/manual/reference/operator/aggregation/geoNear/#std-label-pipeline-geoNear-key-param-example)
+///
+///
+/// Dart code:
+///
+/// ```
+///   GeoNear(
+///       near: GeometryObject.point([ -73.99279 , 40.719296 ]),
+///       distanceField: 'dist.location',
+///       maxDistance : 2,
+///       query: where.eq('category' , 'Parks').map["\$query"],
+///       includeLocs: 'dist.location',
+///       spherical: true
+///     );
+/// ```
+///
+/// Equivalent mongoDB aggregation stage:
+/// ```
+///   $geoNear: {
+//         near: { type: "Point", coordinates: [ -73.99279 , 40.719296 ] },
+//         distanceField: "dist.calculated",
+//         maxDistance: 2,
+//         query: { category: "Parks" },
+//         includeLocs: "dist.location",
+//         spherical: true
+//      }
+/// ```
+///
+///
+class GeoNear extends AggregationStage {
+  GeoNear(
+      {required GeometryObject near,
+      required String distanceField,
+      num? maxDistance,
+      num? minDistance,
+      bool? spherical,
+      Map<String, dynamic>? query,
+      num? distanceMultiplier,
+      String? includeLocs,
+      String? key})
+      : assert(near.type == GeometryObjectType.Point,
+            '\$geoNear \'near\' field must be Point'),
+        super(
+            'geoNear',
+            AEObject({
+              'near': near.build(),
+              'distanceField': distanceField,
+              if (maxDistance != null) 'maxDistance': maxDistance,
+              if (minDistance != null) 'minDistance': minDistance,
+              if (spherical != null) 'spherical': spherical,
+              if (query != null) 'query': query,
+              if (distanceMultiplier != distanceMultiplier)
+                'distanceMultiplier': distanceMultiplier,
+              if (includeLocs != null) 'includeLocs': includeLocs,
+              if (key != null) 'key': key
+            }));
+}
+
+class GeometryObject extends AggregationExpr {
+  GeometryObject({required this.type, required this.coordinates});
+
+  GeometryObject.point(List<double> point)
+      : type = GeometryObjectType.Point,
+        coordinates = point;
+
+  GeometryObjectType type;
+  List coordinates;
+
+  @override
+  Map<String, dynamic> build() {
+    return {
+      'type': type.toString().split('.').last,
+      'coordinates': coordinates
+    };
+  }
+}
+
+enum GeometryObjectType {
+  Point,
+  LineString,
+  Polygon,
+  MultiPoint,
+  MultiLineString,
+  MultiPolygon
 }
