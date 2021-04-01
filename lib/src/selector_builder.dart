@@ -6,6 +6,7 @@ const keyQuery = r'$query';
 class SelectorBuilder {
   static final RegExp objectIdRegexp = RegExp('.ObjectId...([0-9a-f]{24})....');
   Map<String, dynamic> map = {};
+
   Map<String, dynamic> get _query {
     if (!map.containsKey(keyQuery)) {
       map[keyQuery] = <String, dynamic>{};
@@ -16,10 +17,25 @@ class SelectorBuilder {
   int paramSkip = 0;
   int paramLimit = 0;
   Map<String, Object>? _paramFields;
+
   Map<String, Object> get paramFields => _paramFields ??= <String, Object>{};
 
   @override
   String toString() => 'SelectorBuilder($map)';
+
+  /// Copy to new instance
+  static SelectorBuilder copyWith(SelectorBuilder other) {
+    return SelectorBuilder()
+      ..map = other.map
+      .._paramFields = other._paramFields
+      ..paramLimit = other.paramLimit
+      ..paramSkip = other.paramSkip;
+  }
+
+  ///
+  SelectorBuilder clone() {
+    return copyWith(this);
+  }
 
   void _addExpression(String fieldName, value) {
     var exprMap = <String, dynamic>{};
