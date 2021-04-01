@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 
+import '../geometry_obj.dart';
 import 'aggregation_base.dart';
 
 /// `$addFields` aggregation stage
@@ -1167,32 +1168,4 @@ class GeoNear extends AggregationStage {
               if (includeLocs != null) 'includeLocs': includeLocs,
               if (key != null) 'key': key
             }));
-}
-
-class GeometryObject extends AggregationExpr {
-  GeometryObject({required this.type, required this.coordinates});
-
-  GeometryObject.point(List<double> point)
-      : type = GeometryObjectType.Point,
-        coordinates = point;
-
-  GeometryObjectType type;
-  List coordinates;
-
-  @override
-  Map<String, dynamic> build() {
-    return {
-      'type': type.toString().split('.').last,
-      'coordinates': coordinates
-    };
-  }
-}
-
-enum GeometryObjectType {
-  Point,
-  LineString,
-  Polygon,
-  MultiPoint,
-  MultiLineString,
-  MultiPolygon
 }

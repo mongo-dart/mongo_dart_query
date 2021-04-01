@@ -269,6 +269,35 @@ class SelectorBuilder {
     return this;
   }
 
+  /// Only support $geometry shape operator
+  SelectorBuilder geoWithin(String fieldName, GeometryObject coordinate) {
+    _addExpression(fieldName, {
+      '\$geoWithin': {'\$geometry': coordinate.build()}
+    });
+    return this;
+  }
+
+  /// Only support geometry of point
+  SelectorBuilder nearSphere(String fieldName, GeometryObject point,
+      {double? maxDistance, double? minDistance}) {
+    _addExpression(fieldName, {
+      '\$nearSphere': {
+        '\$geometry': point.build(),
+        if (minDistance != null) '\$minDistance': minDistance,
+        if (maxDistance != null) '\$maxDistance': maxDistance
+      },
+    });
+    return this;
+  }
+
+  ///
+  SelectorBuilder geoIntersect(String fieldName, GeometryObject coordinate) {
+    _addExpression(fieldName, {
+      '\$geoIntersects': {'\$geometry': coordinate.build()}
+    });
+    return this;
+  }
+
   /// Combine current expression with expression in parameter.
   /// [See MongoDB doc](http://docs.mongodb.org/manual/reference/operator/and/#op._S_and)
   /// [SelectorBuilder] provides implicit `and` operator for chained queries so these two expression will produce
@@ -282,7 +311,7 @@ class SelectorBuilder {
   ///     {'\$query': {'\$and': [{'price':1.99},{'qty': {'\$lt': 20 }}, {'sale': true }]}}
   SelectorBuilder and(SelectorBuilder other) {
     if (_query.isEmpty) {
-      throw StateError('`And` opertion is not supported on empty query');
+      throw StateError('`And` operation is not supported on empty query');
     }
     _addExpressionMap(other._query);
     return this;
@@ -300,7 +329,7 @@ class SelectorBuilder {
   ///      {'\$query': {'\$and': [{'price':1.99}, {'\$or': [{'qty': {'\$lt': 20 }}, {'sale': true }]}]}}
   SelectorBuilder or(SelectorBuilder other) {
     if (_query.isEmpty) {
-      throw StateError('`And` opertion is not supported on empty query');
+      throw StateError('`And` operation is not supported on empty query');
     }
     if (_query.containsKey('\$or')) {
       var expressions = _query['\$or'] as List;
