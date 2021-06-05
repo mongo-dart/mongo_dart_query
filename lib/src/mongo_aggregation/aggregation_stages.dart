@@ -1,4 +1,6 @@
 import 'package:meta/meta.dart';
+import 'package:mongo_dart_query/mongo_aggregation.dart';
+import 'package:mongo_dart_query/mongo_dart_query.dart';
 
 import '../geometry_obj.dart';
 import 'aggregation_base.dart';
@@ -906,6 +908,47 @@ class Lookup extends AggregationStage {
               'pipeline': AEList(pipeline),
               'as': as
             }));
+}
+
+
+/// Creates `$graphLookup` stage
+///
+///
+class GraphLookup extends AggregationStage {
+  GraphLookup(
+      {required String from,
+      required String startWith,
+      required String connectFromField,
+      required String connectToField,
+      required String as,
+      int? maxDepth,
+      String? depthField,
+      restrictSearchWithMatch})
+      : super(
+            'graphLookup',
+            AEObject({
+              'from': from,
+              'startWith': '\$$startWith',
+              'connectFromField': connectFromField,
+              'connectToField': connectToField,
+              'as': as,
+              if (maxDepth != null) 'maxDepth': maxDepth,
+              if (depthField != null) 'depthField': depthField,
+              if (restrictSearchWithMatch != null)
+                'restrictSearchWithMatch':
+                    _getRestrictSearchWithMatch(restrictSearchWithMatch)
+            }));
+
+  static AEObject _getRestrictSearchWithMatch(restrictSearchWithMatch) {
+    if (restrictSearchWithMatch is SelectorBuilder) {
+      return restrictSearchWithMatch.map['\$query'];
+    } else if (restrictSearchWithMatch is Map<String, dynamic>) {
+      return AEObject(restrictSearchWithMatch);
+    } else {
+      throw Exception(
+          'restrictSearchWithMatch must be Map<String,dynamic> or SelectorBuilder');
+    }
+  }
 }
 
 /// `$unwind` aggregation stage
