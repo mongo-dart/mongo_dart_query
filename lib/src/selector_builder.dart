@@ -286,31 +286,27 @@ class SelectorBuilder {
   }
 
   /// Only support $geometry shape operator
-  SelectorBuilder geoWithin(String fieldName, GeometryObject coordinate) {
-    _addExpression(fieldName, {
-      '\$geoWithin': {'\$geometry': coordinate.build()}
-    });
+  /// Available ShapeOperator instances: Box , Center, CenterSphere, Geometry
+  SelectorBuilder geoWithin(String fieldName, ShapeOperator shape) {
+    _addExpression(fieldName, {'\$geoWithin': shape.build()});
     return this;
   }
 
   /// Only support geometry of point
-  SelectorBuilder nearSphere(String fieldName, GeometryObject point,
+  SelectorBuilder nearSphere(String fieldName, Geometry point,
       {double? maxDistance, double? minDistance}) {
     _addExpression(fieldName, {
-      '\$nearSphere': {
-        '\$geometry': point.build(),
+      '\$nearSphere': <String, dynamic>{
         if (minDistance != null) '\$minDistance': minDistance,
         if (maxDistance != null) '\$maxDistance': maxDistance
-      },
+      }..addAll(point.build()),
     });
     return this;
   }
 
   ///
-  SelectorBuilder geoIntersect(String fieldName, GeometryObject coordinate) {
-    _addExpression(fieldName, {
-      '\$geoIntersects': {'\$geometry': coordinate.build()}
-    });
+  SelectorBuilder geoIntersects(String fieldName, Geometry coordinate) {
+    _addExpression(fieldName, {'\$geoIntersects': coordinate.build()});
     return this;
   }
 

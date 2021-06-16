@@ -911,7 +911,44 @@ class Lookup extends AggregationStage {
 }
 
 
-/// Creates `$graphLookup` stage
+
+/// `$graphLookup`
+///
+/// ### Stage description
+/// Performs a recursive search on a collection, with options for restricting the search by recursion depth and query filter.
+/// [see mongo db documentation](https://docs.mongodb.com/manual/reference/operator/aggregation/graphLookup/)
+///
+///
+/// Dart code:
+///
+/// ```
+///   GraphLookup(
+///           from: "follows",
+///           startWith: "user_id",
+///           connectFromField: "my_follows",
+///           connectToField: "followed",
+///           as: "same_follows",
+///           depthField: "depth",
+///           maxDepth: 3,
+///           restrictSearchWithMatch: where.ne("user_id", "user1"));
+/// ```
+///
+/// Equivalent mongoDB aggregation stage:
+///
+/// ```
+///   $graphLookup: {
+///         from: "follows",
+///         startWith: "$user_id",
+///         connectFromField: "my_follows",
+///         connectToField: "followed",
+///         as: "same_follows",
+///         depthField: "depth",
+///         maxDepth : 3,
+///         restrictSearchWithMatch: {
+///            follower: {$ne: "user1"}
+///         }
+///      }
+/// ```
 ///
 ///
 class GraphLookup extends AggregationStage {
@@ -941,7 +978,7 @@ class GraphLookup extends AggregationStage {
 
   static AEObject _getRestrictSearchWithMatch(restrictSearchWithMatch) {
     if (restrictSearchWithMatch is SelectorBuilder) {
-      return restrictSearchWithMatch.map['\$query'];
+      return AEObject(restrictSearchWithMatch.map['\$query']);
     } else if (restrictSearchWithMatch is Map<String, dynamic>) {
       return AEObject(restrictSearchWithMatch);
     } else {
@@ -1161,37 +1198,42 @@ class SortByCount extends AggregationStage {
 /// Dart code:
 ///
 /// ```
-///   GeoNear(
-///       near: GeometryObject.point([ -73.99279 , 40.719296 ]),
-///       distanceField: 'dist.location',
-///       maxDistance : 2,
-///       query: where.eq('category' , 'Parks').map["\$query"],
-///       includeLocs: 'dist.location',
-///       spherical: true
-///     );
+/// GeoNear(
+///   near: Geometry.point([-73.99279, 40.719296]),
+///   distanceField: 'dist.calculated',
+///   maxDistance: 2,
+///   query: where.eq('category', 'Parks').map['\$query'],
+///   includeLocs: 'dist.location',
+///   spherical: true
+///  ).build()
 /// ```
 ///
 /// Equivalent mongoDB aggregation stage:
 /// ```
-///   $geoNear: {
-//         near: { type: "Point", coordinates: [ -73.99279 , 40.719296 ] },
-//         distanceField: "dist.calculated",
-//         maxDistance: 2,
-//         query: { category: "Parks" },
-//         includeLocs: "dist.location",
-//         spherical: true
-//      }
+/// {
+///    '$geoNear': {
+///        'near': {
+///           'type': 'Point',
+///           'coordinates': [-73.99279, 40.719296]
+///         },
+///         'distanceField': 'dist.calculated',
+///         'maxDistance': 2,
+///         'query': {'category': 'Parks'},
+///         'includeLocs': 'dist.location',
+///         'spherical': true
+///    }
+/// }
 /// ```
 ///
 ///
 class GeoNear extends AggregationStage {
   GeoNear(
-      {required GeometryObject near,
+      {required Geometry near,
       required String distanceField,
       num? maxDistance,
       num? minDistance,
       bool? spherical,
-      Map<String, dynamic>? query,
+      dynamic query,
       num? distanceMultiplier,
       String? includeLocs,
       String? key})
@@ -1200,15 +1242,32 @@ class GeoNear extends AggregationStage {
         super(
             'geoNear',
             AEObject({
-              'near': near.build(),
+              'near': near.build()[r'$geometry'],
               'distanceField': distanceField,
               if (maxDistance != null) 'maxDistance': maxDistance,
               if (minDistance != null) 'minDistance': minDistance,
               if (spherical != null) 'spherical': spherical,
-              if (query != null) 'query': query,
+              if (query != null) 'query': _getQuery(query),
               if (distanceMultiplier != distanceMultiplier)
                 'distanceMultiplier': distanceMultiplier,
               if (includeLocs != null) 'includeLocs': includeLocs,
               if (key != null) 'key': key
             }));
+
+
+
+  static AEObject _getQuery(query) {
+    if (query is SelectorBuilder) {
+      return AEObject(query.map['\$query']);
+    } else if (query is Map<String, dynamic>) {
+      return AEObject(query);
+    } else {
+      throw Exception(
+          'restrictSearchWithMatch must be Map<String,dynamic> or SelectorBuilder');
+    }
+  }
+
+
+
+
 }
