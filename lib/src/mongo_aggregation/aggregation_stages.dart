@@ -1,5 +1,8 @@
 import 'package:meta/meta.dart';
+import 'package:mongo_dart_query/mongo_aggregation.dart';
+import 'package:mongo_dart_query/mongo_dart_query.dart';
 
+import '../geometry_obj.dart';
 import 'aggregation_base.dart';
 
 /// `$addFields` aggregation stage
@@ -340,6 +343,7 @@ class Granularity extends Const {
   static final e96 = Granularity._('E96');
   static final e192 = Granularity._('E192');
   static final powersof2 = Granularity._('POWERSOF2');
+
   Granularity._(String value) : super(value);
 }
 
@@ -906,6 +910,84 @@ class Lookup extends AggregationStage {
             }));
 }
 
+
+
+/// `$graphLookup`
+///
+/// ### Stage description
+/// Performs a recursive search on a collection, with options for restricting the search by recursion depth and query filter.
+/// [see mongo db documentation](https://docs.mongodb.com/manual/reference/operator/aggregation/graphLookup/)
+///
+///
+/// Dart code:
+///
+/// ```
+///   GraphLookup(
+///           from: "follows",
+///           startWith: "user_id",
+///           connectFromField: "my_follows",
+///           connectToField: "followed",
+///           as: "same_follows",
+///           depthField: "depth",
+///           maxDepth: 3,
+///           restrictSearchWithMatch: where.ne("user_id", "user1"));
+/// ```
+///
+/// Equivalent mongoDB aggregation stage:
+///
+/// ```
+///   $graphLookup: {
+///         from: "follows",
+///         startWith: "$user_id",
+///         connectFromField: "my_follows",
+///         connectToField: "followed",
+///         as: "same_follows",
+///         depthField: "depth",
+///         maxDepth : 3,
+///         restrictSearchWithMatch: {
+///            follower: {$ne: "user1"}
+///         }
+///      }
+/// ```
+///
+///
+class GraphLookup extends AggregationStage {
+  GraphLookup(
+      {required String from,
+      required String startWith,
+      required String connectFromField,
+      required String connectToField,
+      required String as,
+      int? maxDepth,
+      String? depthField,
+      restrictSearchWithMatch})
+      : super(
+            'graphLookup',
+            AEObject({
+              'from': from,
+              'startWith': '\$$startWith',
+              'connectFromField': connectFromField,
+              'connectToField': connectToField,
+              'as': as,
+              if (maxDepth != null) 'maxDepth': maxDepth,
+              if (depthField != null) 'depthField': depthField,
+              if (restrictSearchWithMatch != null)
+                'restrictSearchWithMatch':
+                    _getRestrictSearchWithMatch(restrictSearchWithMatch)
+            }));
+
+  static AEObject _getRestrictSearchWithMatch(restrictSearchWithMatch) {
+    if (restrictSearchWithMatch is SelectorBuilder) {
+      return AEObject(restrictSearchWithMatch.map['\$query']);
+    } else if (restrictSearchWithMatch is Map<String, dynamic>) {
+      return AEObject(restrictSearchWithMatch);
+    } else {
+      throw Exception(
+          'restrictSearchWithMatch must be Map<String,dynamic> or SelectorBuilder');
+    }
+  }
+}
+
 /// `$unwind` aggregation stage
 ///
 /// ### Stage description
@@ -1104,4 +1186,88 @@ class SortByCount extends AggregationStage {
   /// { $sortByCount: { $mergeObjects: [ "$employee", "$business" ] } }
   /// ```
   SortByCount(expression) : super('sortByCount', expression);
+}
+
+/// `$geoNear`
+///
+/// ### Stage description
+/// Outputs documents in order of nearest to farthest from a specified point.
+/// [see mongo db documentation](https://docs.mongodb.com/manual/reference/operator/aggregation/geoNear/#std-label-pipeline-geoNear-key-param-example)
+///
+///
+/// Dart code:
+///
+/// ```
+/// GeoNear(
+///   near: Geometry.point([-73.99279, 40.719296]),
+///   distanceField: 'dist.calculated',
+///   maxDistance: 2,
+///   query: where.eq('category', 'Parks').map['\$query'],
+///   includeLocs: 'dist.location',
+///   spherical: true
+///  ).build()
+/// ```
+///
+/// Equivalent mongoDB aggregation stage:
+/// ```
+/// {
+///    '$geoNear': {
+///        'near': {
+///           'type': 'Point',
+///           'coordinates': [-73.99279, 40.719296]
+///         },
+///         'distanceField': 'dist.calculated',
+///         'maxDistance': 2,
+///         'query': {'category': 'Parks'},
+///         'includeLocs': 'dist.location',
+///         'spherical': true
+///    }
+/// }
+/// ```
+///
+///
+class GeoNear extends AggregationStage {
+  GeoNear(
+      {required Geometry near,
+      required String distanceField,
+      num? maxDistance,
+      num? minDistance,
+      bool? spherical,
+      dynamic query,
+      num? distanceMultiplier,
+      String? includeLocs,
+      String? key})
+      : assert(near.type == GeometryObjectType.Point,
+            '\$geoNear \'near\' field must be Point'),
+        super(
+            'geoNear',
+            AEObject({
+              'near': near.build()[r'$geometry'],
+              'distanceField': distanceField,
+              if (maxDistance != null) 'maxDistance': maxDistance,
+              if (minDistance != null) 'minDistance': minDistance,
+              if (spherical != null) 'spherical': spherical,
+              if (query != null) 'query': _getQuery(query),
+              if (distanceMultiplier != distanceMultiplier)
+                'distanceMultiplier': distanceMultiplier,
+              if (includeLocs != null) 'includeLocs': includeLocs,
+              if (key != null) 'key': key
+            }));
+
+
+
+  static AEObject _getQuery(query) {
+    if (query is SelectorBuilder) {
+      return AEObject(query.map['\$query']);
+    } else if (query is Map<String, dynamic>) {
+      return AEObject(query);
+    } else {
+      throw Exception(
+          'restrictSearchWithMatch must be Map<String,dynamic> or SelectorBuilder');
+    }
+  }
+
+
+
+
 }

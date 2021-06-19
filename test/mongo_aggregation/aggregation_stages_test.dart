@@ -1,6 +1,7 @@
 import 'package:bson/bson.dart';
 import 'package:mongo_dart_query/mongo_aggregation.dart';
 import 'package:mongo_dart_query/mongo_dart_query.dart';
+import 'package:mongo_dart_query/src/geometry_obj.dart';
 import 'package:test/test.dart' hide Skip;
 
 void main() {
@@ -313,6 +314,32 @@ void main() {
           }
         });
   });
+
+  test('graphLookup', () {
+    expect(
+        GraphLookup(
+                from: 'employees',
+                startWith: 'reportsTo',
+                connectFromField: 'reportsTo',
+                connectToField: 'name',
+                as: 'reportingHierarchy',
+                depthField: 'depth',
+                maxDepth: 5,
+                restrictSearchWithMatch: where.eq('field', 'value'))
+            .build(),
+        {
+          r'$graphLookup': {
+            'from': 'employees',
+            'startWith': r'$reportsTo',
+            'connectFromField': 'reportsTo',
+            'connectToField': 'name',
+            'as': 'reportingHierarchy',
+            'depthField': 'depth',
+            'maxDepth': 5,
+            'restrictSearchWithMatch': {'field': 'value'}
+          }
+        });
+  });
   test('unwind', () {
     expect(Unwind(Field('sizes')).build(), {
       '\$unwind': {'path': '\$sizes'}
@@ -340,6 +367,41 @@ void main() {
   });
 
   test('sortByCount', () {
+    expect(SortByCount(Field('employee')).build(),
+        {'\$sortByCount': '\$employee'});
+    expect(
+        SortByCount(MergeObjects([Field('employee'), Field('business')]))
+            .build(),
+        {
+          '\$sortByCount': {
+            '\$mergeObjects': ['\$employee', '\$business']
+          }
+        });
+  });
+
+  test('geoNear', () {
+    expect(
+        GeoNear(
+            near: Geometry.point([-73.99279, 40.719296]),
+            distanceField: 'dist.calculated',
+            maxDistance: 2,
+            query: where.eq('category', 'Parks').map['\$query'],
+            includeLocs: 'dist.location',
+            spherical: true).build(),
+        {
+          r'$geoNear': {
+            'near': {
+              'type': 'Point',
+              'coordinates': [-73.99279, 40.719296]
+            },
+            'distanceField': 'dist.calculated',
+            'maxDistance': 2,
+            'query': {'category': 'Parks'},
+            'includeLocs': 'dist.location',
+            'spherical': true
+          }
+        });
+
     expect(SortByCount(Field('employee')).build(),
         {'\$sortByCount': '\$employee'});
     expect(

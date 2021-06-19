@@ -1,5 +1,6 @@
 library test_lib;
 
+import 'package:mongo_dart_query/src/geometry_obj.dart';
 import 'package:test/test.dart';
 import 'package:bson/bson.dart';
 import 'package:mongo_dart_query/mongo_dart_query.dart';
@@ -309,5 +310,147 @@ void main() {
 
     expect(selector.getQueryString(),
         r'{"$query":{"$text":{"$search":"sText"}},"orderby":{"fName":1}}');
+  });
+
+  test('copyWith_clone', () {
+    var selector = where
+        .eq('field', 'value')
+        .gt('num_field', 5)
+        .and(where.nearSphere('geo_obj', Geometry.point([35.0, 35.0])));
+
+    var copied = SelectorBuilder.copyWith(selector);
+
+    expect(selector.getQueryString(), equals(copied.getQueryString()));
+  });
+
+  test('nearSphere', () {
+    var selector = where.nearSphere(
+        'geo_field',
+        Geometry(type: GeometryObjectType.Polygon, coordinates: [
+          [0, 0],
+          [1, 8],
+          [12, 30],
+          [0, 0]
+        ]),
+        maxDistance: 1000,
+        minDistance: 500);
+
+    expect(
+        selector.map,
+        equals({
+          r'$query': {
+            'geo_field': {
+              r'$nearSphere': {
+                r'$geometry': {
+                  'type': 'Polygon',
+                  'coordinates': [
+                    [0, 0],
+                    [1, 8],
+                    [12, 30],
+                    [0, 0]
+                  ]
+                },
+                r'$minDistance': 500,
+                r'$maxDistance': 1000
+              }
+            }
+          }
+        }));
+  });
+
+  test('geoIntersects', () {
+    var selector = where.geoIntersects(
+        'geo_field',
+        Geometry(type: GeometryObjectType.Polygon, coordinates: [
+          [0, 0],
+          [1, 8],
+          [12, 30],
+          [0, 0]
+        ]));
+
+    expect(
+        selector.map,
+        equals({
+          r'$query': {
+            'geo_field': {
+              r'$geoIntersects': {
+                r'$geometry': {
+                  'type': 'Polygon',
+                  'coordinates': [
+                    [0, 0],
+                    [1, 8],
+                    [12, 30],
+                    [0, 0]
+                  ]
+                }
+              }
+            }
+          }
+        }));
+  });
+
+  test('geoWithin_geometry', () {
+    var selector = where.geoWithin(
+        'geo_field',
+        Geometry(type: GeometryObjectType.Polygon, coordinates: [
+          [0, 0],
+          [1, 8],
+          [12, 30],
+          [0, 0]
+        ]));
+
+    expect(
+        selector.map,
+        equals({
+          r'$query': {
+            'geo_field': {
+              r'$geoWithin': {
+                r'$geometry': {
+                  'type': 'Polygon',
+                  'coordinates': [
+                    [0, 0],
+                    [1, 8],
+                    [12, 30],
+                    [0, 0]
+                  ]
+                }
+              }
+            }
+          }
+        }));
+  });
+
+  test('geoWithin_box', () {
+    var selector = where.geoWithin(
+        'geo_field', Box(bottomLeft: [5, 8], upperRight: [8.8, 10.5]));
+
+    expect(
+        selector.map,
+        equals({
+          r'$query': {
+            'geo_field': {
+              r'$geoWithin': {
+                r'$box': [[5, 8],[8.8, 10.5]]
+              }
+            }
+          }
+        }));
+  });
+
+  test('geoWithin_center', () {
+    var selector = where.geoWithin(
+        'geo_field', Center(center: [5,8], radius: 50.2));
+
+    expect(
+        selector.map,
+        equals({
+          r'$query': {
+            'geo_field': {
+              r'$geoWithin': {
+                r'$center': [[5, 8],50.2]
+              }
+            }
+          }
+        }));
   });
 }

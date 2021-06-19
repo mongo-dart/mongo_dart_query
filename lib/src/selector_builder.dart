@@ -6,6 +6,7 @@ const keyQuery = r'$query';
 class SelectorBuilder {
   static final RegExp objectIdRegexp = RegExp('.ObjectId...([0-9a-f]{24})....');
   Map<String, dynamic> map = {};
+
   Map<String, dynamic> get _query {
     if (!map.containsKey(keyQuery)) {
       map[keyQuery] = <String, dynamic>{};
@@ -16,10 +17,25 @@ class SelectorBuilder {
   int paramSkip = 0;
   int paramLimit = 0;
   Map<String, Object>? _paramFields;
+
   Map<String, Object> get paramFields => _paramFields ??= <String, Object>{};
 
   @override
   String toString() => 'SelectorBuilder($map)';
+
+  /// Copy to new instance
+  static SelectorBuilder copyWith(SelectorBuilder other) {
+    return SelectorBuilder()
+      ..map = other.map
+      .._paramFields = other._paramFields
+      ..paramLimit = other.paramLimit
+      ..paramSkip = other.paramSkip;
+  }
+
+  ///
+  SelectorBuilder clone() {
+    return copyWith(this);
+  }
 
   void _addExpression(String fieldName, value) {
     var exprMap = <String, dynamic>{};
@@ -269,6 +285,31 @@ class SelectorBuilder {
     return this;
   }
 
+  /// Only support $geometry shape operator
+  /// Available ShapeOperator instances: Box , Center, CenterSphere, Geometry
+  SelectorBuilder geoWithin(String fieldName, ShapeOperator shape) {
+    _addExpression(fieldName, {'\$geoWithin': shape.build()});
+    return this;
+  }
+
+  /// Only support geometry of point
+  SelectorBuilder nearSphere(String fieldName, Geometry point,
+      {double? maxDistance, double? minDistance}) {
+    _addExpression(fieldName, {
+      '\$nearSphere': <String, dynamic>{
+        if (minDistance != null) '\$minDistance': minDistance,
+        if (maxDistance != null) '\$maxDistance': maxDistance
+      }..addAll(point.build()),
+    });
+    return this;
+  }
+
+  ///
+  SelectorBuilder geoIntersects(String fieldName, Geometry coordinate) {
+    _addExpression(fieldName, {'\$geoIntersects': coordinate.build()});
+    return this;
+  }
+
   /// Combine current expression with expression in parameter.
   /// [See MongoDB doc](http://docs.mongodb.org/manual/reference/operator/and/#op._S_and)
   /// [SelectorBuilder] provides implicit `and` operator for chained queries so these two expression will produce
@@ -282,7 +323,7 @@ class SelectorBuilder {
   ///     {'\$query': {'\$and': [{'price':1.99},{'qty': {'\$lt': 20 }}, {'sale': true }]}}
   SelectorBuilder and(SelectorBuilder other) {
     if (_query.isEmpty) {
-      throw StateError('`And` opertion is not supported on empty query');
+      throw StateError('`And` operation is not supported on empty query');
     }
     _addExpressionMap(other._query);
     return this;
@@ -300,7 +341,7 @@ class SelectorBuilder {
   ///      {'\$query': {'\$and': [{'price':1.99}, {'\$or': [{'qty': {'\$lt': 20 }}, {'sale': true }]}]}}
   SelectorBuilder or(SelectorBuilder other) {
     if (_query.isEmpty) {
-      throw StateError('`And` opertion is not supported on empty query');
+      throw StateError('`And` operation is not supported on empty query');
     }
     if (_query.containsKey('\$or')) {
       var expressions = _query['\$or'] as List;
