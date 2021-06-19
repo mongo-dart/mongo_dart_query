@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2
+
+- added geoNear aggregation stage
+- SelectorBuilder clone()
+
 ## 1.0.1
 
 - $mul operator

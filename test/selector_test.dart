@@ -430,7 +430,10 @@ void main() {
           r'$query': {
             'geo_field': {
               r'$geoWithin': {
-                r'$box': [[5, 8],[8.8, 10.5]]
+                r'$box': [
+                  [5, 8],
+                  [8.8, 10.5]
+                ]
               }
             }
           }
@@ -438,8 +441,8 @@ void main() {
   });
 
   test('geoWithin_center', () {
-    var selector = where.geoWithin(
-        'geo_field', Center(center: [5,8], radius: 50.2));
+    var selector =
+        where.geoWithin('geo_field', Center(center: [5, 8], radius: 50.2));
 
     expect(
         selector.map,
@@ -447,7 +450,10 @@ void main() {
           r'$query': {
             'geo_field': {
               r'$geoWithin': {
-                r'$center': [[5, 8],50.2]
+                r'$center': [
+                  [5, 8],
+                  50.2
+                ]
               }
             }
           }
