@@ -1,12 +1,12 @@
 name: mongo_dart_query
-version: 1.0.2
-description: Query builder for mongo_dart and objectory
+version: 2.0.0-1.0.beta
+description: Query builder for mongo_dart 
 homepage: https://github.com/mongo-dart/mongo_dart_query
 environment:
   sdk: ">=2.12.0 <3.0.0"
 dependencies:
-  bson: ^1.0.3
+  bson: ^2.0.0-1.0.beta
   meta: ^1.3.0
 dev_dependencies:
   test: ^1.16.0
-  pedantic: ^1.10.0
+  lints: ^1.0.0

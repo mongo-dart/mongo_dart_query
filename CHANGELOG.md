@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.0.0-1.0.beta
+
+- New UnionWith Stage
+- Removed Pedantic -> Moved to Lints
+
+### Breaking changes
+
+- Moved to Bson 2.0.0 that uses Decimal instead of Rational
+
 ## 1.0.2
 
 - added geoNear aggregation stage

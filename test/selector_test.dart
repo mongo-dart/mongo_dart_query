@@ -8,14 +8,14 @@ import 'package:mongo_dart_query/mongo_dart_query.dart';
 void main() {
   test('SelectorBuilder Creation', () {
     var selector = where;
-    expect(selector.map is Map, isTrue);
+    //expect(selector.map is Map, isTrue);
     expect(selector.map, isEmpty);
   });
 
   test('testSelectorBuilderOnObjectId', () {
     var id = ObjectId();
     var selector = where.id(id);
-    expect(selector.map is Map, isTrue);
+    //expect(selector.map is Map, isTrue);
     expect(selector.map.length, greaterThan(0));
     expect(
         selector.map,
@@ -31,7 +31,7 @@ void main() {
 
     var id = ObjectId();
     selector.id(id);
-    expect(selector.map is Map, isTrue);
+    //expect(selector.map is Map, isTrue);
     expect(selector.map.length, 1);
     expect(
         selector.map,

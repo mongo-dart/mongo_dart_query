@@ -6,11 +6,17 @@ abstract class ShapeOperator extends Operator {
 }
 
 enum GeometryObjectType {
+  // ignore: constant_identifier_names
   Point,
+  // ignore: constant_identifier_names
   LineString,
+  // ignore: constant_identifier_names
   Polygon,
+  // ignore: constant_identifier_names
   MultiPoint,
+  // ignore: constant_identifier_names
   MultiLineString,
+  // ignore: constant_identifier_names
   MultiPolygon
 }
 

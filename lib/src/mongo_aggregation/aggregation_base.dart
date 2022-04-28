@@ -13,7 +13,7 @@ abstract class AggregationExpr implements Builder {
 
 /// Basic aggregation operator
 abstract class Operator extends AggregationExpr {
-  final _args;
+  final dynamic _args;
   final String _name;
   Operator(this._name, this._args);
   @override
@@ -135,7 +135,7 @@ class Field extends AggregationExpr {
 
 /// Constant expression
 class Const extends AggregationExpr {
-  final _value;
+  final dynamic _value;
   const Const(this._value);
   @override
   dynamic build() => _value;
@@ -148,7 +148,7 @@ class Const extends AggregationExpr {
 /// in expression objects as projection flags. To avoid parsing literals, use
 /// the [Literal] expression
 class Literal extends AggregationExpr {
-  final _expr;
+  final dynamic _expr;
 
   /// Creates a literal expression
   const Literal(this._expr);

@@ -382,12 +382,13 @@ void main() {
   test('geoNear', () {
     expect(
         GeoNear(
-            near: Geometry.point([-73.99279, 40.719296]),
-            distanceField: 'dist.calculated',
-            maxDistance: 2,
-            query: where.eq('category', 'Parks').map['\$query'],
-            includeLocs: 'dist.location',
-            spherical: true).build(),
+                near: Geometry.point([-73.99279, 40.719296]),
+                distanceField: 'dist.calculated',
+                maxDistance: 2,
+                query: where.eq('category', 'Parks').map['\$query'],
+                includeLocs: 'dist.location',
+                spherical: true)
+            .build(),
         {
           r'$geoNear': {
             'near': {
@@ -410,6 +411,57 @@ void main() {
         {
           '\$sortByCount': {
             '\$mergeObjects': ['\$employee', '\$business']
+          }
+        });
+  });
+  test('unionWith', () {
+    expect(
+        UnionWith(
+          coll: 'warehouses',
+          pipeline: [
+            Project({'state': 1, '_id': 0})
+          ],
+        ).build(),
+        {
+          r'$unionWith': {
+            'coll': 'warehouses',
+            'pipeline': [
+              {
+                r'$project': {'state': 1, '_id': 0}
+              }
+            ]
+          }
+        });
+    expect(
+        UnionWith(coll: 'warehouses', pipeline: [
+          Match(Expr(And([
+            Eq(Field('stock_item'), Var('order_item')),
+            Gte(Field('instock'), Var('order_qty'))
+          ]))),
+          Project({'stock_item': 0, '_id': 0})
+        ]).build(),
+        {
+          r'$unionWith': {
+            'coll': 'warehouses',
+            'pipeline': [
+              {
+                r'$match': {
+                  r'$expr': {
+                    r'$and': [
+                      {
+                        r'$eq': [r'$stock_item', r'$$order_item']
+                      },
+                      {
+                        r'$gte': [r'$instock', r'$$order_qty']
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                r'$project': {'stock_item': 0, '_id': 0}
+              }
+            ]
           }
         });
   });
