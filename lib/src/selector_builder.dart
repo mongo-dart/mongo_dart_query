@@ -330,7 +330,7 @@ class SelectorBuilder {
   }
 
   /// Combine current expression with expression in parameter by logical operator **OR**.
-  /// [See MongoDB doc](http://docs.mongodb.org/manual/reference/operator/and/#op._S_or)
+  /// [See MongoDB doc](https://www.mongodb.com/docs/manual/reference/operator/query/or/)
   /// For example
   ///    inventory.find(where.eq('price', 1.99).and(where.lt('qty',20).or(where.eq('sale', true))));
   ///
@@ -341,7 +341,7 @@ class SelectorBuilder {
   ///      {'\$query': {'\$and': [{'price':1.99}, {'\$or': [{'qty': {'\$lt': 20 }}, {'sale': true }]}]}}
   SelectorBuilder or(SelectorBuilder other) {
     if (_query.isEmpty) {
-      throw StateError('`And` operation is not supported on empty query');
+      throw StateError('`Or` operation is not supported on empty query');
     }
     if (_query.containsKey('\$or')) {
       var expressions = _query['\$or'] as List;
