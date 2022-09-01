@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.0
+
+- Lint fixes
+- Corrected "and" references in selectorBuilder.or(…)
+
 ## 2.0.0-1.0.beta
 
 - New UnionWith Stage

@@ -86,6 +86,7 @@ class Ltrim extends Operator {
 }
 
 // TODO: add options validation
+
 /// `$regexFind` operator
 class RegexFind extends Operator {
   /// Creates `$regexFind` operator expression
