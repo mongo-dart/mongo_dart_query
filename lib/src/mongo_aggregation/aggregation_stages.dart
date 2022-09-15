@@ -2,8 +2,6 @@ import 'package:meta/meta.dart';
 import 'package:mongo_dart_query/mongo_aggregation.dart';
 import 'package:mongo_dart_query/mongo_dart_query.dart';
 
-import '../geometry_obj.dart';
-
 /// `$addFields` aggregation stage
 ///
 /// ### Stage description.

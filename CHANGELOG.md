@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1
+
+- Fix - Geometry class was not exported in mongo_aggregation.dart
+
 ## 2.0.0
 
 - Lint fixes
