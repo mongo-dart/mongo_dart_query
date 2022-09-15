@@ -1,5 +1,4 @@
-import 'package:mongo_dart_query/src/mongo_aggregation/aggregation_base.dart';
-import 'package:mongo_dart_query/src/mongo_aggregation/string_operators.dart';
+import 'package:mongo_dart_query/mongo_aggregation.dart';
 import 'package:test/test.dart';
 
 void main() {

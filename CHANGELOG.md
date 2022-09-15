@@ -2,7 +2,7 @@
 
 ## 2.0.1
 
-- Fix - Geometry class was not exported in mongo_aggregation.dart
+- Fix - Geometry class was not exported
 
 ## 2.0.0
 
