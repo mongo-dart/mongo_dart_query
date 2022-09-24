@@ -4,6 +4,10 @@
 
 - Inherited Decimal 2.3.0 that can introduce **breaking changes**
 
+## 2.0.1
+
+- Fix - Geometry class was not exported
+
 ## 2.0.0
 
 - Lint fixes
