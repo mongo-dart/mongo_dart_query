@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.0
+
+- Inherited Decimal 2.3.0 that can introduce **breaking changes**
+
 ## 2.0.0
 
 - Lint fixes
