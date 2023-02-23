@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.0
+
+- Inherited Bson 4.0.0 that introduces **breaking changes**
+
 ## 3.0.0
 
 - Inherited Decimal 2.3.0 that can introduce **breaking changes**
