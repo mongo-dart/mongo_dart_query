@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.1
+
+- UpdateExpression class
+
 ## 4.0.0
 
 - Inherited Bson 4.0.0 that introduces **breaking changes**
