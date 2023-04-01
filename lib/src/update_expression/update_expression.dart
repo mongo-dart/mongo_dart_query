@@ -1,69 +1,68 @@
 import 'package:fixnum/fixnum.dart';
 import 'package:mongo_dart_query/src/common/document_types.dart';
 import 'package:mongo_dart_query/src/common/operators_def.dart';
+import 'package:mongo_dart_query/src/expression/basic_expression.dart';
+
+import '../expression/field_expression.dart';
 
 UpdateExpression get modify => UpdateExpression();
 
 class UpdateExpression {
-  final UpdateDocument _expression = {};
+  final _expression = MapExpression.empty();
 
-  UpdateDocument get raw => _expression;
+  //UpdateDocument get raw => _expression.rawContent as UpdateDocument;
+  MongoDocument get raw => _expression.raw;
 
   @override
   String toString() => 'UpdateExpression($_expression)';
 
-  void _updateOperation(String operator, String fieldName, value) {
-    var opMap = _expression[operator];
-    if (opMap == null) {
-      opMap = emptyMongoDocument;
-      _expression[operator] = opMap;
-    }
-    opMap[fieldName] = value;
-  }
+  void _updateOperation(String operator, String fieldName, value) =>
+      _expression.mergeExpression(
+          OperatorExpression(operator, FieldExpression(fieldName, value)));
 
   // ************************
   // *** Field operators
 
   /// Sets the value of a field to the current date, either as a Date
   /// or a timestamp. The default type is Date.
-  void currentDate(String fieldName, {bool asTimestamp = false}) =>
+  void $currentDate(String fieldName, {bool asTimestamp = false}) =>
       _updateOperation(op$CurrentDate, fieldName,
           asTimestamp ? opTimeStampeTypeDoc : opDateTypeDoc);
 
   /// Increments the value of the field by the specified amount.
-  void inc(String fieldName, value) =>
+  void $inc(String fieldName, value) =>
       _updateOperation(op$Inc, fieldName, value);
 
   /// Only updates the field if the specified value is less than
   /// the existing field value
-  void min(String fieldName, value) =>
+  void $min(String fieldName, value) =>
       _updateOperation(op$Min, fieldName, value);
 
   /// Only updates the field if the specified value is greater than the
   /// existing field value.
-  void max(String fieldName, value) =>
+  void $max(String fieldName, value) =>
       _updateOperation(op$Max, fieldName, value);
 
   /// Multiplies the value of the field by the specified amount
-  void mul(String fieldName, value) =>
+  void $mul(String fieldName, value) =>
       _updateOperation(op$Mul, fieldName, value);
 
-  void rename(String oldName, String newName) =>
+  void $rename(String oldName, String newName) =>
       _updateOperation(op$Rename, oldName, newName);
 
-  void set(String fieldName, value) =>
+  void $set(String fieldName, value) =>
       _updateOperation(op$Set, fieldName, value);
 
-  void setOnInsert(String fieldName, value) =>
+  void $setOnInsert(String fieldName, value) =>
       _updateOperation(op$SetOnInsert, fieldName, value);
 
-  void unset(String fieldName) => _updateOperation(op$Unset, fieldName, 1);
+  void $unset(String fieldName) => _updateOperation(op$Unset, fieldName, 1);
 
   // ************************
   // *** Array operators
 
   /// Adds elements to an array only if they do not already exist in the set.
-  void addToSet(String fieldName, value) =>
+  void $addToSet(String fieldName, value) =>
       _updateOperation(op$AddToSet, fieldName, value);
 
   void addEachToSet(String fieldName, List value) =>
@@ -77,11 +76,11 @@ class UpdateExpression {
 
   /// The pull operator removes from an existing array all instances
   /// of a value that match a specified condition.
-  void pull(String fieldName, value) =>
+  void $pull(String fieldName, value) =>
       _updateOperation(op$Pull, fieldName, value);
 
   /// Adds an item to an array.
-  void push(String fieldName, value) =>
+  void $push(String fieldName, value) =>
       _updateOperation(op$Push, fieldName, value);
 
   /// append multiple values to an array <field>.
@@ -119,7 +118,7 @@ class UpdateExpression {
   /// from an existing array.
   /// Unlike the $pull operator that removes elements by specifying a query,
   /// $pullAll removes elements that match the listed values.
-  void pullAll(String fieldName, List values) =>
+  void $pullAll(String fieldName, List values) =>
       _updateOperation(op$PullAll, fieldName, values);
 
   ///  performs a bitwise "and" update of a field

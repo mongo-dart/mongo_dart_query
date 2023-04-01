@@ -11,6 +11,21 @@ const op$Set = r'$set';
 const op$SetOnInsert = r'$setOnInsert';
 const op$Unset = r'$unset';
 
+// *************  Comparison
+const op$Eq = r'$eq';
+const op$Gt = r'$gt';
+const op$Gte = r'$gte';
+const op$Lt = r'$lt';
+const op$Lte = r'$lte';
+const op$Ne = r'$ne';
+const op$In = r'$in';
+const op$Nin = r'$nin';
+// ************* Logical
+const op$And = r'$and';
+const op$Not = r'$not';
+const op$Or = r'$or';
+const op$Nor = r'$nor';
+
 const op$AddToSet = r'$addToSet';
 const op$Pop = r'$pop';
 const op$Pull = r'$pull';

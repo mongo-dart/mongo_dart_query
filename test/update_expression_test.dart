@@ -9,9 +9,9 @@ void main() {
   group('Update Expression', () {
     test('Current Date', () {
       var modifier = modify
-        ..currentDate('a')
-        ..currentDate('b', asTimestamp: true)
-        ..currentDate('c', asTimestamp: false);
+        ..$currentDate('a')
+        ..$currentDate('b', asTimestamp: true)
+        ..$currentDate('c', asTimestamp: false);
       expect(
           modifier.raw,
           equals({
@@ -25,10 +25,10 @@ void main() {
 
     test('Inc - Min - Max', () {
       var modifier = modify
-        ..inc('a', 5)
-        ..min('b', 'Set')
-        ..max('c', null)
-        ..max('d', 200);
+        ..$inc('a', 5)
+        ..$min('b', 'Set')
+        ..$max('c', null)
+        ..$max('d', 200);
       expect(
           modifier.raw,
           equals({
@@ -39,8 +39,8 @@ void main() {
     });
     test('mul', () {
       var modifier = modify
-        ..set('a', 995)
-        ..mul('b', 5);
+        ..$set('a', 995)
+        ..$mul('b', 5);
       expect(
           modifier.raw,
           equals({
@@ -48,8 +48,8 @@ void main() {
             r'$mul': {'b': 5}
           }));
       modifier = modify
-        ..mul('a', 7.0)
-        ..mul('b', 3);
+        ..$mul('a', 7.0)
+        ..$mul('b', 3);
       expect(
           modifier.raw,
           equals({
@@ -57,7 +57,7 @@ void main() {
           }));
     });
     test('Rename', () {
-      var modifier = modify..rename('nmae', "name");
+      var modifier = modify..$rename('nmae', "name");
       expect(
           modifier.raw,
           equals({
@@ -67,9 +67,9 @@ void main() {
 
     test('Set - Unset - SetOnInsert', () {
       var modifier = modify
-        ..set('a', 995)
-        ..set('b', 'bbb')
-        ..setOnInsert('c', true);
+        ..$set('a', 995)
+        ..$set('b', 'bbb')
+        ..$setOnInsert('c', true);
       expect(
           modifier.raw,
           equals({
@@ -77,8 +77,8 @@ void main() {
             r'$setOnInsert': {'c': true}
           }));
       modifier = modify
-        ..unset('a')
-        ..unset('b');
+        ..$unset('a')
+        ..$unset('b');
       expect(
           modifier.raw,
           equals({
@@ -87,7 +87,7 @@ void main() {
     });
 
     test('Add to Set', () {
-      var modifier = modify..addToSet('colors', 'mauve');
+      var modifier = modify..$addToSet('colors', 'mauve');
       expect(
           modifier.raw,
           equals({
@@ -118,10 +118,10 @@ void main() {
     });
     test('Pull', () {
       var modifier = modify
-        ..pull('fruits', {
+        ..$pull('fruits', {
           r'$in': ['apples', 'oranges']
         })
-        ..pull('vegetables', 'carrots');
+        ..$pull('vegetables', 'carrots');
       expect(
           modifier.raw,
           equals({
@@ -135,7 +135,7 @@ void main() {
     });
     test('Push - Push each', () {
       var modifier = modify
-        ..push('scores', 89)
+        ..$push('scores', 89)
         ..pushEach('rates', [90, 92, 85])
         ..pushEach(
             'quizzes',
@@ -175,8 +175,8 @@ void main() {
     });
     test('Pull All', () {
       var modifier = modify
-        ..pullAll('scores', [0, 5])
-        ..pull('vegetables', 'carrots');
+        ..$pullAll('scores', [0, 5])
+        ..$pull('vegetables', 'carrots');
       expect(
           modifier.raw,
           equals({
