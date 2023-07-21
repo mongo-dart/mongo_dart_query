@@ -2,7 +2,7 @@
 
 ## 4.0.1
 
-- UpdateExpression class
+- addEachToSet method
 
 ## 4.0.0
 
