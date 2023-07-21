@@ -1,8 +1,8 @@
 import 'package:fixnum/fixnum.dart';
-import 'package:mongo_dart_query/src/common/document_types.dart';
-import 'package:mongo_dart_query/src/common/operators_def.dart';
 import 'package:mongo_dart_query/src/expression/basic_expression.dart';
 
+import '../expression/common/document_types.dart';
+import '../expression/common/operators_def.dart';
 import '../expression/field_expression.dart';
 
 UpdateExpression get modify => UpdateExpression();
@@ -11,14 +11,14 @@ class UpdateExpression {
   final _expression = MapExpression.empty();
 
   //UpdateDocument get raw => _expression.rawContent as UpdateDocument;
-  MongoDocument get raw => _expression.raw;
+  MongoDocument get raw => _expression.rawContent;
 
   @override
   String toString() => 'UpdateExpression($_expression)';
 
   void _updateOperation(String operator, String fieldName, value) =>
-      _expression.mergeExpression(
-          OperatorExpression(operator, FieldExpression(fieldName, value)));
+      _expression.mergeExpression(OperatorExpression(
+          operator, FieldExpression(fieldName, ValueExpression.create(value))));
 
   // ************************
   // *** Field operators

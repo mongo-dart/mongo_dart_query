@@ -285,6 +285,18 @@ void main() {
             r'$mul': {'a': 7.0, 'b': 3}
           }));
     });
+    test('addEachToSet', () {
+      var modifier = modify.addEachToSet('a', [1, 2, 3]);
+      expect(
+          modifier.map,
+          equals({
+            r'$addToSet': {
+              'a': {
+                r'$each': [1, 2, 3]
+              }
+            },
+          }));
+    });
   });
   test('testGetQueryString', () {
     var selector = where.eq('foo', 'bar');

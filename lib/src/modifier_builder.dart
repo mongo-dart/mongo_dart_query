@@ -78,6 +78,11 @@ class ModifierBuilder {
     return this;
   }
 
+  ModifierBuilder addEachToSet(String fieldName, List value) {
+    _updateOperation(r'$addToSet', fieldName, {r'$each': value});
+    return this;
+  }
+
   /// The popFirst operator removes the first element of an array.
   ModifierBuilder popFirst(String fieldName) {
     _updateOperation('\$pop', fieldName, -1);

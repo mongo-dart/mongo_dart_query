@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:bson/bson.dart';
-import 'package:mongo_dart_query/src/common/constant.dart';
-import 'package:mongo_dart_query/src/common/document_types.dart';
+import 'package:mongo_dart_query/src/expression/basic_expression.dart';
 
-import '../common/operators_def.dart';
+import '../expression/common/constant.dart';
+import '../expression/common/document_types.dart';
+import '../expression/common/operators_def.dart';
+import '../expression/field_expression.dart';
 import '../geometry_obj.dart';
 import 'filter_expression.dart';
 
@@ -13,62 +15,103 @@ const keyQuery = r'$query';
 
 class QueryExpression {
   static final RegExp objectIdRegexp = RegExp('.ObjectId...([0-9a-f]{24})....');
+  @Deprecated('Remove this')
   Map<String, dynamic> map = {};
 
   FilterExpression filter = FilterExpression();
+  QueryFilter get rawFilter => filter.rawContent;
+  @Deprecated('use rawFilter instead')
+  Map<String, dynamic> get _query => rawFilter;
 
-  QueryFilter get rawFilter => filter.raw;
+  /// Returs a Json version of the filter
+  String getQueryString() => json.encode(filter.rawContent);
+
+  void raw(MongoDocument document) => filter.addDocument(document);
+
+  ExpressionContent _valueToContent(dynamic value) {
+    if (value is ExpressionContent) {
+      return value;
+    } else if (value is MongoDocument) {
+      return MapExpression(value);
+    } else if (value is List) {
+      return ListExpression(value);
+    } else if (value is Set) {
+      return SetExpression(value);
+    }
+    return ValueExpression.create(value);
+  }
+
+  // ***************************************************
+  // ***************** Parenthesis
+  // ***************************************************
+  void get open => filter.open;
+  void get close => filter.close;
 
   // ***************************************************
   // ***************** Comparison Operators
   // ***************************************************
 
   /// Matches values that are equal to a specified value.
-  void $eq(String fieldName, value) =>
-      filter.addExpression(op$Eq, fieldName, value);
+  void $eq(String fieldName, value) => filter.addFieldOperator(FieldExpression(
+      fieldName, OperatorExpression(op$Eq, _valueToContent(value))));
 
   void id(value) => $eq(field_id, value);
 
   /// Matches values that are greater than a specified value.
-  void $gt(String fieldName, value) =>
-      filter.addExpression(op$Gt, fieldName, value);
+  void $gt(String fieldName, value) => filter.addFieldOperator(FieldExpression(
+      fieldName, OperatorExpression(op$Gt, _valueToContent(value))));
 
   /// Matches values that are greater than or equal to a specified value.
-  void $gte(String fieldName, value) =>
-      filter.addExpression(op$Gte, fieldName, value);
+  void $gte(String fieldName, value) => filter.addFieldOperator(FieldExpression(
+      fieldName, OperatorExpression(op$Gte, _valueToContent(value))));
 
   /// Matches any of the values specified in an array.
   void $in(String fieldName, List values) =>
-      filter.addExpression(op$In, fieldName, values);
+      filter.addOperator(OperatorExpression(
+          op$In, FieldExpression(fieldName, ListExpression(values))));
 
   /// Matches values that are less than a specified value.
-  void $lt(String fieldName, value) =>
-      filter.addExpression(op$Lt, fieldName, value);
+  void $lt(String fieldName, value) => filter.addFieldOperator(FieldExpression(
+      fieldName, OperatorExpression(op$Lt, _valueToContent(value))));
 
   /// Matches values that are less than or equal to a specified value.
-  void $lte(String fieldName, value) =>
-      filter.addExpression(op$Lte, fieldName, value);
+  void $lte(String fieldName, value) => filter.addFieldOperator(FieldExpression(
+      fieldName, OperatorExpression(op$Lte, _valueToContent(value))));
 
   /// Matches all values that are not equal to a specified value.
-  void $ne(String fieldName, value) =>
-      filter.addExpression(op$Ne, fieldName, value);
+  void $ne(String fieldName, value) => filter.addFieldOperator(FieldExpression(
+      fieldName, OperatorExpression(op$Ne, _valueToContent(value))));
 
   /// Matches none of the values specified in an array.
   void $nin(String fieldName, List values) =>
-      filter.addExpression(op$Nin, fieldName, values);
+      filter.addOperator(OperatorExpression(
+          op$Nin, FieldExpression(fieldName, ListExpression(values))));
 
   // ***************************************************
-  // ***************** Comaprison Operators
+  // ***************** Logical Operators
   // ***************************************************
+
+  /// $not Inverts the effect of a query expression and returns documents
+  /// that do not match the query expression.
+  void $not(OperatorExpression operatorExp) =>
+      filter.addOperator(OperatorExpression(op$Not, operatorExp));
+
+  /// $and performs a logical AND operation and selects the documents that
+  /// satisfy all the expressions.
+  void get $and => filter.logicAnd();
+
+  /// $or operator performs a logical OR operation on an array of one or
+  /// more expressions and selects the documents that satisfy at least one
+  /// of the expressions.
+  void get $or => filter.logicOr();
+
+  /// $nor performs a logical NOR operation on an array of one or
+  /// more query expression and selects the documents that fail all the
+  /// query expressions in the array.
+  void get $nor => filter.logicNor();
 
   // *************************
   // ************** CHECK
-  Map<String, dynamic> get _query {
-    if (!map.containsKey(keyQuery)) {
-      map[keyQuery] = <String, dynamic>{};
-    }
-    return map[keyQuery] as Map<String, dynamic>;
-  }
 
   int paramSkip = 0;
   int paramLimit = 0;
@@ -76,13 +119,15 @@ class QueryExpression {
 
   Map<String, Object> get paramFields => _paramFields ??= <String, Object>{};
 
-  @override
-  String toString() => 'QueryExpresion($map)';
+  // TODO revert after debug
+  //@override
+  //String toString() => 'QueryExpresion($filter.raw)';
 
   /// Copy to new instance
   static QueryExpression copyWith(QueryExpression other) {
     return QueryExpression()
-      ..map = other.map
+      // TODO provide copy
+      //..filter.raw = other.filter.raw
       .._paramFields = other._paramFields
       ..paramLimit = other.paramLimit
       ..paramSkip = other.paramSkip;
@@ -108,7 +153,7 @@ class QueryExpression {
     } else {
       var expressions = [_query];
       expressions.add(expr);
-      map['\$query'] = {'\$and': expressions};
+      filter.rawContent['\$query'] = {'\$and': expressions};
     }
   }
 
@@ -116,8 +161,8 @@ class QueryExpression {
 
   void _ensureOrderBy() {
     _query;
-    if (!map.containsKey('orderby')) {
-      map['orderby'] = <String, dynamic>{};
+    if (!filter.rawContent.containsKey('orderby')) {
+      filter.rawContent['orderby'] = <String, dynamic>{};
     }
   }
 
@@ -177,56 +222,57 @@ class QueryExpression {
     if (descending) {
       order = -1;
     }
-    map['orderby'][fieldName] = order;
+    filter.rawContent['orderby'][fieldName] = order;
   }
 
   void sortByMetaTextScore(String fieldName) {
     _ensureOrderBy();
-    map['orderby'][fieldName] = <String, dynamic>{'\$meta': 'textScore'};
+    filter.rawContent['orderby']
+        [fieldName] = <String, dynamic>{'\$meta': 'textScore'};
   }
 
   // *********** HINT
 
   void hint(String fieldName, {bool descending = false}) {
     _query;
-    if (!map.containsKey('\$hint')) {
-      map['\$hint'] = <String, dynamic>{};
+    if (!filter.rawContent.containsKey('\$hint')) {
+      filter.rawContent['\$hint'] = <String, dynamic>{};
     }
     var order = 1;
     if (descending) {
       order = -1;
     }
-    map['\$hint'][fieldName] = order;
+    filter.rawContent['\$hint'][fieldName] = order;
   }
 
   void hintIndex(String indexName) {
     _query;
-    map['\$hint'] = indexName;
+    filter.rawContent['\$hint'] = indexName;
   }
 
   void comment(String commentStr) {
     _query;
-    map['\$comment'] = commentStr;
+    filter.rawContent['\$comment'] = commentStr;
   }
 
   void explain() {
     _query;
-    map['\$explain'] = true;
+    filter.rawContent['\$explain'] = true;
   }
 
   void snapshot() {
     _query;
-    map['\$snapshot'] = true;
+    filter.rawContent['\$snapshot'] = true;
   }
 
   void showDiskLoc() {
     _query;
-    map['\$showDiskLoc'] = true;
+    filter.rawContent['\$showDiskLoc'] = true;
   }
 
   void returnKey() {
     _query;
-    map['\$sreturnKey'] = true;
+    filter.rawContent['\$sreturnKey'] = true;
   }
 
   void jsQuery(String javaScriptCode) =>
@@ -252,11 +298,6 @@ class QueryExpression {
 
   void limit(int limit) => paramLimit = limit;
   void skip(int skip) => paramSkip = skip;
-
-  QueryExpression raw(Map<String, dynamic> rawSelector) {
-    map = rawSelector;
-    return this;
-  }
 
   void within(String fieldName, value) => _addExpression(fieldName, {
         '\$within': {'\$box': value}
@@ -329,13 +370,8 @@ class QueryExpression {
     } else {
       var expressions = [_query];
       expressions.add(other._query);
-      map['\$query'] = {'\$or': expressions};
+      filter.rawContent['\$query'] = {'\$or': expressions};
     }
     return this;
-  }
-
-  String getQueryString() {
-    var result = json.encode(map);
-    return result;
   }
 }

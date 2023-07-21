@@ -1,6 +1,6 @@
 import 'basic_expression.dart';
 
-class FieldExpression extends Expression {
-  FieldExpression(String fieldName, value) : super(fieldName, value);
+class FieldExpression<T extends ExpressionContent> extends Expression {
+  FieldExpression(String fieldName, T value) : super(fieldName, value);
   String get fieldName => entry.key;
 }

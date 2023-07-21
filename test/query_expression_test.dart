@@ -8,40 +8,33 @@ import 'package:mongo_dart_query/src/geometry_obj.dart';
 void main() {
   test('SelectorBuilder Creation', () {
     var selector = where;
-    //expect(selector.map is Map, isTrue);
-    expect(selector.map, isEmpty);
+    expect(selector.filter.rawContent, isMap);
+    expect(selector.filter.rawContent, isEmpty);
   });
 
   test('testSelectorBuilderOnObjectId', () {
     var id = ObjectId();
     var selector = where..id(id);
-    //expect(selector.map is Map, isTrue);
-    expect(selector.map.length, greaterThan(0));
+    expect(selector.filter.rawContent.isNotEmpty, isTrue);
     expect(
-        selector.map,
+        selector.filter.rawContent,
         equals({
-          r'$query': {'_id': id}
+          '_id': {r'$eq': id}
         }));
   });
 
   test('testSelectorBuilderRawMap', () {
-    var selector = where.raw({
-      r'$query': {'name': 'joe'}
-    });
+    var selector = where..raw({'name': 'joe'});
 
     var id = ObjectId();
     selector.id(id);
     //expect(selector.map is Map, isTrue);
-    expect(selector.map.length, 1);
+    expect(selector.filter.rawContent.isNotEmpty, isTrue);
     expect(
-        selector.map,
+        selector.filter.rawContent,
         equals({
-          r'$query': {
-            r'$and': [
-              {'name': 'joe'},
-              {'_id': id}
-            ]
-          }
+          'name': 'joe',
+          '_id': {r'$eq': id}
         }));
   });
 
@@ -49,16 +42,15 @@ void main() {
     var selector = where
       ..$gt('my_field', 995)
       ..sortBy('my_field');
-    expect(selector.map, {
-      r'$query': {
-        'my_field': {r'$gt': 995}
-      },
+    expect(selector.filter.rawContent, {
+      'my_field': {r'$gt': 995},
       'orderby': {'my_field': 1}
     });
+    expect(false, isTrue);
     selector = where
       ..inRange('my_field', 700, 703, minInclude: false)
       ..sortBy('my_field');
-    expect(selector.map, {
+    expect(selector.filter.rawContent, {
       r'$query': {
         'my_field': {r'$gt': 700, r'$lt': 703}
       },
@@ -67,7 +59,7 @@ void main() {
     selector = where
       ..$eq('my_field', 17)
       ..fields(['str_field']);
-    expect(selector.map, {
+    expect(selector.filter.rawContent, {
       r'$query': {'my_field': 17}
     });
     expect(selector.paramFields, {'str_field': 1});
@@ -75,7 +67,7 @@ void main() {
       ..sortBy('a')
       ..skip(300);
     expect(
-        selector.map,
+        selector.filter.rawContent,
         equals({
           '\$query': {},
           'orderby': {'a': 1}
@@ -85,215 +77,221 @@ void main() {
       ..hint('baz', descending: true)
       ..explain();
     expect(
-        selector.map,
+        selector.filter.rawContent,
         equals({
           '\$query': {},
           '\$hint': {'bar': 1, 'baz': -1},
           '\$explain': true
         }));
     selector = where..hintIndex('foo');
-    expect(selector.map, equals({'\$query': {}, '\$hint': 'foo'}));
+    expect(
+        selector.filter.rawContent, equals({'\$query': {}, '\$hint': 'foo'}));
   });
 
   test('testQueryComposition', () {
     var selector = where
       ..$gt('a', 995)
       ..$eq('b', 'bbb');
-    expect(
-        selector.map,
-        equals({
-          r'$query': {
-            '\$and': [
-              {
-                'a': {r'$gt': 995}
-              },
-              {'b': 'bbb'}
-            ]
-          }
-        }));
-    selector = where
+    expect(selector.filter.rawContent, {
+      'a': {r'$gt': 995},
+      'b': {r'$eq': 'bbb'}
+    });
+  });
+
+  test('testQueryComposition 2', () {
+    var selector = where
       ..$gt('a', 995)
       ..$lt('a', 1000);
     expect(
-        selector.map,
+        selector.filter.rawContent,
         equals({
-          r'$query': {
-            '\$and': [
-              {
-                'a': {r'$gt': 995}
-              },
-              {
-                'a': {r'$lt': 1000}
-              }
-            ]
-          }
+          'a': {r'$gt': 995, r'$lt': 1000},
         }));
-    selector = where
+  });
+
+  test('testQueryComposition 3', () {
+    var selector = where
+      ..$gt('a', 995)
+      ..$and
+      ..open
+      ..$lt('b', 1000)
+      ..$or
+      ..$gt('c', 2000)
+      ..close;
+    /* var selector = where
       ..$gt('a', 995)
       ..and(where
         ..$lt('b', 1000)
-        ..or(where..$gt('c', 2000)));
-    expect(selector.map, {
-      '\$query': {
-        '\$and': [
-          {
-            'a': {'\$gt': 995}
-          },
-          {
-            '\$or': [
-              {
-                'b': {'\$lt': 1000}
-              },
-              {
-                'c': {'\$gt': 2000}
-              }
-            ]
-          }
-        ]
-      }
+        ..or(where..$gt('c', 2000))); */
+    expect(selector.filter.rawContent, {
+      'a': {r'$gt': 995},
+      r'$or': [
+        {
+          'b': {r'$lt': 1000}
+        },
+        {
+          'c': {r'$gt': 2000}
+        }
+      ]
     });
-    selector = where
+  });
+
+  test('testQueryComposition 4', () {
+    var selector = where
+      ..open
       ..$lt('b', 1000)
-      ..or(where..$gt('c', 2000))
-      ..and(where..$gt('a', 995));
-    expect(selector.map, {
-      '\$query': {
-        '\$and': [
-          {
-            '\$or': [
-              {
-                'b': {'\$lt': 1000}
-              },
-              {
-                'c': {'\$gt': 2000}
-              }
-            ]
-          },
-          {
-            'a': {'\$gt': 995}
-          }
-        ]
-      }
-    });
-    selector = where
-      ..$lt('b', 1000)
-      ..or(where..$gt('c', 2000))
+      ..$or
+      ..$gt('c', 2000)
+      ..close
       ..$gt('a', 995);
-    expect(selector.map, {
-      '\$query': {
-        '\$and': [
-          {
-            '\$or': [
-              {
-                'b': {'\$lt': 1000}
-              },
-              {
-                'c': {'\$gt': 2000}
-              }
-            ]
-          },
-          {
-            'a': {'\$gt': 995}
-          }
-        ]
-      }
+    expect(selector.filter.rawContent, {
+      r'$or': [
+        {
+          'b': {r'$lt': 1000}
+        },
+        {
+          'c': {r'$gt': 2000}
+        }
+      ],
+      'a': {r'$gt': 995}
     });
-    selector = where
+  });
+
+  test('testQueryComposition 5', () {
+    var selector = where
       ..$lt('b', 1000)
-      ..or(where..$gt('c', 2000))
-      ..or(where..$gt('a', 995));
-    expect(selector.map, {
-      '\$query': {
-        '\$or': [
-          {
-            'b': {'\$lt': 1000}
-          },
-          {
-            'c': {'\$gt': 2000}
-          },
-          {
-            'a': {'\$gt': 995}
-          }
-        ]
-      }
+      ..$or
+      ..$gt('c', 2000)
+      ..$and
+      ..$gt('a', 995);
+    expect(selector.filter.rawContent, {
+      r'$or': [
+        {
+          'b': {r'$lt': 1000}
+        },
+        {
+          'c': {r'$gt': 2000},
+          'a': {r'$gt': 995}
+        }
+      ],
     });
-    selector = where
+  });
+
+  test('testQueryComposition 6', () {
+    var selector = where
+      ..$lt('b', 1000)
+      ..$or
+      ..$gt('c', 2000)
+      ..$or
+      ..$gt('a', 995);
+    expect(selector.filter.rawContent, {
+      r'$or': [
+        {
+          'b': {r'$lt': 1000}
+        },
+        {
+          'c': {r'$gt': 2000}
+        },
+        {
+          'a': {r'$gt': 995}
+        }
+      ]
+    });
+  });
+
+  test('testQueryComposition 7', () {
+    var selector = where
       ..$eq('price', 1.99)
-      ..and(where
-        ..$lt('qty', 20)
-        ..or(where..$eq('sale', true)));
-    expect(selector.map, {
-      '\$query': {
-        '\$and': [
-          {'price': 1.99},
-          {
-            '\$or': [
-              {
-                'qty': {'\$lt': 20}
-              },
-              {'sale': true}
-            ]
-          }
-        ]
-      }
+      ..$and
+      ..open
+      ..$lt('qty', 20)
+      ..$or
+      ..$eq('sale', true)
+      ..close;
+    expect(selector.filter.rawContent, {
+      'price': {r'$eq': 1.99},
+      r'$or': [
+        {
+          'qty': {r'$lt': 20}
+        },
+        {
+          'sale': {r'$eq': true}
+        }
+      ]
     });
-    selector = where
+  });
+  test('testQueryComposition 7 bis', () {
+    var selector = where
       ..$eq('price', 1.99)
-      ..and(where..$lt('qty', 20))
-      ..and(where..$eq('sale', true));
-    expect(selector.map, {
-      '\$query': {
-        '\$and': [
-          {'price': 1.99},
-          {
-            'qty': {'\$lt': 20}
-          },
-          {'sale': true}
-        ]
-      }
+      ..open
+      ..$lt('qty', 20)
+      ..$or
+      ..$eq('sale', true);
+    expect(selector.filter.rawContent, {
+      'price': {r'$eq': 1.99},
+      r'$or': [
+        {
+          'qty': {r'$lt': 20}
+        },
+        {
+          'sale': {r'$eq': true}
+        }
+      ]
     });
-    selector = where
+  });
+
+  test('testQueryComposition 8', () {
+    var selector = where
+      ..$eq('price', 1.99)
+      ..$and
+      ..$lt('qty', 20)
+      ..$and
+      ..$eq('sale', true);
+    expect(selector.filter.rawContent, {
+      'price': {r'$eq': 1.99},
+      'qty': {r'$lt': 20},
+      'sale': {r'$eq': true}
+    });
+  });
+
+  test('testQueryComposition 9', () {
+    var selector = where
       ..$eq('price', 1.99)
       ..$lt('qty', 20)
       ..$eq('sale', true);
-    expect(selector.map, {
-      '\$query': {
-        '\$and': [
-          {'price': 1.99},
-          {
-            'qty': {'\$lt': 20}
-          },
-          {'sale': true}
-        ]
-      }
+    expect(selector.filter.rawContent, {
+      'price': {r'$eq': 1.99},
+      'qty': {'\$lt': 20},
+      'sale': {r'$eq': true}
     });
-    selector = where
+  });
+
+  test('testQueryComposition 10', () {
+    var selector = where
       ..$eq('foo', 'bar')
-      ..or(where..$eq('foo', null))
+      ..$or
+      ..$eq('foo', null)
       ..$eq('name', 'jack');
-    expect(selector.map, {
-      r'$query': {
-        r'$and': [
-          {
-            r'$or': [
-              {'foo': 'bar'},
-              {'foo': null}
-            ]
-          },
-          {'name': 'jack'}
-        ]
-      }
+    expect(selector.filter.rawContent, {
+      r'$or': [
+        {
+          'foo': {r'$eq': 'bar'}
+        },
+        {
+          'foo': {r'$eq': null}
+        }
+      ],
+      'name': {r'$eq': 'jack'}
     });
   });
   test('testGetQueryString', () {
     var selector = where..$eq('foo', 'bar');
-    expect(selector.getQueryString(), r'{"$query":{"foo":"bar"}}');
+    expect(selector.getQueryString(), r'{"foo":{"$eq":"bar"}}');
     selector = where..$lt('foo', 2);
-    expect(selector.getQueryString(), r'{"$query":{"foo":{"$lt":2}}}');
+    expect(selector.getQueryString(), r'{"foo":{"$lt":2}}');
     var id = ObjectId();
     selector = where..id(id);
-    expect(
-        selector.getQueryString(), '{"\$query":{"_id":"${id.toHexString()}"}}');
+    expect(selector.getQueryString(), '{"_id":{"\$eq":"${id.toHexString()}"}}');
 //  var dbPointer = new DbRef('Dummy',id);
 //  selector = where.eq('foo',dbPointer);
 //  expect(selector.getQueryString(),'{"\$query":{"foo":$dbPointer}}');
@@ -336,23 +334,21 @@ void main() {
           minDistance: 500);
 
     expect(
-        selector.map,
+        selector.filter.rawContent,
         equals({
-          r'$query': {
-            'geo_field': {
-              r'$nearSphere': {
-                r'$geometry': {
-                  'type': 'Polygon',
-                  'coordinates': [
-                    [0, 0],
-                    [1, 8],
-                    [12, 30],
-                    [0, 0]
-                  ]
-                },
-                r'$minDistance': 500,
-                r'$maxDistance': 1000
-              }
+          'geo_field': {
+            r'$nearSphere': {
+              r'$geometry': {
+                'type': 'Polygon',
+                'coordinates': [
+                  [0, 0],
+                  [1, 8],
+                  [12, 30],
+                  [0, 0]
+                ]
+              },
+              r'$minDistance': 500,
+              r'$maxDistance': 1000
             }
           }
         }));
@@ -370,20 +366,18 @@ void main() {
           ]));
 
     expect(
-        selector.map,
+        selector.filter.rawContent,
         equals({
-          r'$query': {
-            'geo_field': {
-              r'$geoIntersects': {
-                r'$geometry': {
-                  'type': 'Polygon',
-                  'coordinates': [
-                    [0, 0],
-                    [1, 8],
-                    [12, 30],
-                    [0, 0]
-                  ]
-                }
+          'geo_field': {
+            r'$geoIntersects': {
+              r'$geometry': {
+                'type': 'Polygon',
+                'coordinates': [
+                  [0, 0],
+                  [1, 8],
+                  [12, 30],
+                  [0, 0]
+                ]
               }
             }
           }
@@ -402,20 +396,18 @@ void main() {
           ]));
 
     expect(
-        selector.map,
+        selector.filter.rawContent,
         equals({
-          r'$query': {
-            'geo_field': {
-              r'$geoWithin': {
-                r'$geometry': {
-                  'type': 'Polygon',
-                  'coordinates': [
-                    [0, 0],
-                    [1, 8],
-                    [12, 30],
-                    [0, 0]
-                  ]
-                }
+          'geo_field': {
+            r'$geoWithin': {
+              r'$geometry': {
+                'type': 'Polygon',
+                'coordinates': [
+                  [0, 0],
+                  [1, 8],
+                  [12, 30],
+                  [0, 0]
+                ]
               }
             }
           }
@@ -428,16 +420,14 @@ void main() {
           'geo_field', Box(bottomLeft: [5, 8], upperRight: [8.8, 10.5]));
 
     expect(
-        selector.map,
+        selector.filter.rawContent,
         equals({
-          r'$query': {
-            'geo_field': {
-              r'$geoWithin': {
-                r'$box': [
-                  [5, 8],
-                  [8.8, 10.5]
-                ]
-              }
+          'geo_field': {
+            r'$geoWithin': {
+              r'$box': [
+                [5, 8],
+                [8.8, 10.5]
+              ]
             }
           }
         }));
@@ -448,16 +438,14 @@ void main() {
       ..geoWithin('geo_field', Center(center: [5, 8], radius: 50.2));
 
     expect(
-        selector.map,
+        selector.filter.rawContent,
         equals({
-          r'$query': {
-            'geo_field': {
-              r'$geoWithin': {
-                r'$center': [
-                  [5, 8],
-                  50.2
-                ]
-              }
+          'geo_field': {
+            r'$geoWithin': {
+              r'$center': [
+                [5, 8],
+                50.2
+              ]
             }
           }
         }));

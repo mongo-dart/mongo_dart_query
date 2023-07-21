@@ -1,7 +1,7 @@
 library test_lib;
 
 import 'package:fixnum/fixnum.dart';
-import 'package:mongo_dart_query/src/common/constant.dart';
+import 'package:mongo_dart_query/src/expression/common/constant.dart';
 import 'package:test/test.dart';
 import 'package:mongo_dart_query/mongo_query.dart';
 
