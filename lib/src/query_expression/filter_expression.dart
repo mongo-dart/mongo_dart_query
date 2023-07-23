@@ -215,11 +215,11 @@ class FilterExpression extends MapExpression {
       }
     }
     if (tempAndExp.isNotEmpty) {
-      if (tempAndExp.content.values.length == 1) {
-        orExp.add(MapExpression(tempAndExp.content.content2map));
-      } else {
-        orExp.add(tempAndExp);
-      }
+      //if (tempAndExp.content.values.length == 1) {
+      orExp.add(MapExpression(tempAndExp.content.content2map));
+      //} else {
+      //  orExp.add(tempAndExp);
+      //}
     }
     if (orExp.isEmpty) {
       return;

@@ -87,7 +87,8 @@ class QueryExpression {
   void $nin(String fieldName, List values) =>
       filter.addOperator(OperatorExpression(
           op$Nin, FieldExpression(fieldName, ListExpression(values))));
-// ***************************************************
+
+  // ***************************************************
   // ***************** Text Search Operator
   // ***************************************************
   void $text(String search,
@@ -102,6 +103,52 @@ class QueryExpression {
             if (diacriticSensitive != null && diacriticSensitive)
               op$DiacriticSensitive: diacriticSensitive,
           })));
+
+  // ***************************************************
+  // ***************** Geo Spatial
+  // ***************************************************
+
+  void $within(String fieldName, value) =>
+      filter.addFieldOperator(FieldExpression(
+          fieldName,
+          OperatorExpression(
+              op$Within, MapExpression({op$Box: _valueToContent(value)}))));
+
+  void $near(String fieldName, var value, [double? maxDistance]) {
+    if (maxDistance == null) {
+      filter.addFieldOperator(FieldExpression(
+          fieldName, OperatorExpression(op$Near, _valueToContent(value))));
+    } else {
+      filter.addFieldOperator(FieldExpression(fieldName,
+          MapExpression({op$Near: value, op$MaxDistance: maxDistance})));
+    }
+  }
+
+  /// Only support $geometry shape operator
+  /// Available ShapeOperator instances: Box , Center, CenterSphere, Geometry
+  void $geoWithin(String fieldName, ShapeOperator shape) =>
+      filter.addFieldOperator(FieldExpression(fieldName,
+          OperatorExpression(op$GeoWithin, MapExpression(shape.build()))));
+
+  /// Only support geometry of point
+  void $nearSphere(String fieldName, Geometry point,
+          {double? maxDistance, double? minDistance}) =>
+      filter.addFieldOperator(FieldExpression(
+          fieldName,
+          OperatorExpression(
+              op$NearSphere,
+              MapExpression({
+                if (minDistance != null) op$MinDistance: minDistance,
+                if (maxDistance != null) op$MaxDistance: maxDistance
+              }..addAll(point.build())))));
+
+  ///
+  void $geoIntersects(String fieldName, Geometry coordinate) =>
+      filter.addFieldOperator(FieldExpression(
+          fieldName,
+          OperatorExpression(
+              op$GeoIntersects, MapExpression(coordinate.build()))));
+
   // ***************************************************
   // ***************** Logical Operators
   // ***************************************************
@@ -168,6 +215,22 @@ class QueryExpression {
   // ***************************************************
   void skip(int skip) => _skip = skip;
   int getSkip() => _skip;
+  // ***************************************************
+  // **************         Copy           **************
+  // ***************************************************
+
+  /// Copy to new instance
+  static QueryExpression copyWith(QueryExpression other) {
+    return QueryExpression()
+      ..filter.addDocument(other.filter.rawContent)
+      ..sortExp.addMap(other.sortExp.rawContent)
+      .._paramFields = other._paramFields
+      ..limit(other.getLimit())
+      ..skip(other.getSkip());
+  }
+
+  ///
+  QueryExpression clone() => copyWith(this);
 
   // *************************
   // ************** CHECK
@@ -179,19 +242,6 @@ class QueryExpression {
   // TODO revert after debug
   //@override
   //String toString() => 'QueryExpresion($filter.raw)';
-
-  /// Copy to new instance
-  static QueryExpression copyWith(QueryExpression other) {
-    return QueryExpression()
-      // TODO provide copy
-      //..filter.raw = other.filter.raw
-      .._paramFields = other._paramFields
-      ..limit(other.getLimit())
-      ..skip(other.getSkip());
-  }
-
-  ///
-  QueryExpression clone() => copyWith(this);
 
   void _addExpression(String fieldName, value) {
     var exprMap = emptyMongoDocument;
@@ -351,38 +401,6 @@ class QueryExpression {
       paramFields[field] = 0;
     }
   }
-
-  void within(String fieldName, value) => _addExpression(fieldName, {
-        '\$within': {'\$box': value}
-      });
-
-  void near(String fieldName, var value, [double? maxDistance]) {
-    if (maxDistance == null) {
-      _addExpression(fieldName, {'\$near': value});
-    } else {
-      _addExpression(
-          fieldName, {'\$near': value, '\$maxDistance': maxDistance});
-    }
-  }
-
-  /// Only support $geometry shape operator
-  /// Available ShapeOperator instances: Box , Center, CenterSphere, Geometry
-  void geoWithin(String fieldName, ShapeOperator shape) =>
-      _addExpression(fieldName, {'\$geoWithin': shape.build()});
-
-  /// Only support geometry of point
-  void nearSphere(String fieldName, Geometry point,
-          {double? maxDistance, double? minDistance}) =>
-      _addExpression(fieldName, {
-        '\$nearSphere': <String, dynamic>{
-          if (minDistance != null) '\$minDistance': minDistance,
-          if (maxDistance != null) '\$maxDistance': maxDistance
-        }..addAll(point.build()),
-      });
-
-  ///
-  void geoIntersects(String fieldName, Geometry coordinate) =>
-      _addExpression(fieldName, {'\$geoIntersects': coordinate.build()});
 
   /// Combine current expression with expression in parameter.
   /// [See MongoDB doc](http://docs.mongodb.org/manual/reference/operator/and/#op._S_and)

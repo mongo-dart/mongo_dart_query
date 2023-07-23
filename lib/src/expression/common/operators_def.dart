@@ -27,6 +27,16 @@ const op$Language = r'$language';
 const op$CaseSensitive = r'$caseSensitive';
 const op$DiacriticSensitive = r'$diacriticSensitive';
 
+// ************* Geo Spatial
+const op$Within = r'$within';
+const op$Box = r'$box';
+const op$Near = r'$near';
+const op$MaxDistance = r'$maxDistance';
+const op$MinDistance = r'$minDistance';
+const op$GeoWithin = r'$geoWithin';
+const op$NearSphere = r'$nearSphere';
+const op$GeoIntersects = r'$geoIntersects';
+
 // ************* Logical
 const op$And = r'$and';
 const op$Not = r'$not';

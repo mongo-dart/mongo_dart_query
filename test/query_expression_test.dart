@@ -277,6 +277,116 @@ void main() {
       ],
     });
   });
+
+  test('testQueryComposition 10 b', () {
+    var selector = where
+      ..$eq('foo', 'bar')
+      ..$or
+      ..$eq('foo', null)
+      ..$and
+      ..$eq('name', 'jack');
+    expect(selector.filter.rawContent, {
+      r'$or': [
+        {
+          'foo': {r'$eq': 'bar'}
+        },
+        {
+          'foo': {r'$eq': null},
+          'name': {r'$eq': 'jack'}
+        }
+      ],
+    });
+  });
+  test('testQueryComposition 10 c', () {
+    var selector = where
+      ..$eq('foo', 'bar')
+      ..$or
+      ..$eq('foo', 'test')
+      ..$or
+      ..$eq('name', 'jack');
+    expect(selector.filter.rawContent, {
+      r'$or': [
+        {
+          'foo': {r'$eq': 'bar'}
+        },
+        {
+          'foo': {r'$eq': 'test'}
+        },
+        {
+          'name': {r'$eq': 'jack'}
+        }
+      ],
+    });
+  });
+  test('testQueryComposition 10 d', () {
+    var selector = where
+      ..$eq('foo', 'bar')
+      ..$or
+      ..$eq('foo', null)
+      ..$eq('name', 'jack')
+      ..$or
+      ..$eq('name', 'Tom');
+    expect(selector.filter.rawContent, {
+      r'$or': [
+        {
+          'foo': {r'$eq': 'bar'}
+        },
+        {
+          'foo': {r'$eq': null},
+          'name': {r'$eq': 'jack'}
+        },
+        {
+          'name': {r'$eq': 'Tom'}
+        }
+      ],
+    });
+  });
+  test('testQueryComposition 10 e', () {
+    var selector = where
+      ..$eq('foo', 'bar')
+      ..$or
+      ..$eq('name', 'Tom')
+      ..$or
+      ..$eq('foo', null)
+      ..$eq('name', 'jack');
+    expect(selector.filter.rawContent, {
+      r'$or': [
+        {
+          'foo': {r'$eq': 'bar'}
+        },
+        {
+          'name': {r'$eq': 'Tom'}
+        },
+        {
+          'foo': {r'$eq': null},
+          'name': {r'$eq': 'jack'}
+        }
+      ],
+    });
+  });
+  test('testQueryComposition 10 f', () {
+    var selector = where
+      ..$eq('foo', null)
+      ..$eq('name', 'jack')
+      ..$or
+      ..$eq('foo', 'bar')
+      ..$or
+      ..$eq('name', 'Tom');
+    expect(selector.filter.rawContent, {
+      r'$or': [
+        {
+          'foo': {r'$eq': null},
+          'name': {r'$eq': 'jack'}
+        },
+        {
+          'foo': {r'$eq': 'bar'}
+        },
+        {
+          'name': {r'$eq': 'Tom'}
+        }
+      ],
+    });
+  });
   test('testGetQueryString', () {
     var selector = where..$eq('foo', 'bar');
     expect(selector.getQueryString(), r'{"foo":{"$eq":"bar"}}');
@@ -310,7 +420,7 @@ void main() {
       ..$eq('field', 'value')
       ..$gt('num_field', 5)
       ..$and
-      ..nearSphere('geo_obj', Geometry.point([35.0, 35.0]));
+      ..$nearSphere('geo_obj', Geometry.point([35.0, 35.0]));
 
     var copied = QueryExpression.copyWith(selector);
 
@@ -319,7 +429,7 @@ void main() {
 
   test('nearSphere', () {
     var selector = where
-      ..nearSphere(
+      ..$nearSphere(
           'geo_field',
           Geometry(type: GeometryObjectType.Polygon, coordinates: [
             [0, 0],
@@ -353,7 +463,7 @@ void main() {
 
   test('geoIntersects', () {
     var selector = where
-      ..geoIntersects(
+      ..$geoIntersects(
           'geo_field',
           Geometry(type: GeometryObjectType.Polygon, coordinates: [
             [0, 0],
@@ -383,7 +493,7 @@ void main() {
 
   test('geoWithin_geometry', () {
     var selector = where
-      ..geoWithin(
+      ..$geoWithin(
           'geo_field',
           Geometry(type: GeometryObjectType.Polygon, coordinates: [
             [0, 0],
@@ -413,7 +523,7 @@ void main() {
 
   test('geoWithin_box', () {
     var selector = where
-      ..geoWithin(
+      ..$geoWithin(
           'geo_field', Box(bottomLeft: [5, 8], upperRight: [8.8, 10.5]));
 
     expect(
@@ -432,7 +542,7 @@ void main() {
 
   test('geoWithin_center', () {
     var selector = where
-      ..geoWithin('geo_field', Center(center: [5, 8], radius: 50.2));
+      ..$geoWithin('geo_field', Center(center: [5, 8], radius: 50.2));
 
     expect(
         selector.filter.rawContent,
