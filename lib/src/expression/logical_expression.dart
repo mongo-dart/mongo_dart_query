@@ -25,24 +25,29 @@ class AndExpression extends LogicalExpression {
       content.add(operatorExp);
       return;
     }
-    if (operatorExp is MapExpression || operatorExp is Expression) {
-      if (operatorExp is Expression) {
-        if (keyList.contains(operatorExp.key)) {
-          var index = keyList.indexOf(operatorExp.key);
-          content.mergeAtElement(operatorExp, index);
-        } else {
-          content.add(operatorExp);
-        }
-        return;
-      } else if (operatorExp is FilterExpression) {
-        content.add(ValueExpression.create(operatorExp.rawContent));
-        return;
-      } else if (operatorExp is MapExpression) {
+    if (operatorExp is Expression) {
+      if (keyList.contains(operatorExp.key)) {
+        var index = keyList.indexOf(operatorExp.key);
+        content.mergeAtElement(operatorExp, index);
+      } else {
         content.add(operatorExp);
-        return;
       }
-
-      assert(false, 'To be added!');
+      return;
+    } else if (operatorExp is FilterExpression) {
+      content.add(ValueExpression.create(operatorExp.rawContent));
+      return;
+    } else if (operatorExp is MapExpression) {
+      content.add(operatorExp);
+      return;
+    } else if (operatorExp is ListExpression) {
+      for (var entry in operatorExp.content2map.entries) {
+        if (keyList.contains(entry.key)) {
+          var index = keyList.indexOf(entry.key);
+          content.mergeAtElement(MapExpression(entry.value), index);
+        } else {
+          content.add(MapExpression({entry.key: entry.value}));
+        }
+      }
       return;
     }
     content.add(operatorExp);

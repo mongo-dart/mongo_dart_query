@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.2
+
+- UpdateExpression class (experimental)
+
 ## 4.0.1
 
 - addEachToSet method

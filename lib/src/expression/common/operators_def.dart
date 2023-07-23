@@ -20,6 +20,13 @@ const op$Lte = r'$lte';
 const op$Ne = r'$ne';
 const op$In = r'$in';
 const op$Nin = r'$nin';
+// ************* Text
+const op$Text = r'$text';
+const op$Search = r'$search';
+const op$Language = r'$language';
+const op$CaseSensitive = r'$caseSensitive';
+const op$DiacriticSensitive = r'$diacriticSensitive';
+
 // ************* Logical
 const op$And = r'$and';
 const op$Not = r'$not';

@@ -94,7 +94,7 @@ class FilterExpression extends MapExpression {
           if (actualContainer.content.values.last is AndExpression) {
             (actualContainer.content.values.last as AndExpression).add(element);
           } else {
-            actualContainer.add(element);
+            actualContainer.add(AndExpression([element]));
           }
         } else if (actualContainer is NorExpression) {
           if (actualContainer.content.values.last is AndExpression) {

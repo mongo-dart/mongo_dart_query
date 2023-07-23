@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bson/bson.dart';
 import 'package:mongo_dart_query/src/expression/basic_expression.dart';
+import 'package:mongo_dart_query/src/query_expression/sort_expression.dart';
 
 import '../expression/common/constant.dart';
 import '../expression/common/document_types.dart';
@@ -11,21 +12,21 @@ import '../geometry_obj.dart';
 import 'filter_expression.dart';
 
 QueryExpression get where => QueryExpression();
-const keyQuery = r'$query';
 
 class QueryExpression {
   static final RegExp objectIdRegexp = RegExp('.ObjectId...([0-9a-f]{24})....');
-  @Deprecated('Remove this')
-  Map<String, dynamic> map = {};
 
   FilterExpression filter = FilterExpression();
   QueryFilter get rawFilter => filter.rawContent;
-  @Deprecated('use rawFilter instead')
-  Map<String, dynamic> get _query => rawFilter;
+
+  SortExpression sortExp = SortExpression();
+  int _skip = 0;
+  int _limit = 0;
 
   /// Returs a Json version of the filter
   String getQueryString() => json.encode(filter.rawContent);
 
+  /// Inserts a raw document as filter
   void raw(MongoDocument document) => filter.addDocument(document);
 
   ExpressionContent _valueToContent(dynamic value) {
@@ -86,7 +87,21 @@ class QueryExpression {
   void $nin(String fieldName, List values) =>
       filter.addOperator(OperatorExpression(
           op$Nin, FieldExpression(fieldName, ListExpression(values))));
-
+// ***************************************************
+  // ***************** Text Search Operator
+  // ***************************************************
+  void $text(String search,
+          {String? language, bool? caseSensitive, bool? diacriticSensitive}) =>
+      filter.addOperator(OperatorExpression(
+          op$Text,
+          MapExpression({
+            op$Search: search,
+            if (language != null) op$Language: language,
+            if (caseSensitive != null && caseSensitive)
+              op$CaseSensitive: caseSensitive,
+            if (diacriticSensitive != null && diacriticSensitive)
+              op$DiacriticSensitive: diacriticSensitive,
+          })));
   // ***************************************************
   // ***************** Logical Operators
   // ***************************************************
@@ -110,11 +125,53 @@ class QueryExpression {
   /// query expressions in the array.
   void get $nor => filter.logicNor();
 
+  // ***************************************************
+  // **************         Sort          **************
+  // ***************************************************
+  void sortBy(Object field) {
+    if (field is String) {
+      sortExp.addField(field);
+    } else if (field is IndexDocument) {
+      for (var entry in field.entries) {
+        if (entry.value is int) {
+          if (entry.value == -1) {
+            sortExp.addField(entry.key, descending: true);
+          } else {
+            sortExp.addField(entry.key);
+          }
+        } else if (entry.value is IndexDocument) {
+          if ((entry.value as IndexDocument).length == 1 &&
+              (entry.value as IndexDocument).entries.first.key == r'$meta' &&
+              (entry.value as IndexDocument).entries.first.value ==
+                  'textScore') {
+            sortExp.add$meta(entry.key);
+          } else {
+            throw ArgumentError(
+                'The received document seems to be not correct ("${entry.value}")');
+          }
+        }
+      }
+    } else {
+      throw ArgumentError(
+          'The received field seems to be not correct ("$field")');
+    }
+  }
+
+  // ***************************************************
+  // **************        Limit         **************
+  // ***************************************************
+  void limit(int limit) => _limit = limit;
+  int getLimit() => _limit;
+
+  // ***************************************************
+  // **************         Skip          **************
+  // ***************************************************
+  void skip(int skip) => _skip = skip;
+  int getSkip() => _skip;
+
   // *************************
   // ************** CHECK
 
-  int paramSkip = 0;
-  int paramLimit = 0;
   Map<String, Object>? _paramFields;
 
   Map<String, Object> get paramFields => _paramFields ??= <String, Object>{};
@@ -129,8 +186,8 @@ class QueryExpression {
       // TODO provide copy
       //..filter.raw = other.filter.raw
       .._paramFields = other._paramFields
-      ..paramLimit = other.paramLimit
-      ..paramSkip = other.paramSkip;
+      ..limit(other.getLimit())
+      ..skip(other.getSkip());
   }
 
   ///
@@ -139,19 +196,19 @@ class QueryExpression {
   void _addExpression(String fieldName, value) {
     var exprMap = emptyMongoDocument;
     exprMap[fieldName] = value;
-    if (_query.isEmpty) {
-      _query[fieldName] = value;
+    if (rawFilter.isEmpty) {
+      rawFilter[fieldName] = value;
     } else {
       _addExpressionMap(exprMap);
     }
   }
 
   void _addExpressionMap(Map<String, dynamic> expr) {
-    if (_query.containsKey('\$and')) {
-      var expressions = _query['\$and'] as List;
+    if (rawFilter.containsKey('\$and')) {
+      var expressions = rawFilter['\$and'] as List;
       expressions.add(expr);
     } else {
-      var expressions = [_query];
+      var expressions = [rawFilter];
       expressions.add(expr);
       filter.rawContent['\$query'] = {'\$and': expressions};
     }
@@ -160,7 +217,7 @@ class QueryExpression {
   //void _ensureParamFields() => paramFields /* ??= <String, dynamic>{} */;
 
   void _ensureOrderBy() {
-    _query;
+    rawFilter;
     if (!filter.rawContent.containsKey('orderby')) {
       filter.rawContent['orderby'] = <String, dynamic>{};
     }
@@ -216,25 +273,25 @@ class QueryExpression {
 
   // ********* SORT
 
-  void sortBy(String fieldName, {bool descending = false}) {
+  /* void sortBy(String fieldName, {bool descending = false}) {
     _ensureOrderBy();
     var order = 1;
     if (descending) {
       order = -1;
     }
     filter.rawContent['orderby'][fieldName] = order;
-  }
+  } */
 
-  void sortByMetaTextScore(String fieldName) {
+  /*  void sortByMetaTextScore(String fieldName) {
     _ensureOrderBy();
     filter.rawContent['orderby']
         [fieldName] = <String, dynamic>{'\$meta': 'textScore'};
-  }
+  } */
 
   // *********** HINT
 
   void hint(String fieldName, {bool descending = false}) {
-    _query;
+    rawFilter;
     if (!filter.rawContent.containsKey('\$hint')) {
       filter.rawContent['\$hint'] = <String, dynamic>{};
     }
@@ -246,38 +303,39 @@ class QueryExpression {
   }
 
   void hintIndex(String indexName) {
-    _query;
+    rawFilter;
     filter.rawContent['\$hint'] = indexName;
   }
 
   void comment(String commentStr) {
-    _query;
+    rawFilter;
     filter.rawContent['\$comment'] = commentStr;
   }
 
   void explain() {
-    _query;
+    rawFilter;
     filter.rawContent['\$explain'] = true;
   }
 
   void snapshot() {
-    _query;
+    rawFilter;
     filter.rawContent['\$snapshot'] = true;
   }
 
   void showDiskLoc() {
-    _query;
+    rawFilter;
     filter.rawContent['\$showDiskLoc'] = true;
   }
 
   void returnKey() {
-    _query;
+    rawFilter;
     filter.rawContent['\$sreturnKey'] = true;
   }
 
   void jsQuery(String javaScriptCode) =>
-      _query['\$where'] = BsonCode(javaScriptCode);
+      rawFilter['\$where'] = BsonCode(javaScriptCode);
 
+  // this is for projection fields
   void metaTextScore(String fieldName) {
     paramFields[fieldName] = {'\$meta': 'textScore'};
   }
@@ -293,11 +351,6 @@ class QueryExpression {
       paramFields[field] = 0;
     }
   }
-
-  // ******* Limit
-
-  void limit(int limit) => paramLimit = limit;
-  void skip(int skip) => paramSkip = skip;
 
   void within(String fieldName, value) => _addExpression(fieldName, {
         '\$within': {'\$box': value}
@@ -343,10 +396,10 @@ class QueryExpression {
   ///
   ///     {'\$query': {'\$and': [{'price':1.99},{'qty': {'\$lt': 20 }}, {'sale': true }]}}
   QueryExpression and(QueryExpression other) {
-    if (_query.isEmpty) {
+    if (rawFilter.isEmpty) {
       throw StateError('`And` operation is not supported on empty query');
     }
-    _addExpressionMap(other._query);
+    _addExpressionMap(other.rawFilter);
     return this;
   }
 
@@ -361,15 +414,15 @@ class QueryExpression {
   /// MongoDB json query from this expression would be
   ///      {'\$query': {'\$and': [{'price':1.99}, {'\$or': [{'qty': {'\$lt': 20 }}, {'sale': true }]}]}}
   QueryExpression or(QueryExpression other) {
-    if (_query.isEmpty) {
+    if (rawFilter.isEmpty) {
       throw StateError('`Or` operation is not supported on empty query');
     }
-    if (_query.containsKey('\$or')) {
-      var expressions = _query['\$or'] as List;
-      expressions.add(other._query);
+    if (rawFilter.containsKey('\$or')) {
+      var expressions = rawFilter['\$or'] as List;
+      expressions.add(other.rawFilter);
     } else {
-      var expressions = [_query];
-      expressions.add(other._query);
+      var expressions = [rawFilter];
+      expressions.add(other.rawFilter);
       filter.rawContent['\$query'] = {'\$or': expressions};
     }
     return this;

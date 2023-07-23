@@ -43,36 +43,29 @@ void main() {
       ..$gt('my_field', 995)
       ..sortBy('my_field');
     expect(selector.filter.rawContent, {
-      'my_field': {r'$gt': 995},
-      'orderby': {'my_field': 1}
+      'my_field': {r'$gt': 995}
     });
-    expect(false, isTrue);
+    expect(selector.sortExp.rawContent, {'my_field': 1});
     selector = where
       ..inRange('my_field', 700, 703, minInclude: false)
-      ..sortBy('my_field');
+      ..sortBy({'my_field': -1});
     expect(selector.filter.rawContent, {
-      r'$query': {
-        'my_field': {r'$gt': 700, r'$lt': 703}
-      },
-      'orderby': {'my_field': 1}
+      'my_field': {r'$gt': 700, r'$lt': 703}
     });
-    selector = where
+    expect(selector.sortExp.rawContent, {'my_field': -1});
+    /*  selector = where
       ..$eq('my_field', 17)
       ..fields(['str_field']);
-    expect(selector.filter.rawContent, {
-      r'$query': {'my_field': 17}
-    });
-    expect(selector.paramFields, {'str_field': 1});
+    expect(selector.filter.rawContent, {'my_field': 17});
+    expect(selector.paramFields, {'str_field': 1}); */
     selector = where
       ..sortBy('a')
       ..skip(300);
-    expect(
-        selector.filter.rawContent,
-        equals({
-          '\$query': {},
-          'orderby': {'a': 1}
-        }));
-    selector = where
+    expect(selector.filter.rawContent, {});
+    expect(selector.sortExp.rawContent, {'a': 1});
+    expect(selector.getSkip(), 300);
+
+    /* selector = where
       ..hint('bar')
       ..hint('baz', descending: true)
       ..explain();
@@ -82,10 +75,10 @@ void main() {
           '\$query': {},
           '\$hint': {'bar': 1, 'baz': -1},
           '\$explain': true
-        }));
-    selector = where..hintIndex('foo');
+        })); */
+    /*   selector = where..hintIndex('foo');
     expect(
-        selector.filter.rawContent, equals({'\$query': {}, '\$hint': 'foo'}));
+        selector.filter.rawContent, equals({'\$query': {}, '\$hint': 'foo'})); */
   });
 
   test('testQueryComposition', () {
@@ -278,10 +271,10 @@ void main() {
           'foo': {r'$eq': 'bar'}
         },
         {
-          'foo': {r'$eq': null}
+          'foo': {r'$eq': null},
+          'name': {r'$eq': 'jack'}
         }
       ],
-      'name': {r'$eq': 'jack'}
     });
   });
   test('testGetQueryString', () {
@@ -302,18 +295,22 @@ void main() {
     var searchText = 'sText';
     var selector = where
       ..sortBy(fieldName)
-      ..$eq('\$text', {'\$search': searchText})
-      ..metaTextScore('score');
+      ..$text(searchText)
+      ..sortExp.add$meta('score');
 
-    expect(selector.getQueryString(),
-        r'{"$query":{"$text":{"$search":"sText"}},"orderby":{"fName":1}}');
+    expect(selector.getQueryString(), r'{"$text":{"$search":"sText"}}');
+    expect(selector.sortExp.rawContent, {
+      "fName": 1,
+      'score': {r'$meta': 'textScore'}
+    });
   });
 
   test('copyWith_clone', () {
     var selector = where
       ..$eq('field', 'value')
       ..$gt('num_field', 5)
-      ..and(where..nearSphere('geo_obj', Geometry.point([35.0, 35.0])));
+      ..$and
+      ..nearSphere('geo_obj', Geometry.point([35.0, 35.0]));
 
     var copied = QueryExpression.copyWith(selector);
 
