@@ -266,12 +266,12 @@ class QueryExpression {
 
   //void _ensureParamFields() => paramFields /* ??= <String, dynamic>{} */;
 
-  void _ensureOrderBy() {
+  /*  void _ensureOrderBy() {
     rawFilter;
     if (!filter.rawContent.containsKey('orderby')) {
       filter.rawContent['orderby'] = <String, dynamic>{};
     }
-  }
+  } */
 
   void all(String fieldName, List values) =>
       _addExpression(fieldName, {'\$all': values});

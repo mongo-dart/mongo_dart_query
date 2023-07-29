@@ -53,6 +53,8 @@ const op$Each = r'$each';
 const op$Position = r'$position';
 const op$Slice = r'$slice';
 const op$Sort = r'$sort';
+const op$Meta = r'$meta';
+const op$ElemMatch = r'$elemMatch';
 
 const op$Bit = r'$bit';
 const opBitAnd = 'and';
