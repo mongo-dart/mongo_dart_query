@@ -20,12 +20,6 @@ const op$Lte = r'$lte';
 const op$Ne = r'$ne';
 const op$In = r'$in';
 const op$Nin = r'$nin';
-// ************* Text
-const op$Text = r'$text';
-const op$Search = r'$search';
-const op$Language = r'$language';
-const op$CaseSensitive = r'$caseSensitive';
-const op$DiacriticSensitive = r'$diacriticSensitive';
 
 // ************* Geo Spatial
 const op$Within = r'$within';
@@ -37,11 +31,35 @@ const op$GeoWithin = r'$geoWithin';
 const op$NearSphere = r'$nearSphere';
 const op$GeoIntersects = r'$geoIntersects';
 
+// ************* Element
+const op$Exists = r'$exists';
+const op$Type = r'$type';
+
+// ************* Evaluation
+const op$Expr = r'$expr';
+const op$Mod = r'$mod';
+const op$Regex = r'$regex';
+const op$Options = r'$options';
+const op$Where = r'$where';
+const op$JsonSchema = r'$jsonSchema';
+const op$Text = r'$text';
+const op$Search = r'$search';
+const op$Language = r'$language';
+const op$CaseSensitive = r'$caseSensitive';
+const op$DiacriticSensitive = r'$diacriticSensitive';
+
 // ************* Logical
 const op$And = r'$and';
 const op$Not = r'$not';
 const op$Or = r'$or';
 const op$Nor = r'$nor';
+
+// ************* array Query
+const op$All = r'$all';
+const op$Size = r'$size';
+
+// ************* miscellaneous
+const op$Comment = r'$comment';
 
 const op$AddToSet = r'$addToSet';
 const op$Pop = r'$pop';

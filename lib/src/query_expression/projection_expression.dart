@@ -12,10 +12,10 @@ class ProjectionExpression extends MapExpression {
   final _sequence = <MapExpression>[];
 
   bool get notEmpty => _sequence.isNotEmpty;
-  MongoDocument get content => valueMap;
+  ProjectionDocument get content => valueMap as ProjectionDocument;
 
   @override
-  MongoDocument get rawContent {
+  ProjectionDocument get rawContent {
     if (!expressionProcessed) {
       processExpression();
     }
@@ -29,19 +29,35 @@ class ProjectionExpression extends MapExpression {
     expressionProcessed = true;
     content.clear();
     for (var element in _sequence) {
-      content.addAll(element.rawContent);
+      content.addAll(element.rawContent as ProjectionDocument);
     }
   }
 
+  /// Set a Map
+  /// Clears the original content and add the new one
+  @override
+  void setMap(MongoDocument map) => valueMap = <String, Object>{...map};
+
+  /// Add a Map
+  /// Add a map content to the actual content.
+  /// If any key alreay exists, it is substituted
+  @override
+  void addMap(MongoDocument map) => valueMap.addAll(map as ProjectionDocument);
+
   /// adds a {$meta : testScore} for search score projection
   void add$metaTextScore(String fieldName) => _sequence.add(MapExpression({
-        fieldName: {r'$meta': 'textScore'}
+        fieldName: {op$Meta: 'textScore'}
       }));
 
   /// adds a {$meta : testScore} for search score projection
   void add$metaIndexKey(String fieldName) => _sequence.add(MapExpression({
-        fieldName: {r'$meta': 'indexKey'}
+        fieldName: {op$Meta: 'indexKey'}
       }));
+
+  /// Add a key-value pair
+  /// If the key already exists, the value is substituted
+  @override
+  void addEntry(String key, value) => valueMap[key] = value as Object;
 
   /// Include a field in the returned field list
   /// For embedded Documents use the  dot notation (ex. "<docName>.<field>")
@@ -58,23 +74,9 @@ class ProjectionExpression extends MapExpression {
   /// the "_id" field is always returned.
   void excludeId() => _sequence.add(MapExpression({field_id: 0}));
 
-  /// The $slice projection operator specifies the number of elements in an
-  ///   array to return in the query result.
-  /// For embedded Documents use the  dot notation (ex. "<docName>.<field>")
-  void arraySlice(String fieldName, int elementsToReturn,
-          {int? elementsToSkip}) =>
-      _sequence.add(MapExpression({
-        fieldName: {
-          if (elementsToSkip == null)
-            op$Slice: elementsToReturn
-          else
-            op$Slice: [elementsToReturn, elementsToSkip]
-        }
-      }));
-
   /// The positional $ operator limits the contents of an <array> to return
   /// the first element that matches the query condition on the array.
-  void arrayFirstMatchinge(String fieldName) =>
+  void $(String fieldName) =>
       _sequence.add(MapExpression({'$fieldName.\$': 1}));
 
   /// The $elemMatch operator limits the contents of an <array> to return
@@ -83,9 +85,21 @@ class ProjectionExpression extends MapExpression {
   /// This allows you to project based on a condition not in the query,
   /// or if you need to project based on multiple fields in the array's
   /// embedded documents.
-  void arrayFirstMatchingOnCondition(
-          String fieldName, FilterExpression condition) =>
+  void $elemMatch(String fieldName, FilterExpression condition) =>
       _sequence.add(MapExpression({
         fieldName: {op$ElemMatch: condition.rawContent}
+      }));
+
+  /// The $slice projection operator specifies the number of elements in an
+  ///   array to return in the query result.
+  /// For embedded Documents use the  dot notation (ex. "<docName>.<field>")
+  void $slice(String fieldName, int elementsToReturn, {int? elementsToSkip}) =>
+      _sequence.add(MapExpression({
+        fieldName: {
+          if (elementsToSkip == null)
+            op$Slice: elementsToReturn
+          else
+            op$Slice: [elementsToReturn, elementsToSkip]
+        }
       }));
 }

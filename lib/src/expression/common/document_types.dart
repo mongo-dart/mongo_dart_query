@@ -8,4 +8,5 @@ typedef UpdateDocument = Map<String, MongoDocument>;
 UpdateDocument get emptyUpdateDocument => <String, MongoDocument>{};
 typedef IndexDocument = Map<String, Object>;
 typedef ProjectionDocument = Map<String, Object>;
+ProjectionDocument get emptyProjectionDocument => <String, Object>{};
 typedef ArrayFilter = Map<String, dynamic>;

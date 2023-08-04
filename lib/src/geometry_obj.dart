@@ -60,3 +60,5 @@ class CenterSphere extends ShapeOperator {
   CenterSphere({required List<num> center, required num radius})
       : super('centerSphere', [center, radius]);
 }
+
+// TODO missing Polygon

@@ -1,14 +1,15 @@
 import 'dart:convert';
 
 import 'package:bson/bson.dart';
+import 'package:mongo_dart_query/mongo_aggregation.dart';
 import 'package:mongo_dart_query/src/expression/basic_expression.dart';
+import 'package:mongo_dart_query/src/query_expression/projection_expression.dart';
 import 'package:mongo_dart_query/src/query_expression/sort_expression.dart';
 
 import '../expression/common/constant.dart';
 import '../expression/common/document_types.dart';
 import '../expression/common/operators_def.dart';
 import '../expression/field_expression.dart';
-import '../geometry_obj.dart';
 import 'filter_expression.dart';
 
 QueryExpression get where => QueryExpression();
@@ -20,6 +21,7 @@ class QueryExpression {
   QueryFilter get rawFilter => filter.rawContent;
 
   SortExpression sortExp = SortExpression();
+  ProjectionExpression fields = ProjectionExpression();
   int _skip = 0;
   int _limit = 0;
 
@@ -68,8 +70,8 @@ class QueryExpression {
 
   /// Matches any of the values specified in an array.
   void $in(String fieldName, List values) =>
-      filter.addOperator(OperatorExpression(
-          op$In, FieldExpression(fieldName, ListExpression(values))));
+      filter.addFieldOperator(FieldExpression(
+          fieldName, OperatorExpression(op$In, ListExpression(values))));
 
   /// Matches values that are less than a specified value.
   void $lt(String fieldName, value) => filter.addFieldOperator(FieldExpression(
@@ -89,8 +91,104 @@ class QueryExpression {
           op$Nin, FieldExpression(fieldName, ListExpression(values))));
 
   // ***************************************************
-  // ***************** Text Search Operator
+  // ***************** Logical Operators
   // ***************************************************
+
+  /// $and performs a logical AND operation and selects the documents that
+  /// satisfy all the expressions.
+  void get $and => filter.logicAnd();
+
+  /// $not Inverts the effect of a query expression and returns documents
+  /// that do not match the query expression.
+  void $not(OperatorExpression operatorExp) =>
+      filter.addOperator(OperatorExpression(op$Not, operatorExp));
+
+  /// $nor performs a logical NOR operation on an array of one or
+  /// more query expression and selects the documents that fail all the
+  /// query expressions in the array.
+  void get $nor => filter.logicNor();
+
+  /// $or operator performs a logical OR operation on an array of one or
+  /// more expressions and selects the documents that satisfy at least one
+  /// of the expressions.
+  void get $or => filter.logicOr();
+
+  // ***************************************************
+  // ***************** Element Query Operators
+  // ***************************************************
+
+  /// $exists matches the documents that contain the field,
+  /// including documents where the field value is null.
+  void $exists(String fieldName) => filter.addFieldOperator(FieldExpression(
+      fieldName, OperatorExpression(op$Exists, _valueToContent(true))));
+
+  ///  notExist reTurns only the documents that do not contain the field.
+  void notExists(String fieldName) => filter.addFieldOperator(FieldExpression(
+      fieldName, OperatorExpression(op$Exists, _valueToContent(false))));
+
+  /// $type selects documents where the value of the field is an instance
+  /// of the specified BSON type(s). Querying by data type is useful
+  /// when dealing with highly unstructured data where data types
+  /// are not predictable.
+  /// You can user either the identification number o the type alias:
+  /// BSON Type       Id Number        Alias              Const
+  ///   Double          1             "double"          bsonDataNumber
+  ///   String          2             "string"          bsonDataString
+  ///   Object          3             "object"          bsonDataObject
+  ///   Array           4             "array"           bsonDataArray
+  ///   Binary Data     5             "binData"         bsonDataBinary
+  ///   ObjectId        7             "objectId"        bsonDataObjectId
+  ///   Boolean         8             "bool"            bsonDataBool
+  ///   Date            9             "date"            bsonDataDate
+  ///   Null           10             "null"            bsonDataNull
+  ///   Regular Exp    11             "regex"           bsonDataRegExp
+  ///   32-bit integer 16             "int"             bsonDataInt
+  ///   Timestamp      17             "timestamp"       bsonDataTimestamp
+  ///   64-bit integer 18             "long"            bsonDataLong
+  ///   Decimal128     19             "decimal"         bsonDecimal128
+  void $type(String fieldName, List types) =>
+      filter.addFieldOperator(FieldExpression(
+          fieldName, OperatorExpression(op$Type, ListExpression(types))));
+  // ***************************************************
+  // ***************** Evaluation Query Operators
+  // ***************************************************
+
+  void $expr(Operator aggregationExpression) =>
+      filter.addOperator(OperatorExpression(
+          op$Expr, MapExpression(aggregationExpression.build())));
+
+  /// The $jsonSchema operator matches documents that satisfy the
+  /// specified JSON Schema.
+  // TODO check if String or MAp are required
+  void $jsonSchema(String schemaObject) => filter.addOperator(
+      OperatorExpression(op$JsonSchema, _valueToContent(schemaObject)));
+
+  /// Select documents where the value of a field divided by a divisor
+  /// has the specified remainder (i.e. perform a modulo operation to
+  /// select documents).
+  /// The reminder defaults to zero
+  void $mod(String fieldName, int value, {int reminder = 0}) =>
+      filter.addFieldOperator(FieldExpression(fieldName,
+          OperatorExpression(op$Mod, ListExpression([value, reminder]))));
+
+  /// Provides regular expression capabilities for pattern matching
+  /// strings in queries. MongoDB uses Perl compatible regular expressions
+  /// (i.e. "PCRE" ) version 8.42 with UTF-8 support.
+  void $regex(String fieldName, String pattern,
+      {bool caseInsensitive = false,
+      bool multiLineAnchorMatch = false,
+      bool extendedIgnoreWhiteSpace = false,
+      bool dotMAtchAll = false}) {
+    var value = '/$pattern/'
+        '${caseInsensitive ? 'i' : ''}'
+        '${multiLineAnchorMatch ? 'm' : ''}'
+        '${extendedIgnoreWhiteSpace ? 'x' : ''}'
+        '${dotMAtchAll ? 's' : ''}';
+
+    filter.addFieldOperator(FieldExpression(
+        fieldName, OperatorExpression(op$Regex, _valueToContent(value))));
+  }
+
   void $text(String search,
           {String? language, bool? caseSensitive, bool? diacriticSensitive}) =>
       filter.addOperator(OperatorExpression(
@@ -104,32 +202,50 @@ class QueryExpression {
               op$DiacriticSensitive: diacriticSensitive,
           })));
 
+  /// Use the $where operator to pass either a string containing a JavaScript
+  /// expression or a full JavaScript function to the query system.
+  /// The $where provides greater flexibility, but requires that the database
+  /// processes the JavaScript expression or function for each document
+  /// in the collection.
+  /// Reference the document in the JavaScript expression or function
+  /// using either this or obj .
+  void $where(String function) => filter
+      .addOperator(OperatorExpression(op$Where, _valueToContent(function)));
+
   // ***************************************************
   // ***************** Geo Spatial
   // ***************************************************
 
-  void $within(String fieldName, value) =>
+  /// Geospatial operators return data based on geospatial expression conditions
+  void $geoIntersects(String fieldName, Geometry coordinate) =>
       filter.addFieldOperator(FieldExpression(
           fieldName,
           OperatorExpression(
-              op$Within, MapExpression({op$Box: _valueToContent(value)}))));
+              op$GeoIntersects, MapExpression(coordinate.build()))));
 
-  void $near(String fieldName, var value, [double? maxDistance]) {
-    if (maxDistance == null) {
-      filter.addFieldOperator(FieldExpression(
-          fieldName, OperatorExpression(op$Near, _valueToContent(value))));
-    } else {
-      filter.addFieldOperator(FieldExpression(fieldName,
-          MapExpression({op$Near: value, op$MaxDistance: maxDistance})));
-    }
-  }
-
+  /// Selects documents with geospatial data that exists entirely
+  /// within a specified shape.
   /// Only support $geometry shape operator
   /// Available ShapeOperator instances: Box , Center, CenterSphere, Geometry
   void $geoWithin(String fieldName, ShapeOperator shape) =>
       filter.addFieldOperator(FieldExpression(fieldName,
           OperatorExpression(op$GeoWithin, MapExpression(shape.build()))));
 
+  /// Specifies a point for which a geospatial query returns the documents
+  /// from nearest to farthest.
+  void $near(String fieldName, var value,
+      {double? maxDistance, double? minDistance}) {
+    filter.addFieldOperator(FieldExpression(
+        fieldName,
+        MapExpression({
+          op$Near: value,
+          if (minDistance != null) op$MinDistance: minDistance,
+          if (maxDistance != null) op$MaxDistance: maxDistance
+        })));
+  }
+
+  /// Specifies a point for which a geospatial query returns the documents
+  /// from nearest to farthest.
   /// Only support geometry of point
   void $nearSphere(String fieldName, Geometry point,
           {double? maxDistance, double? minDistance}) =>
@@ -142,35 +258,76 @@ class QueryExpression {
                 if (maxDistance != null) op$MaxDistance: maxDistance
               }..addAll(point.build())))));
 
-  ///
-  void $geoIntersects(String fieldName, Geometry coordinate) =>
+  // ***************************************************
+  // ***************** Array Query Operator
+  // ***************************************************
+
+  /// The $all operator selects the documents where the value of a field is
+  /// an array that contains all the specified elements.
+  void $all(String fieldName, List values) =>
       filter.addFieldOperator(FieldExpression(
-          fieldName,
-          OperatorExpression(
-              op$GeoIntersects, MapExpression(coordinate.build()))));
+          fieldName, OperatorExpression(op$All, ListExpression(values))));
+
+  /// The $elemMatch operator matches documents that contain an array
+  /// field with at least one element that matches all the specified query criteria.
+  void $elemMatch(String fieldName, List values) =>
+      filter.addFieldOperator(FieldExpression(
+          fieldName, OperatorExpression(op$ElemMatch, ListExpression(values))));
+
+  void $size(String fieldName, int numElements) =>
+      filter.addFieldOperator(FieldExpression(fieldName,
+          OperatorExpression(op$Size, _valueToContent(numElements))));
+
+  /*  void match(String fieldName, String pattern,
+          {bool? multiLine,
+          bool? caseInsensitive,
+          bool? dotAll,
+          bool? extended}) =>
+      _addExpression(fieldName, {
+        '\$regex': BsonRegexp(pattern,
+            multiLine: multiLine,
+            caseInsensitive: caseInsensitive,
+            dotAll: dotAll,
+            extended: extended)
+      }); */
+
+  void inRange(String fieldName, min, max,
+      {bool minInclude = true, bool maxInclude = false}) {
+    var mapExp = MapExpression.empty();
+    if (minInclude) {
+      mapExp.addExpression(OperatorExpression(op$Gte, _valueToContent(min)));
+    } else {
+      mapExp.addExpression(OperatorExpression(op$Gt, _valueToContent(min)));
+    }
+    if (maxInclude) {
+      mapExp.addExpression(OperatorExpression(op$Lte, _valueToContent(max)));
+    } else {
+      mapExp.addExpression(OperatorExpression(op$Lt, _valueToContent(max)));
+    }
+    filter.addFieldOperator(FieldExpression(fieldName, mapExp));
+  }
 
   // ***************************************************
-  // ***************** Logical Operators
+  // **************    Bit wise operators
   // ***************************************************
 
-  /// $not Inverts the effect of a query expression and returns documents
-  /// that do not match the query expression.
-  void $not(OperatorExpression operatorExp) =>
-      filter.addOperator(OperatorExpression(op$Not, operatorExp));
+  // TODO Missing  $bitsAllClear
+  // TODO Missing $bitsAllSet
+  // TODO Missing $bitsAnyClear
+  // TODO Missing $bitsAnySet
 
-  /// $and performs a logical AND operation and selects the documents that
-  /// satisfy all the expressions.
-  void get $and => filter.logicAnd();
+  // ***************************************************
+  // **************    Miscellaneous query operators
+  // ***************************************************
 
-  /// $or operator performs a logical OR operation on an array of one or
-  /// more expressions and selects the documents that satisfy at least one
-  /// of the expressions.
-  void get $or => filter.logicOr();
-
-  /// $nor performs a logical NOR operation on an array of one or
-  /// more query expression and selects the documents that fail all the
-  /// query expressions in the array.
-  void get $nor => filter.logicNor();
+  /// The $comment query operator associates a comment to any expression
+  /// taking a query predicate.
+  void $comment(String commentStr) {
+    filter.addOperator(
+        OperatorExpression(op$Comment, _valueToContent(commentStr)));
+  }
+  // TODO Missing $rand
+  // TODO Missing $natural
 
   // ***************************************************
   // **************         Sort          **************
@@ -203,6 +360,24 @@ class QueryExpression {
           'The received field seems to be not correct ("$field")');
     }
   }
+  // ***************************************************
+  // **************        Project        **************
+  // ***************************************************
+
+  void selectMetaTextScore(String fieldName) =>
+      fields.add$metaTextScore(fieldName);
+
+  void selectFields(List<String> fields) {
+    for (var field in fields) {
+      this.fields.includeField(field);
+    }
+  }
+
+  void excludeFields(List<String> fields) {
+    for (var field in fields) {
+      this.fields.excludeField(field);
+    }
+  }
 
   // ***************************************************
   // **************        Limit         **************
@@ -215,6 +390,7 @@ class QueryExpression {
   // ***************************************************
   void skip(int skip) => _skip = skip;
   int getSkip() => _skip;
+
   // ***************************************************
   // **************         Copy           **************
   // ***************************************************
@@ -224,7 +400,7 @@ class QueryExpression {
     return QueryExpression()
       ..filter.addDocument(other.filter.rawContent)
       ..sortExp.addMap(other.sortExp.rawContent)
-      .._paramFields = other._paramFields
+      ..fields.addMap(other.fields.rawContent)
       ..limit(other.getLimit())
       ..skip(other.getSkip());
   }
@@ -234,10 +410,6 @@ class QueryExpression {
 
   // *************************
   // ************** CHECK
-
-  Map<String, Object>? _paramFields;
-
-  Map<String, Object> get paramFields => _paramFields ??= <String, Object>{};
 
   // TODO revert after debug
   //@override
@@ -272,7 +444,7 @@ class QueryExpression {
       filter.rawContent['orderby'] = <String, dynamic>{};
     }
   } */
-
+/* 
   void all(String fieldName, List values) =>
       _addExpression(fieldName, {'\$all': values});
 
@@ -319,7 +491,7 @@ class QueryExpression {
       rangeMap['\$lt'] = max;
     }
     _addExpression(fieldName, rangeMap);
-  }
+  } */
 
   // ********* SORT
 
@@ -337,30 +509,6 @@ class QueryExpression {
     filter.rawContent['orderby']
         [fieldName] = <String, dynamic>{'\$meta': 'textScore'};
   } */
-
-  // *********** HINT
-
-  void hint(String fieldName, {bool descending = false}) {
-    rawFilter;
-    if (!filter.rawContent.containsKey('\$hint')) {
-      filter.rawContent['\$hint'] = <String, dynamic>{};
-    }
-    var order = 1;
-    if (descending) {
-      order = -1;
-    }
-    filter.rawContent['\$hint'][fieldName] = order;
-  }
-
-  void hintIndex(String indexName) {
-    rawFilter;
-    filter.rawContent['\$hint'] = indexName;
-  }
-
-  void comment(String commentStr) {
-    rawFilter;
-    filter.rawContent['\$comment'] = commentStr;
-  }
 
   void explain() {
     rawFilter;
@@ -384,23 +532,6 @@ class QueryExpression {
 
   void jsQuery(String javaScriptCode) =>
       rawFilter['\$where'] = BsonCode(javaScriptCode);
-
-  // this is for projection fields
-  void metaTextScore(String fieldName) {
-    paramFields[fieldName] = {'\$meta': 'textScore'};
-  }
-
-  void fields(List<String> fields) {
-    for (var field in fields) {
-      paramFields[field] = 1;
-    }
-  }
-
-  void excludeFields(List<String> fields) {
-    for (var field in fields) {
-      paramFields[field] = 0;
-    }
-  }
 
   /// Combine current expression with expression in parameter.
   /// [See MongoDB doc](http://docs.mongodb.org/manual/reference/operator/and/#op._S_and)
