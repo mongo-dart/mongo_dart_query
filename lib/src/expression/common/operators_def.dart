@@ -1,78 +1,78 @@
-const op$CurrentDate = r'$currentDate';
+const op$currentDate = r'$currentDate';
 const opDateTypeDoc = {r'$type': 'date'};
 const opTimeStampeTypeDoc = {r'$type': 'timestamp'};
 
-const op$Inc = r'$inc';
-const op$Min = r'$min';
-const op$Max = r'$max';
-const op$Mul = r'$mul';
-const op$Rename = r'$rename';
-const op$Set = r'$set';
-const op$SetOnInsert = r'$setOnInsert';
-const op$Unset = r'$unset';
+const op$inc = r'$inc';
+const op$min = r'$min';
+const op$max = r'$max';
+const op$mul = r'$mul';
+const op$rename = r'$rename';
+const op$set = r'$set';
+const op$setOnInsert = r'$setOnInsert';
+const op$unset = r'$unset';
 
 // *************  Comparison
-const op$Eq = r'$eq';
-const op$Gt = r'$gt';
-const op$Gte = r'$gte';
-const op$Lt = r'$lt';
-const op$Lte = r'$lte';
-const op$Ne = r'$ne';
-const op$In = r'$in';
-const op$Nin = r'$nin';
+const op$eq = r'$eq';
+const op$gt = r'$gt';
+const op$gte = r'$gte';
+const op$lt = r'$lt';
+const op$lte = r'$lte';
+const op$ne = r'$ne';
+const op$in = r'$in';
+const op$nin = r'$nin';
 
 // ************* Geo Spatial
-const op$Within = r'$within';
-const op$Box = r'$box';
-const op$Near = r'$near';
-const op$MaxDistance = r'$maxDistance';
-const op$MinDistance = r'$minDistance';
-const op$GeoWithin = r'$geoWithin';
-const op$NearSphere = r'$nearSphere';
-const op$GeoIntersects = r'$geoIntersects';
+const op$within = r'$within';
+const op$box = r'$box';
+const op$near = r'$near';
+const op$maxDistance = r'$maxDistance';
+const op$minDistance = r'$minDistance';
+const op$geoWithin = r'$geoWithin';
+const op$nearSphere = r'$nearSphere';
+const op$geoIntersects = r'$geoIntersects';
 
 // ************* Element
-const op$Exists = r'$exists';
-const op$Type = r'$type';
+const op$exists = r'$exists';
+const op$type = r'$type';
 
 // ************* Evaluation
-const op$Expr = r'$expr';
-const op$Mod = r'$mod';
-const op$Regex = r'$regex';
-const op$Options = r'$options';
-const op$Where = r'$where';
-const op$JsonSchema = r'$jsonSchema';
-const op$Text = r'$text';
-const op$Search = r'$search';
-const op$Language = r'$language';
-const op$CaseSensitive = r'$caseSensitive';
-const op$DiacriticSensitive = r'$diacriticSensitive';
+const op$expr = r'$expr';
+const op$mod = r'$mod';
+const op$regex = r'$regex';
+const op$options = r'$options';
+const op$where = r'$where';
+const op$jsonSchema = r'$jsonSchema';
+const op$text = r'$text';
+const op$search = r'$search';
+const op$language = r'$language';
+const op$caseSensitive = r'$caseSensitive';
+const op$diacriticSensitive = r'$diacriticSensitive';
 
 // ************* Logical
-const op$And = r'$and';
-const op$Not = r'$not';
-const op$Or = r'$or';
-const op$Nor = r'$nor';
+const op$and = r'$and';
+const op$not = r'$not';
+const op$or = r'$or';
+const op$nor = r'$nor';
 
 // ************* array Query
-const op$All = r'$all';
-const op$Size = r'$size';
+const op$all = r'$all';
+const op$size = r'$size';
 
 // ************* miscellaneous
-const op$Comment = r'$comment';
+const op$comment = r'$comment';
 
-const op$AddToSet = r'$addToSet';
-const op$Pop = r'$pop';
-const op$Pull = r'$pull';
-const op$Push = r'$push';
-const op$PullAll = r'$pullAll';
+const op$addToSet = r'$addToSet';
+const op$pop = r'$pop';
+const op$pull = r'$pull';
+const op$push = r'$push';
+const op$pullAll = r'$pullAll';
 
-const op$Each = r'$each';
-const op$Position = r'$position';
-const op$Slice = r'$slice';
-const op$Sort = r'$sort';
-const op$Meta = r'$meta';
-const op$ElemMatch = r'$elemMatch';
+const op$each = r'$each';
+const op$position = r'$position';
+const op$slice = r'$slice';
+const op$sort = r'$sort';
+const op$meta = r'$meta';
+const op$elemMatch = r'$elemMatch';
 
 const op$Bit = r'$bit';
 const opBitAnd = 'and';

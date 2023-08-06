@@ -6,21 +6,21 @@ import 'package:test/test.dart';
 void main() {
   group('Expression', () {
     test('Expression', () {
-      var e = Expression(op$Eq, ValueExpression.create(5));
+      var e = Expression(op$eq, ValueExpression.create(5));
       expect(e.raw, {r'$eq': 5});
     });
     test('Operator Expression', () {
-      var e = Expression(op$Eq, ValueExpression.create(null));
+      var e = Expression(op$eq, ValueExpression.create(null));
       expect(e.raw, {r'$eq': null});
-      expect(e.key, op$Eq);
+      expect(e.key, op$eq);
     });
 
     test('Container Expression', () {
       var e = OperatorExpression(
-          op$Or,
+          op$or,
           ListExpression([
-            Expression(op$Eq, ValueExpression.create(5)),
-            OperatorExpression(op$Eq, ValueExpression.create(null))
+            Expression(op$eq, ValueExpression.create(5)),
+            OperatorExpression(op$eq, ValueExpression.create(null))
           ]));
       expect(e.raw, {
         r'$or': [
@@ -28,11 +28,11 @@ void main() {
           {r'$eq': null}
         ]
       });
-      expect(e.operator, op$Or);
+      expect(e.operator, op$or);
     });
     test('Field Expression', () {
       var e = FieldExpression(
-          'field', OperatorExpression(op$Eq, ValueExpression.create(null)));
+          'field', OperatorExpression(op$eq, ValueExpression.create(null)));
       expect(e.raw, {
         'field': {r'$eq': null}
       });

@@ -176,7 +176,7 @@ class ListExpression extends ExpressionContainer {
     }
     MongoDocument allAnd = emptyMongoDocument;
     for (var entry in ret.valueMap.entries) {
-      if (entry.key != op$And) {
+      if (entry.key != op$and) {
         break;
       }
       allAnd = {

@@ -8,10 +8,10 @@ class SortExpression extends MapExpression {
   final _sequence = <MapExpression>[];
 
   bool get notEmpty => _sequence.isNotEmpty;
-  MongoDocument get content => valueMap;
+  IndexDocument get content => valueMap as IndexDocument;
 
   @override
-  MongoDocument get rawContent {
+  IndexDocument get rawContent {
     if (!expressionProcessed) {
       processExpression();
     }
@@ -25,9 +25,25 @@ class SortExpression extends MapExpression {
     expressionProcessed = true;
     content.clear();
     for (var element in _sequence) {
-      content.addAll(element.rawContent);
+      content.addAll(element.rawContent as IndexDocument);
     }
   }
+
+  /// Set a Map
+  /// Clears the original content and add the new one
+  @override
+  void setMap(MongoDocument map) => valueMap = <String, Object>{...map};
+
+  /// Add a Map
+  /// Add a map content to the actual content.
+  /// If any key alreay exists, it is substituted
+  @override
+  void addMap(MongoDocument map) => valueMap.addAll(map as IndexDocument);
+
+  /// Add a key-value pair
+  /// If the key already exists, the value is substituted
+  @override
+  void addEntry(String key, value) => valueMap[key] = value as Object;
 
   /// adds a {$meta : testScore} for field text search
   void add$meta(String fieldName) => _sequence.add(MapExpression({

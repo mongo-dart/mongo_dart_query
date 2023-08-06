@@ -44,20 +44,20 @@ class ProjectionExpression extends MapExpression {
   @override
   void addMap(MongoDocument map) => valueMap.addAll(map as ProjectionDocument);
 
-  /// adds a {$meta : testScore} for search score projection
-  void add$metaTextScore(String fieldName) => _sequence.add(MapExpression({
-        fieldName: {op$Meta: 'textScore'}
-      }));
-
-  /// adds a {$meta : testScore} for search score projection
-  void add$metaIndexKey(String fieldName) => _sequence.add(MapExpression({
-        fieldName: {op$Meta: 'indexKey'}
-      }));
-
   /// Add a key-value pair
   /// If the key already exists, the value is substituted
   @override
   void addEntry(String key, value) => valueMap[key] = value as Object;
+
+  /// adds a {$meta : testScore} for search score projection
+  void add$metaTextScore(String fieldName) => _sequence.add(MapExpression({
+        fieldName: {op$meta: 'textScore'}
+      }));
+
+  /// adds a {$meta : testScore} for search score projection
+  void add$metaIndexKey(String fieldName) => _sequence.add(MapExpression({
+        fieldName: {op$meta: 'indexKey'}
+      }));
 
   /// Include a field in the returned field list
   /// For embedded Documents use the  dot notation (ex. "<docName>.<field>")
@@ -87,7 +87,7 @@ class ProjectionExpression extends MapExpression {
   /// embedded documents.
   void $elemMatch(String fieldName, FilterExpression condition) =>
       _sequence.add(MapExpression({
-        fieldName: {op$ElemMatch: condition.rawContent}
+        fieldName: {op$elemMatch: condition.rawContent}
       }));
 
   /// The $slice projection operator specifies the number of elements in an
@@ -97,9 +97,9 @@ class ProjectionExpression extends MapExpression {
       _sequence.add(MapExpression({
         fieldName: {
           if (elementsToSkip == null)
-            op$Slice: elementsToReturn
+            op$slice: elementsToReturn
           else
-            op$Slice: [elementsToReturn, elementsToSkip]
+            op$slice: [elementsToReturn, elementsToSkip]
         }
       }));
 }

@@ -5,7 +5,7 @@ import 'common/document_types.dart';
 import 'common/operators_def.dart';
 
 class NotExpression extends OperatorExpression {
-  NotExpression(OperatorExpression operatorExp) : super(op$Not, operatorExp);
+  NotExpression(OperatorExpression operatorExp) : super(op$not, operatorExp);
 }
 
 class LogicalExpression extends OperatorExpression<ListExpression> {
@@ -17,7 +17,7 @@ class LogicalExpression extends OperatorExpression<ListExpression> {
 
 class AndExpression extends LogicalExpression {
   AndExpression([List<ExpressionContent>? values])
-      : super(op$And, ListExpression(values ?? <ExpressionContent>[]));
+      : super(op$and, ListExpression(values ?? <ExpressionContent>[]));
 
   void add(ExpressionContent operatorExp) {
     var keyList = content.keysList;
@@ -60,12 +60,12 @@ class AndExpression extends LogicalExpression {
 
 class OrExpression extends LogicalExpression {
   OrExpression([List<ExpressionContent>? values])
-      : super(op$Or, ListExpression(values ?? <ExpressionContent>[]));
+      : super(op$or, ListExpression(values ?? <ExpressionContent>[]));
   void add(ExpressionContent operatorExp) => content.add(operatorExp);
 }
 
 class NorExpression extends LogicalExpression {
   NorExpression([List<ExpressionContent>? values])
-      : super(op$Nor, ListExpression(values ?? <ExpressionContent>[]));
+      : super(op$nor, ListExpression(values ?? <ExpressionContent>[]));
   void add(ExpressionContent operatorExp) => content.add(operatorExp);
 }

@@ -26,62 +26,62 @@ class UpdateExpression {
   /// Sets the value of a field to the current date, either as a Date
   /// or a timestamp. The default type is Date.
   void $currentDate(String fieldName, {bool asTimestamp = false}) =>
-      _updateOperation(op$CurrentDate, fieldName,
+      _updateOperation(op$currentDate, fieldName,
           asTimestamp ? opTimeStampeTypeDoc : opDateTypeDoc);
 
   /// Increments the value of the field by the specified amount.
   void $inc(String fieldName, value) =>
-      _updateOperation(op$Inc, fieldName, value);
+      _updateOperation(op$inc, fieldName, value);
 
   /// Only updates the field if the specified value is less than
   /// the existing field value
   void $min(String fieldName, value) =>
-      _updateOperation(op$Min, fieldName, value);
+      _updateOperation(op$min, fieldName, value);
 
   /// Only updates the field if the specified value is greater than the
   /// existing field value.
   void $max(String fieldName, value) =>
-      _updateOperation(op$Max, fieldName, value);
+      _updateOperation(op$max, fieldName, value);
 
   /// Multiplies the value of the field by the specified amount
   void $mul(String fieldName, value) =>
-      _updateOperation(op$Mul, fieldName, value);
+      _updateOperation(op$mul, fieldName, value);
 
   void $rename(String oldName, String newName) =>
-      _updateOperation(op$Rename, oldName, newName);
+      _updateOperation(op$rename, oldName, newName);
 
   void $set(String fieldName, value) =>
-      _updateOperation(op$Set, fieldName, value);
+      _updateOperation(op$set, fieldName, value);
 
   void $setOnInsert(String fieldName, value) =>
-      _updateOperation(op$SetOnInsert, fieldName, value);
+      _updateOperation(op$setOnInsert, fieldName, value);
 
-  void $unset(String fieldName) => _updateOperation(op$Unset, fieldName, 1);
+  void $unset(String fieldName) => _updateOperation(op$unset, fieldName, 1);
 
   // ************************
   // *** Array operators
 
   /// Adds elements to an array only if they do not already exist in the set.
   void $addToSet(String fieldName, value) =>
-      _updateOperation(op$AddToSet, fieldName, value);
+      _updateOperation(op$addToSet, fieldName, value);
 
   void addEachToSet(String fieldName, List value) =>
-      _updateOperation(op$AddToSet, fieldName, {op$Each: value});
+      _updateOperation(op$addToSet, fieldName, {op$each: value});
 
   /// The popFirst operator removes the first element of an array.
-  void popFirst(String fieldName) => _updateOperation(op$Pop, fieldName, -1);
+  void popFirst(String fieldName) => _updateOperation(op$pop, fieldName, -1);
 
   /// The popLast operator removes the last element of an array.
-  void popLast(String fieldName) => _updateOperation(op$Pop, fieldName, 1);
+  void popLast(String fieldName) => _updateOperation(op$pop, fieldName, 1);
 
   /// The pull operator removes from an existing array all instances
   /// of a value that match a specified condition.
   void $pull(String fieldName, value) =>
-      _updateOperation(op$Pull, fieldName, value);
+      _updateOperation(op$pull, fieldName, value);
 
   /// Adds an item to an array.
   void $push(String fieldName, value) =>
-      _updateOperation(op$Push, fieldName, value);
+      _updateOperation(op$push, fieldName, value);
 
   /// append multiple values to an array <field>.
   void pushEach(String fieldName, List values,
@@ -104,14 +104,14 @@ class UpdateExpression {
 
           /// limit the size of updated arrays
           int? slice}) =>
-      _updateOperation(op$Push, fieldName, {
-        op$Each: values,
-        if (position != null) op$Position: position,
+      _updateOperation(op$push, fieldName, {
+        op$each: values,
+        if (position != null) op$position: position,
         if (sort != null)
-          op$Sort: sort
+          op$sort: sort
         else if (sortDocument != null)
-          op$Sort: sortDocument,
-        if (slice != null) op$Slice: slice
+          op$sort: sortDocument,
+        if (slice != null) op$slice: slice
       });
 
   /// The $pullAll operator removes all instances of the specified values
@@ -119,7 +119,7 @@ class UpdateExpression {
   /// Unlike the $pull operator that removes elements by specifying a query,
   /// $pullAll removes elements that match the listed values.
   void $pullAll(String fieldName, List values) =>
-      _updateOperation(op$PullAll, fieldName, values);
+      _updateOperation(op$pullAll, fieldName, values);
 
   ///  performs a bitwise "and" update of a field
   void bitAnd(String fieldName, int value) =>
