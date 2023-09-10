@@ -179,14 +179,17 @@ class QueryExpression {
       bool multiLineAnchorMatch = false,
       bool extendedIgnoreWhiteSpace = false,
       bool dotMAtchAll = false}) {
-    var value = '/$pattern/'
-        '${caseInsensitive ? 'i' : ''}'
+    var options = '${caseInsensitive ? 'i' : ''}'
         '${multiLineAnchorMatch ? 'm' : ''}'
         '${extendedIgnoreWhiteSpace ? 'x' : ''}'
         '${dotMAtchAll ? 's' : ''}';
 
     filter.addFieldOperator(FieldExpression(
-        fieldName, OperatorExpression(op$regex, _valueToContent(value))));
+        fieldName,
+        MapExpression({
+          op$regex: _valueToContent(pattern),
+          if (options.isNotEmpty) op$options: options
+        })));
   }
 
   void $text(String search,

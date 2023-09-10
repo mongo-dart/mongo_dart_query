@@ -32,6 +32,67 @@ void main() {
         });
   });
 
+  test('setWindowFields', () {
+    expect(
+        SetWindowFields(
+            partitionBy: {r'$year': r"$orderDate"},
+            sortBy: {'orderDate': 1},
+            outputField: 'cumulativeQuantityForYear',
+            outputOperator: Sum(r'$quantity'),
+            documents: ["unbounded", "current"]).build(),
+        {
+          r'$setWindowFields': {
+            'partitionBy': {r'$year': r"$orderDate"},
+            'sortBy': {'orderDate': 1},
+            'output': {
+              'cumulativeQuantityForYear': {
+                r'$sum': r"$quantity",
+                'window': {
+                  'documents': ["unbounded", "current"]
+                }
+              }
+            }
+          }
+        });
+    expect(
+        SetWindowFields(
+                partitionBy: r'$state',
+                sortBy: {'orderDate': 1},
+                outputField: 'recentOrders',
+                outputOperator: Push(r'$orderDate'),
+                range: ["unbounded", -10],
+                unit: "month")
+            .build(),
+        {
+          r'$setWindowFields': {
+            'partitionBy': r"$state",
+            'sortBy': {'orderDate': 1},
+            'output': {
+              'recentOrders': {
+                r'$push': r"$orderDate",
+                'window': {
+                  'range': ["unbounded", -10],
+                  'unit': "month"
+                }
+              }
+            }
+          }
+        });
+    expect(
+        SetWindowFields(
+                outputField: 'recentOrders', outputOperator: Avg(r'$orderDate'))
+            .build(),
+        {
+          r'$setWindowFields': {
+            'output': {
+              'recentOrders': {
+                r'$avg': r"$orderDate",
+              }
+            }
+          }
+        });
+  });
+
   test('unset', () {
     expect(Unset(['isbn', 'author.first', 'copies.warehouse']).build(), {
       '\$unset': ['isbn', 'author.first', 'copies.warehouse']

@@ -12,7 +12,7 @@ class ProjectionExpression extends MapExpression {
   final _sequence = <MapExpression>[];
 
   bool get notEmpty => _sequence.isNotEmpty;
-  ProjectionDocument get content => valueMap as ProjectionDocument;
+  ProjectionDocument get content => <String, Object>{...valueMap};
 
   @override
   ProjectionDocument get rawContent {

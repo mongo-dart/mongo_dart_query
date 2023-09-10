@@ -8,7 +8,7 @@ class SortExpression extends MapExpression {
   final _sequence = <MapExpression>[];
 
   bool get notEmpty => _sequence.isNotEmpty;
-  IndexDocument get content => valueMap as IndexDocument;
+  IndexDocument get content => <String, Object>{...valueMap};
 
   @override
   IndexDocument get rawContent {
