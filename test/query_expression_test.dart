@@ -2,7 +2,7 @@ library test_lib;
 
 import 'package:test/test.dart';
 import 'package:bson/bson.dart';
-import 'package:mongo_dart_query/src/expression/mongo_query.dart';
+import 'package:mongo_dart_query/mongo_query.dart';
 import 'package:mongo_dart_query/src/geometry_obj.dart';
 
 void main() {

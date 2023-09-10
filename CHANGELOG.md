@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.0.3-1.0.dev
+
+- QueryExpression class (experimental)
+- UpdateExpression class (experimental)
+
 ## 4.0.2
 
 - SetWindowFields() (aggregation)
