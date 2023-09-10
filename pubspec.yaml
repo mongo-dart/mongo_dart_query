@@ -1,12 +1,15 @@
 name: mongo_dart_query
-version: 4.0.3-1.0.dev
+version: 4.1.0-1.0.dev
 description: Query builder for mongo_dart
 homepage: https://github.com/mongo-dart/mongo_dart_query
 environment:
-  sdk: ">=2.15.0 <4.0.0"
+  sdk: ">=2.17.0 <4.0.0"
+
+publish_to: none  
   
 dependencies:
-  bson: ^4.0.0
+  bson: #^5.0.0
+    path: ../bson
   meta: ^1.9.0
   fixnum: ^1.1.0
 

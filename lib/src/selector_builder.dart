@@ -229,7 +229,7 @@ class SelectorBuilder {
   }
 
   SelectorBuilder jsQuery(String javaScriptCode) {
-    _query['\$where'] = BsonCode(javaScriptCode);
+    _query['\$where'] = BsonCode(JsCode(javaScriptCode));
     return this;
   }
 

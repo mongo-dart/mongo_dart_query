@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.0.3-1.0.dev
+## 4.1.0-1.0.dev
 
 - QueryExpression class (experimental)
 - UpdateExpression class (experimental)
