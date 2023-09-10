@@ -1,9 +1,8 @@
 # Changelog
 
-## 4.0.3-1.0.dev
+## 4.0.3
 
-- QueryExpression class (experimental)
-- UpdateExpression class (experimental)
+- ToDo
 
 ## 4.0.2
 
