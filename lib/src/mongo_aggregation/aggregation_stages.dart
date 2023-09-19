@@ -1,6 +1,7 @@
 import 'package:mongo_dart_query/mongo_aggregation.dart';
 import 'package:mongo_dart_query/mongo_dart_query.dart';
 import 'package:mongo_dart_query/src/mongo_aggregation/common.dart';
+import 'package:mongo_dart_query/src/mongo_aggregation/support_classes/output.dart';
 
 /// `$addFields` aggregation stage
 ///
@@ -102,32 +103,28 @@ class SetStage extends AggregationStage {
 ///
 /// Dart code:
 /// ```
-/// SetWindowFields(
-///   groupBy: Field('price'),
-///   boundaries: [0, 200, 400],
-///   defaultId: "Other",
-///   output: {
-///     'count': Sum(1),
-///     'titles': Push(Field('title'))
-///   }
-/// ).build()
+///   SetWindowFields(
+///      partitionBy: {r'$year': r"$orderDate"},
+///      sortBy: {'orderDate': 1},
+///      output: Output('cumulativeQuantityForYear', Sum(r'$quantity'),
+///          documents: ["unbounded", "current"])).build(),
 /// ```
 /// Equivalent mongoDB aggregation stage:
 /// ```
-/// {
-///    $setWindowFields: {
-///       partitionBy: "$state",
-///       sortBy: { orderDate: 1 },
-///       output: {
-///          cumulativeQuantityForState: {
-///             $sum: "$quantity",
-///             window: {
-///                documents: [ "unbounded", "current" ]
-///             }
+///  {
+///    r'$setWindowFields': {
+///      'partitionBy': {r'$year': r"$orderDate"},
+///      'sortBy': {'orderDate': 1},
+///      'output': {
+///        'cumulativeQuantityForYear': {
+///          r'$sum': r"$quantity",
+///          'window': {
+///            'documents': ["unbounded", "current"]
 ///          }
-///       }
+///        }
+///      }
 ///    }
-/// }
+///  }
 /// ```
 /// https://www.mongodb.com/docs/manual/reference/operator/aggregation/setWindowFields/
 class SetWindowFields extends AggregationStage {
@@ -140,80 +137,36 @@ class SetWindowFields extends AggregationStage {
   ///   Specifies the field(s) to sort the documents by in the partition.
   ///   Uses the same syntax as the $sort stage.
   ///   Default is no sorting.
-  /// * [outputField] -Specifies the field(s) to append to the documents in the
-  ///   output returned by the $setWindowFields stage. Each field is set to
-  ///   the result returned by the window operator.
-  ///   A field can contain dots to specify embedded document fields and array
-  ///   fields. The semantics for the embedded document dotted notation in the
-  ///   $setWindowFields stage are the same as the $addFields and $set stages.
-  ///   See embedded document $addFields example and embedded document
-  ///   $set example.
-  ///   * [outputOperator] - The window operator is the window operator
-  ///   to use in the $setWindowFields stage.
-  ///
-  ///   The window operator parameters are the parameters to pass to the window
-  ///   operator. Specifies the window boundaries and parameters. Window
-  ///   boundaries are inclusive. Default is an unbounded window, which includes
-  ///   all documents in the partition.
-  ///   Specify either a documents or range window.
-  ///   - [documents] Optional - A window where the lower and upper boundaries
-  ///     are specified relative to the position of the current document read
-  ///     from the collection.
-  ///     The window boundaries are specified using a two element array
-  ///     containing a lower and upper limit string or integer. Use:
-  ///     - The "current" string for the current document position in the output
-  ///     - The "unbounded" string for the first or last document position in
-  ///       the partition.
-  ///   - [range] Optional - A window where the lower and upper boundaries are
-  ///     defined using a range of values based on the sortBy field in the
-  ///     current document.
-  ///     The window boundaries are specified using a two element array
-  ///     containing a lower and upper limit string or number. Use:
-  ///     - The "current" string for the current document position in the output
-  ///     - The "unbounded" string for the first or last document position in
-  ///       the partition.
-  ///     - A number to add to the value of the sortBy field for the current
-  ///       document. A document is in the window if the sortBy field value is
-  ///       inclusively within the lower and upper boundaries.
-  /// * [unit] Optional -Specifies the units for time range window boundaries.
-  ///   Can be set to one of these strings:
-  ///   - "year"
-  ///   - "quarter"
-  ///   - "month"
-  ///   - "week"
-  ///   - "day"
-  ///   - "hour"
-  ///   - "minute"
-  ///   - "second"
-  ///   - "millisecond"
-  ///
-  ///   If omitted, default numeric range window boundaries are used.
-  SetWindowFields(
-      {partitionBy,
-      Map<String, int>? sortBy,
-      defaultId,
-      required String outputField,
-      required Accumulator outputOperator,
-      List? documents,
-      List? range,
-      String? unit})
-      : super(
+  /// * [output] - Specifies the field(s) an related parameters to append to
+  ///   the documents in the output returned by the $setWindowFields stage.
+  ///   Each field is set to the result returned by the window operator.
+  ///   The field can either an Output object, a list of Output Objects or a
+  ///   document containing the explicit description of the output required
+  SetWindowFields({
+    partitionBy,
+    Map<String, int>? sortBy,
+    defaultId,
+    required dynamic output,
+  }) : super(
             stSetWindowFields,
             AEObject({
               if (partitionBy != null) spPartitionBy: partitionBy,
               if (sortBy != null) spSortBy: AEObject(sortBy),
-              'output': {
-                outputField: {
-                  ...outputOperator.build(),
-                  if (documents != null || range != null || unit != null)
-                    spWindow: {
-                      if (documents != null) spDocuments: AEList(documents),
-                      if (range != null) spRange: AEList(range),
-                      if (unit != null) spUnit: unit
-                    }
-                }
-              },
+              'output': _getOutputDocument(output),
             }));
+
+  static AEObject _getOutputDocument(output) {
+    if (output is Output) {
+      return AEObject(output.build());
+    } else if (output is List<Output>) {
+      return AEObject({for (Output element in output) ...element.build()});
+    } else if (output is Map<String, dynamic>) {
+      return AEObject(output);
+    } else {
+      throw Exception(
+          'output parm must be Map<String,dynamic>, Output or List<Output>');
+    }
+  }
 }
 
 /// `$unset` aggregation stage

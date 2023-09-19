@@ -1,6 +1,7 @@
 import 'package:bson/bson.dart';
 import 'package:mongo_dart_query/mongo_aggregation.dart';
 import 'package:mongo_dart_query/mongo_dart_query.dart';
+import 'package:mongo_dart_query/src/mongo_aggregation/support_classes/output.dart';
 import 'package:test/test.dart' hide Skip;
 
 void main() {
@@ -37,9 +38,8 @@ void main() {
         SetWindowFields(
             partitionBy: {r'$year': r"$orderDate"},
             sortBy: {'orderDate': 1},
-            outputField: 'cumulativeQuantityForYear',
-            outputOperator: Sum(r'$quantity'),
-            documents: ["unbounded", "current"]).build(),
+            output: Output('cumulativeQuantityForYear', Sum(r'$quantity'),
+                documents: ["unbounded", "current"])).build(),
         {
           r'$setWindowFields': {
             'partitionBy': {r'$year': r"$orderDate"},
@@ -58,10 +58,8 @@ void main() {
         SetWindowFields(
                 partitionBy: r'$state',
                 sortBy: {'orderDate': 1},
-                outputField: 'recentOrders',
-                outputOperator: Push(r'$orderDate'),
-                range: ["unbounded", -10],
-                unit: "month")
+                output: Output('recentOrders', Push(r'$orderDate'),
+                    range: ["unbounded", -10], unit: "month"))
             .build(),
         {
           r'$setWindowFields': {
@@ -79,14 +77,44 @@ void main() {
           }
         });
     expect(
-        SetWindowFields(
-                outputField: 'recentOrders', outputOperator: Avg(r'$orderDate'))
+        SetWindowFields(output: Output('recentOrders', Avg(r'$orderDate')))
             .build(),
         {
           r'$setWindowFields': {
             'output': {
               'recentOrders': {
                 r'$avg': r"$orderDate",
+              }
+            }
+          }
+        });
+    expect(
+        SetWindowFields(partitionBy: {
+          r'$year': r'$orderDate'
+        }, sortBy: {
+          'orderDate': 1
+        }, output: [
+          Output('cumulativeQuantityForYear', Sum(r'$quantity'),
+              documents: ["unbounded", "current"]),
+          Output('maximumQuantityForYear', Max(r'$quantity'),
+              documents: ["unbounded", "unbounded"])
+        ]).build(),
+        {
+          r'$setWindowFields': {
+            'partitionBy': {r'$year': r'$orderDate'},
+            'sortBy': {'orderDate': 1},
+            'output': {
+              'cumulativeQuantityForYear': {
+                r'$sum': r'$quantity',
+                'window': {
+                  'documents': ["unbounded", "current"]
+                }
+              },
+              'maximumQuantityForYear': {
+                r'$max': r'$quantity',
+                'window': {
+                  'documents': ["unbounded", "unbounded"]
+                }
               }
             }
           }
