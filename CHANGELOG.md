@@ -2,7 +2,7 @@
 
 ## 4.0.3
 
-- ToDo
+- SetWindowFields() (aggregation). Fix.
 
 ## 4.0.2
 
