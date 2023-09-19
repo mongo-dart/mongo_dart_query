@@ -2,6 +2,7 @@
 const stSetWindowFields = 'setWindowFields';
 
 // Stage parms
+const spOutput = 'output';
 const spPartitionBy = 'partitionBy';
 const spSortBy = 'sortBy';
 const spWindow = 'window';
