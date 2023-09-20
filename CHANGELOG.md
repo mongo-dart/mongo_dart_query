@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.4
+
+- Missing Export (Fix)
+
 ## 4.0.3
 
 - SetWindowFields() (aggregation). Fix.

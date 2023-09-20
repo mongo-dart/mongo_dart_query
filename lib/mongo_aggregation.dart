@@ -36,3 +36,4 @@ export 'src/mongo_aggregation/string_operators.dart';
 export 'src/mongo_aggregation/type_expression_operators.dart';
 export 'src/mongo_aggregation/uncategorized_operators.dart';
 export 'src/geometry_obj.dart';
+export 'src/mongo_aggregation/support_classes/output.dart';
