@@ -534,7 +534,7 @@ class QueryExpression {
   }
 
   void jsQuery(String javaScriptCode) =>
-      rawFilter['\$where'] = BsonCode(JsCode(javaScriptCode));
+      rawFilter['\$where'] = JsCode(javaScriptCode);
 
   /// Combine current expression with expression in parameter.
   /// [See MongoDB doc](http://docs.mongodb.org/manual/reference/operator/and/#op._S_and)

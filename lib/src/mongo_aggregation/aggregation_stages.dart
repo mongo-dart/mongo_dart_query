@@ -1,7 +1,6 @@
 import 'package:mongo_dart_query/mongo_aggregation.dart';
 import 'package:mongo_dart_query/mongo_dart_query.dart';
 import 'package:mongo_dart_query/src/mongo_aggregation/common.dart';
-import 'package:mongo_dart_query/src/mongo_aggregation/support_classes/output.dart';
 
 /// `$addFields` aggregation stage
 ///

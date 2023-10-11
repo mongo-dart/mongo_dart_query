@@ -1,7 +1,6 @@
-import 'package:bson/bson.dart';
+import 'package:bson/src/types/bson_null.dart';
 import 'package:mongo_dart_query/mongo_aggregation.dart';
 import 'package:mongo_dart_query/mongo_dart_query.dart';
-import 'package:mongo_dart_query/src/mongo_aggregation/support_classes/output.dart';
 import 'package:test/test.dart' hide Skip;
 
 void main() {

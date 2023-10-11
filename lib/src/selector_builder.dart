@@ -135,13 +135,16 @@ class SelectorBuilder {
   }
 
   SelectorBuilder match(String fieldName, String pattern,
-      {bool? multiLine, bool? caseInsensitive, bool? dotAll, bool? extended}) {
+      {bool multiLine = false,
+      bool caseInsensitive = false,
+      bool dotAll = false,
+      bool unicode = false}) {
     _addExpression(fieldName, {
-      '\$regex': BsonRegexp(pattern,
+      '\$regex': RegExp(pattern,
           multiLine: multiLine,
-          caseInsensitive: caseInsensitive,
+          caseSensitive: !caseInsensitive,
           dotAll: dotAll,
-          extended: extended)
+          unicode: unicode)
     });
     return this;
   }
@@ -229,7 +232,7 @@ class SelectorBuilder {
   }
 
   SelectorBuilder jsQuery(String javaScriptCode) {
-    _query['\$where'] = BsonCode(JsCode(javaScriptCode));
+    _query['\$where'] = JsCode(javaScriptCode);
     return this;
   }
 
