@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.5
+
+- Added `escapePatern` parameter to `match` method in `SelectorBuilder`. This parameter allows to escape the pattern passed to the method. Usefule when, for example you have to search for some string conatining a RegExp special character like points (ex '<john.doe@noone.com>')
+
 ## 4.0.4
 
 - Missing Export (Fix)

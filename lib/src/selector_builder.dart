@@ -135,9 +135,13 @@ class SelectorBuilder {
   }
 
   SelectorBuilder match(String fieldName, String pattern,
-      {bool? multiLine, bool? caseInsensitive, bool? dotAll, bool? extended}) {
+      {bool? multiLine,
+      bool? caseInsensitive,
+      bool? dotAll,
+      bool? extended,
+      bool escapePattern = false}) {
     _addExpression(fieldName, {
-      '\$regex': BsonRegexp(pattern,
+      '\$regex': BsonRegexp(escapePattern ? RegExp.escape(pattern) : pattern,
           multiLine: multiLine,
           caseInsensitive: caseInsensitive,
           dotAll: dotAll,
