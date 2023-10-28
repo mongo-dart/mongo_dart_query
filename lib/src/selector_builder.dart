@@ -138,9 +138,10 @@ class SelectorBuilder {
       {bool multiLine = false,
       bool caseInsensitive = false,
       bool dotAll = false,
-      bool unicode = false}) {
+      bool unicode = false,
+      bool escapePattern = false}) {
     _addExpression(fieldName, {
-      '\$regex': RegExp(pattern,
+      '\$regex': RegExp(escapePattern ? RegExp.escape(pattern) : pattern,
           multiLine: multiLine,
           caseSensitive: !caseInsensitive,
           dotAll: dotAll,

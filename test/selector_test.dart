@@ -369,6 +369,15 @@ void main() {
         }));
   });
 
+  test('Match', () {
+    var selector = where.match('testField', 'john.doe@noone.com');
+    expect(selector.map[r'$query']['testField'][r'$regex'].pattern,
+        RegExp('john.doe@noone.com').pattern);
+    selector =
+        where.match('testField', 'john.doe@noone.com', escapePattern: true);
+    expect(selector.map[r'$query']['testField'][r'$regex'].pattern,
+        RegExp(r'john\.doe@noone\.com').pattern);
+  });
   test('geoIntersects', () {
     var selector = where.geoIntersects(
         'geo_field',
