@@ -25,7 +25,7 @@ class QueryExpression {
   int _skip = 0;
   int _limit = 0;
 
-  /// Returs a Json version of the filter
+  /// Returns a Json version of the filter
   String getQueryString() => json.encode(filter.rawContent);
 
   /// Inserts a raw document as filter

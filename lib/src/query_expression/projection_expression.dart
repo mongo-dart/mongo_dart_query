@@ -27,9 +27,10 @@ class ProjectionExpression extends MapExpression {
 
   void processExpression() {
     expressionProcessed = true;
-    content.clear();
+    valueMap.clear();
     for (var element in _sequence) {
-      content.addAll(element.rawContent as ProjectionDocument);
+      var insertMap = <String, Object>{...element.rawContent};
+      valueMap.addAll(insertMap);
     }
   }
 

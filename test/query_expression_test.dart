@@ -1,7 +1,10 @@
 library test_lib;
 
+import 'dart:convert';
+
 import 'package:test/test.dart';
 import 'package:bson/bson.dart';
+
 import 'package:mongo_dart_query/mongo_query.dart';
 import 'package:mongo_dart_query/src/geometry_obj.dart';
 
@@ -53,11 +56,14 @@ void main() {
       'my_field': {r'$gt': 700, r'$lt': 703}
     });
     expect(selector.sortExp.rawContent, {'my_field': -1});
-    /*  selector = where
+    selector = where
       ..$eq('my_field', 17)
-      ..fields(['str_field']);
-    expect(selector.filter.rawContent, {'my_field': 17});
-    expect(selector.paramFields, {'str_field': 1}); */
+      ..selectFields(['str_field']);
+    expect(selector.filter.rawContent, {
+      'my_field': {r'$eq': 17}
+    });
+    expect(selector.fields.rawContent, {'str_field': 1});
+
     selector = where
       ..sortBy('a')
       ..skip(300);
@@ -111,11 +117,7 @@ void main() {
       ..$or
       ..$gt('c', 2000)
       ..close;
-    /* var selector = where
-      ..$gt('a', 995)
-      ..and(where
-        ..$lt('b', 1000)
-        ..or(where..$gt('c', 2000))); */
+
     expect(selector.filter.rawContent, {
       'a': {r'$gt': 995},
       r'$or': [
@@ -392,12 +394,15 @@ void main() {
     expect(selector.getQueryString(), r'{"foo":{"$eq":"bar"}}');
     selector = where..$lt('foo', 2);
     expect(selector.getQueryString(), r'{"foo":{"$lt":2}}');
+
     var id = ObjectId();
     selector = where..id(id);
-    expect(selector.getQueryString(), '{"_id":{"\$eq":"${id.toHexString()}"}}');
-//  var dbPointer = new DbRef('Dummy',id);
-//  selector = where.eq('foo',dbPointer);
-//  expect(selector.getQueryString(),'{"\$query":{"foo":$dbPointer}}');
+    expect(selector.getQueryString(), '{"_id":{"\$eq":"${id.oid}"}}');
+
+    var dbRef = DbRef('Dummy', id);
+    selector = where..$eq('foo', dbRef);
+    expect(selector.getQueryString(),
+        '{"foo":{"\$eq":${json.encode(dbRef.toJson())}}}');
   });
 
   test('sortByMetaTextScore', () {
