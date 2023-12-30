@@ -1,4 +1,4 @@
-part of mongo_dart_query;
+part of '../mongo_dart_query.dart';
 
 SelectorBuilder get where => SelectorBuilder();
 const keyQuery = r'$query';
@@ -135,17 +135,17 @@ class SelectorBuilder {
   }
 
   SelectorBuilder match(String fieldName, String pattern,
-      {bool? multiLine,
-      bool? caseInsensitive,
-      bool? dotAll,
-      bool? extended,
+      {bool multiLine = false,
+      bool caseInsensitive = false,
+      bool dotAll = false,
+      bool extended = false,
       bool escapePattern = false}) {
     _addExpression(fieldName, {
-      '\$regex': BsonRegexp(escapePattern ? RegExp.escape(pattern) : pattern,
+      '\$regex': RegExp(escapePattern ? RegExp.escape(pattern) : pattern,
           multiLine: multiLine,
-          caseInsensitive: caseInsensitive,
+          caseSensitive: !caseInsensitive,
           dotAll: dotAll,
-          extended: extended)
+          unicode: extended)
     });
     return this;
   }
@@ -233,7 +233,7 @@ class SelectorBuilder {
   }
 
   SelectorBuilder jsQuery(String javaScriptCode) {
-    _query['\$where'] = BsonCode(javaScriptCode);
+    _query['\$where'] = JsCode(javaScriptCode);
     return this;
   }
 

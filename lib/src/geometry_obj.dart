@@ -2,7 +2,7 @@ import '../mongo_aggregation.dart';
 
 /// There is
 abstract class ShapeOperator extends Operator {
-  ShapeOperator(String name, args) : super(name, args);
+  ShapeOperator(super.name, super.args);
 }
 
 enum GeometryObjectType {

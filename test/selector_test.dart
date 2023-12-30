@@ -305,8 +305,7 @@ void main() {
     expect(selector.getQueryString(), r'{"$query":{"foo":{"$lt":2}}}');
     var id = ObjectId();
     selector = where.id(id);
-    expect(
-        selector.getQueryString(), '{"\$query":{"_id":"${id.toHexString()}"}}');
+    expect(selector.getQueryString(), '{"\$query":{"_id":"${id.oid}"}}');
 //  var dbPointer = new DbRef('Dummy',id);
 //  selector = where.eq('foo',dbPointer);
 //  expect(selector.getQueryString(),'{"\$query":{"foo":$dbPointer}}');
@@ -372,11 +371,11 @@ void main() {
   test('Match', () {
     var selector = where.match('testField', 'john.doe@noone.com');
     expect(selector.map[r'$query']['testField'][r'$regex'].pattern,
-        BsonRegexp('john.doe@noone.com').pattern);
+        RegExp('john.doe@noone.com').pattern);
     selector =
         where.match('testField', 'john.doe@noone.com', escapePattern: true);
     expect(selector.map[r'$query']['testField'][r'$regex'].pattern,
-        BsonRegexp(r'john\.doe@noone\.com').pattern);
+        RegExp(r'john\.doe@noone\.com').pattern);
   });
   test('geoIntersects', () {
     var selector = where.geoIntersects(

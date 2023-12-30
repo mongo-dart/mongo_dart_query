@@ -428,7 +428,7 @@ class Granularity extends Const {
   static final e192 = Granularity._('E192');
   static final powersof2 = Granularity._('POWERSOF2');
 
-  Granularity._(String value) : super(value);
+  Granularity._(String super.value);
 }
 
 /// `$count` aggregation stage

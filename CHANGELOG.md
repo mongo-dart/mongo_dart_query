@@ -1,5 +1,15 @@
 # Changelog
 
+## 5.0.0
+
+Changed dependency on Bson package. This have the following consequenses:
+
+- BSON classes are mainly used for internal use. See the Bson github site for more details
+  - BsonRegexp now it is not normally needed, use RegExp instead.
+  - BsonNull is not needed, you can use null directly.
+  - A new JsCode class has been created, it is no more needed the use of BsonCode.
+- Uuid dependecy has been updated and this means that the UuidValue class has been slightly changed. The .fromString constructure must be used mainly instead of the default one. Check the Uuid package Pub site for details.  
+
 ## 4.0.5
 
 - Added `escapePatern` parameter to `match` method in `SelectorBuilder`. This parameter allows to escape the pattern passed to the method. Usefule when, for example you have to search for some string conatining a RegExp special character like points (ex '<john.doe@noone.com>')

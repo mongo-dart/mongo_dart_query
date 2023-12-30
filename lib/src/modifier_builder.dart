@@ -1,4 +1,4 @@
-part of mongo_dart_query;
+part of '../mongo_dart_query.dart';
 
 ModifierBuilder get modify => ModifierBuilder();
 

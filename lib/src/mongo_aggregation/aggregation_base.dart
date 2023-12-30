@@ -23,7 +23,7 @@ abstract class Operator extends AggregationExpr {
 
 /// Basic accumulation operator
 abstract class Accumulator extends Operator {
-  Accumulator(String name, expr) : super(name, expr);
+  Accumulator(super.name, super.expr);
 }
 
 /// Aggregation expression's list

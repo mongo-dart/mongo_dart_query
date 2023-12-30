@@ -1,4 +1,3 @@
-import 'package:bson/bson.dart';
 import 'package:mongo_dart_query/mongo_aggregation.dart';
 import 'package:mongo_dart_query/mongo_dart_query.dart';
 import 'package:test/test.dart' hide Skip;
@@ -289,16 +288,15 @@ void main() {
             'count': {'\$sum': 1}
           }
         });
-    final nullId = BsonNull();
     expect(
-        Group(id: nullId, fields: {
+        Group(id: null, fields: {
           'totalPrice': Sum(Multiply([Field('price'), Field('quantity')])),
           'averageQuantity': Avg(Field('quantity')),
           'count': Sum(1)
         }).build(),
         {
           '\$group': {
-            '_id': nullId,
+            '_id': null,
             'totalPrice': {
               '\$sum': {
                 '\$multiply': ['\$price', '\$quantity']
