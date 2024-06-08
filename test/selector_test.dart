@@ -376,6 +376,10 @@ void main() {
         where.match('testField', 'john.doe@noone.com', escapePattern: true);
     expect(selector.map[r'$query']['testField'][r'$regex'].pattern,
         RegExp(r'john\.doe@noone\.com').pattern);
+    selector =
+        where.match('testField', 'john.doe@noone.com', caseInsensitive: true);
+    expect(selector.map[r'$query']['testField'][r'$regex'],
+        RegExp('john.doe@noone.com', caseSensitive: true));
   });
   test('geoIntersects', () {
     var selector = where.geoIntersects(

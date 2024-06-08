@@ -143,7 +143,7 @@ class SelectorBuilder {
     _addExpression(fieldName, {
       '\$regex': RegExp(escapePattern ? RegExp.escape(pattern) : pattern,
           multiLine: multiLine,
-          caseSensitive: !caseInsensitive,
+          caseSensitive: caseInsensitive,
           dotAll: dotAll,
           unicode: extended)
     });
