@@ -39,6 +39,35 @@ class AddFields extends AggregationStage {
   AddFields(Map<String, dynamic> fields) : super('addFields', AEObject(fields));
 }
 
+/// `$sample` aggregation stage
+///
+/// ### Stage description.
+///
+/// `$sample` randomly selects a specified number of documents from the aggregation pipeline.
+/// This stage can be useful for sampling a subset of documents from a larger dataset.
+///
+/// You can include only one `$sample` stage in an aggregation pipeline.
+///
+/// Example:
+///
+/// Dart code
+/// ```
+/// Sample(10).build()
+/// ```
+/// Equivalent mongoDB aggregation stage:
+/// ```
+/// {
+///   $sample: {
+///     size: 10
+///   }
+/// }
+/// ```
+/// https://docs.mongodb.com/manual/reference/operator/aggregation/sample/
+class Sample extends AggregationStage {
+  /// Creates `$sample` aggregation stage
+  Sample(int size) : super('sample', {'size': size});
+}
+
 /// `$set` aggregation stage
 ///
 /// ### Stage description
