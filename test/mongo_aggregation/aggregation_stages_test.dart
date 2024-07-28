@@ -1,6 +1,7 @@
 import 'package:mongo_dart_query/mongo_aggregation.dart';
 import 'package:mongo_dart_query/mongo_dart_query.dart';
 import 'package:test/test.dart' hide Skip;
+import 'package:bson/src/types/bson_null.dart';
 
 void main() {
   test('addFields', () {
@@ -15,6 +16,12 @@ void main() {
             'totalQuiz': {'\$sum': '\$quiz'}
           }
         });
+  });
+
+  test('sample', () {
+    expect(Sample(10).build(), {
+      r'$sample': {'size': 10}
+    });
   });
 
   test('set', () {
@@ -289,14 +296,14 @@ void main() {
           }
         });
     expect(
-        Group(id: null, fields: {
+        Group(id: BsonNull(), fields: {
           'totalPrice': Sum(Multiply([Field('price'), Field('quantity')])),
           'averageQuantity': Avg(Field('quantity')),
           'count': Sum(1)
         }).build(),
         {
           '\$group': {
-            '_id': null,
+            '_id': BsonNull(),
             'totalPrice': {
               '\$sum': {
                 '\$multiply': ['\$price', '\$quantity']

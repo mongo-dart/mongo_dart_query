@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.2
+
+- Sample stage
+
 ## 5.0.1
 
 - Fixed match operator, the case insensitive flag was inverted (true instead of false and viceversa)
