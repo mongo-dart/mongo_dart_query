@@ -1,4 +1,4 @@
-library mongo_dart_query;
+library;
 
 import 'dart:convert' show json;
 import 'package:bson/bson.dart';

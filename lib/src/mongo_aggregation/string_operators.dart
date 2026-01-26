@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 import 'aggregation_base.dart';
 
 /// `$concat` operator
@@ -36,7 +34,7 @@ class IndexOfBytes extends Operator {
   /// non-negative integral number. If you specify a [end] index value, you
   /// should also specify a [start] index value; otherwise, `$indexOfBytes` uses
   /// the [end] value as the [start] index value instead of the [end] value.
-  IndexOfBytes(string, substring, [start, end])
+  IndexOfBytes(dynamic string, substring, [start, end])
       : super('indexOfBytes', AEList([string, substring, start, end]));
 }
 
@@ -63,7 +61,7 @@ class IndexOfCP extends Operator {
   /// non-negative integral number. If you specify a [end] index value, you
   /// should also specify a [start] index value; otherwise, `$indexOfCP` uses
   /// the [end] value as the [start] index value instead of the [end value.
-  IndexOfCP(string, substring, [start, end])
+  IndexOfCP(dynamic string, substring, [start, end])
       : super('indexOfCP', AEList([string, substring, start, end]));
 }
 
@@ -81,7 +79,7 @@ class Ltrim extends Operator {
   /// operator breaks down the string into individual UTF code point to trim from input.
   /// If unspecified, `$ltrim` removes whitespace characters, including the `null`
   /// character.
-  Ltrim({@required input, chars})
+  Ltrim({required dynamic input, chars})
       : super('ltrim', AEObject({'input': input, 'chars': chars}));
 }
 
@@ -103,7 +101,7 @@ class RegexFind extends Operator {
   /// be a string or any valid expression that resolves to a string.
   /// * [regex] - The regex pattern to apply. Can be any valid expression that
   /// resolves to a string.
-  /// * [options] - Optional. The following <options> are available for use with
+  /// * [options] - Optional. The following -options- are available for use with
   /// regular expression:
   ///   * `i` - Case insensitivity to match both upper and lower cases. You can
   /// specify the option in the options field or as part of the regex field.
@@ -122,7 +120,7 @@ class RegexFind extends Operator {
   /// 11).
   ///   * `s` - Allows the dot character (i.e. .) to match all characters including
   /// newline characters.
-  RegexFind({@required input, @required regex, options})
+  RegexFind({required dynamic input, required regex, options})
       : super('regexFind',
             AEObject({'input': input, 'regex': regex, 'options': options}));
 }
@@ -143,7 +141,7 @@ class RegexFindAll extends Operator {
   /// be a string or any valid expression that resolves to a string.
   /// * [regex] - The regex pattern to apply. Can be any valid expression that
   /// resolves to a string.
-  /// * [options] - Optional. The following <options> are available for use with
+  /// * [options] - Optional. The following -options- are available for use with
   /// regular expression:
   ///   * `i` - Case insensitivity to match both upper and lower cases. You can
   /// specify the option in the options field or as part of the regex field.
@@ -162,7 +160,7 @@ class RegexFindAll extends Operator {
   /// 11).
   ///   * `s` - Allows the dot character (i.e. .) to match all characters including
   /// newline characters.
-  RegexFindAll({@required input, @required regex, options})
+  RegexFindAll({required dynamic input, required regex, options})
       : super('regexFindAll',
             AEObject({'input': input, 'regex': regex, 'options': options}));
 }
@@ -183,7 +181,7 @@ class RegexMatch extends Operator {
   /// be a string or any valid expression that resolves to a string.
   /// * [regex] - The regex pattern to apply. Can be any valid expression that
   /// resolves to a string.
-  /// * [options] - Optional. The following <options> are available for use with
+  /// * [options] - Optional. The following -options- are available for use with
   /// regular expression:
   ///   * `i` - Case insensitivity to match both upper and lower cases. You can
   /// specify the option in the options field or as part of the regex field.
@@ -202,7 +200,7 @@ class RegexMatch extends Operator {
   /// 11).
   ///   * `s` - Allows the dot character (i.e. .) to match all characters including
   /// newline characters.
-  RegexMatch({@required input, @required regex, options})
+  RegexMatch({required dynamic input, required regex, options})
       : super('regexMatch',
             AEObject({'input': input, 'regex': regex, 'options': options}));
 }
@@ -221,7 +219,7 @@ class Rtrim extends Operator {
   /// operator breaks down the string into individual UTF code point to trim from input.
   /// If unspecified, `$ltrim` removes whitespace characters, including the `null`
   /// character.
-  Rtrim({@required input, chars})
+  Rtrim({required dynamic input, chars})
       : super('rtrim', AEObject({'input': input, 'chars': chars}));
 }
 
@@ -238,7 +236,8 @@ class Split extends Operator {
   /// expression as long as it resolves to a string.
   /// * [delimiter] - The delimiter to use when splitting the string expression.
   /// delimiter can be any valid expression as long as it resolves to a string.
-  Split(string, delimiter) : super('split', AEList([string, delimiter]));
+  Split(dynamic string, delimiter)
+      : super('split', AEList([string, delimiter]));
 }
 
 /// `$strLenBytes` operator
@@ -246,7 +245,7 @@ class StrLenBytes extends Operator {
   /// Creates `$strLenBytes` operator expression
   ///
   /// Returns the number of UTF-8 encoded bytes in the specified string.
-  StrLenBytes(expr) : super('strLenBytes', expr);
+  StrLenBytes(dynamic expr) : super('strLenBytes', expr);
 }
 
 /// `$strLenCP` operator
@@ -254,7 +253,7 @@ class StrLenCP extends Operator {
   /// Creates `$xtrLenCp` operator expression
   ///
   /// Returns the number of UTF-8 code points in the specified string.
-  StrLenCP(expr) : super('strLenCP', expr);
+  StrLenCP(dynamic expr) : super('strLenCP', expr);
 }
 
 /// `$strcasecmp` operator
@@ -266,7 +265,7 @@ class StrCaseCmp extends Operator {
   /// * 1 if first string is “greater than” the second string.
   /// * 0 if the two strings are equal.
   /// * -1 if the first string is “less than” the second string.
-  StrCaseCmp(a, b) : super('strcasecmp', AEList([a, b]));
+  StrCaseCmp(dynamic a, b) : super('strcasecmp', AEList([a, b]));
 }
 
 /// `$substrBytes` operator
@@ -292,7 +291,7 @@ class SubstrBytes extends Operator {
   /// non-negative integer or number that can be represented as an integer
   /// (such as 2.0). Byte count can not result in an ending index that is in the
   /// middle of a UTF-8 character.
-  SubstrBytes(string, index, count)
+  SubstrBytes(dynamic string, index, count)
       : super('substrBytes', AEList([string, index, count]));
 }
 
@@ -316,7 +315,7 @@ class SubstrCP extends Operator {
   /// * [count] - Can be any valid expression as long as it resolves to a
   /// non-negative integer or number that can be represented as an integer
   /// (such as 2.0).
-  SubstrCP(string, index, count)
+  SubstrCP(dynamic string, index, count)
       : super('substrCP', AEList([string, index, count]));
 }
 
@@ -327,7 +326,7 @@ class ToLower extends Operator {
   /// Converts a string to lowercase, returning the result.
   ///
   /// The argument can be any expression as long as it resolves to a string.
-  ToLower(expr) : super('toLower', expr);
+  ToLower(dynamic expr) : super('toLower', expr);
 }
 
 /// `$toString` operator
@@ -339,7 +338,7 @@ class ToString extends Operator {
   /// returns null.
   ///
   /// The $toString takes any valid expression.
-  ToString(expr) : super('toString', expr);
+  ToString(dynamic expr) : super('toString', expr);
 }
 
 /// `$trim` operator
@@ -356,7 +355,7 @@ class Trim extends Operator {
   /// operator breaks down the string into individual UTF code point to trim from input.
   /// If unspecified, `$ltrim` removes whitespace characters, including the `null`
   /// character.
-  Trim({@required input, chars})
+  Trim({required dynamic input, chars})
       : super('trim', AEObject({'input': input, 'chars': chars}));
 }
 
@@ -367,5 +366,5 @@ class ToUpper extends Operator {
   /// Converts a string to uppercase, returning the result.
   ///
   /// The argument can be any expression as long as it resolves to a string.
-  ToUpper(expr) : super('toUpper', expr);
+  ToUpper(dynamic expr) : super('toUpper', expr);
 }

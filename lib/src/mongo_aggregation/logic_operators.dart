@@ -26,5 +26,5 @@ class Not extends Operator {
   /// Evaluates a boolean and returns the opposite boolean value; i.e. when
   /// passed an expression that evaluates to `true`, `$not` returns `false`; when
   /// passed an expression that evaluates to `false`, $not returns `true`.
-  Not(expr) : super('not', expr);
+  Not(dynamic expr) : super('not', expr);
 }

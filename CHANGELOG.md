@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.0.3
+
+- Lints update
+- Refresh dependencies
+
 ## 5.0.2
 
 - Sample stage

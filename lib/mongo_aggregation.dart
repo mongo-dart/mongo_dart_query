@@ -21,7 +21,7 @@
 /// ```
 /// Full mongoDB documentation on aggregation queries:
 /// https://docs.mongodb.com/manual/aggregation/
-library mongo_aggregation;
+library;
 
 export 'src/mongo_aggregation/aggregation_base.dart';
 export 'src/mongo_aggregation/aggregation_pipeline_builder.dart';

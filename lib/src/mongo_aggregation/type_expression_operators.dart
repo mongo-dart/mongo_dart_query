@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 import 'aggregation_base.dart';
 
 /// `$convert` operator
@@ -26,7 +24,7 @@ class Convert extends Operator {
   /// * [onNull] - Optional. The value to return if the input is null or missing.
   /// The arguments can be any valid expression. If unspecified, `$convert` returns
   /// `null` if the input is null or missing.
-  Convert({@required input, @required to, onError, onNull})
+  Convert({required dynamic input, required to, onError, onNull})
       : super(
             'convert',
             AEObject({
@@ -44,7 +42,7 @@ class ToBool extends Operator {
   /// Converts a value to a boolean.
   ///
   /// The [ToBool] takes any valid expression.
-  ToBool(expr) : super('toBool', expr);
+  ToBool(dynamic expr) : super('toBool', expr);
 }
 
 /// `$toDecimal` operator
@@ -56,7 +54,7 @@ class ToDecimal extends Operator {
   /// `$toDecimal` returns `null`.
   ///
   /// The [ToDecimal] takes any valid expression.
-  ToDecimal(expr) : super('toDecimal', expr);
+  ToDecimal(dynamic expr) : super('toDecimal', expr);
 }
 
 /// `$toDouble` operator
@@ -68,7 +66,7 @@ class ToDouble extends Operator {
   /// returns `null`.
   ///
   /// The [ToDouble] takes any valid expression.
-  ToDouble(expr) : super('toDouble', expr);
+  ToDouble(dynamic expr) : super('toDouble', expr);
 }
 
 /// `$toInt` operator
@@ -80,7 +78,7 @@ class ToInt extends Operator {
   /// returns `null`.
   ///
   /// The [ToInt] takes any valid expression.
-  ToInt(expr) : super('toInt', expr);
+  ToInt(dynamic expr) : super('toInt', expr);
 }
 
 /// `$toLong` operator
@@ -92,7 +90,7 @@ class ToLong extends Operator {
   /// `null`.
   ///
   /// The [ToLong] takes any valid expression.
-  ToLong(expr) : super('toLong', expr);
+  ToLong(dynamic expr) : super('toLong', expr);
 }
 
 /// `$toObjectId` operator
@@ -104,7 +102,7 @@ class ToObjectId extends Operator {
   /// `$toObjectId` returns `null`.
   ///
   /// The [ToObjectId] takes any valid expression.
-  ToObjectId(expr) : super('toObjectId', expr);
+  ToObjectId(dynamic expr) : super('toObjectId', expr);
 }
 
 /// `$type` operator
@@ -114,5 +112,5 @@ class Type extends Operator {
   /// Returns a string that specifies the BSON type of the argument.
   ///
   /// The argument can be any valid expression.
-  Type(expr) : super('type', expr);
+  Type(dynamic expr) : super('type', expr);
 }

@@ -114,7 +114,7 @@ class AEObject extends Iterable<MapEntry<String, dynamic>>
 ///
 /// The function is used  to filter not null elements in [AEObject] and [AEList]
 /// constuctors
-bool _valueIsNotNull(value) =>
+bool _valueIsNotNull(dynamic value) =>
     value is MapEntry ? value.value != null : value != null;
 
 /// Field path expression
@@ -183,7 +183,7 @@ class Var extends AggregationExpr {
   /// The start of the field path being processed in the aggregation pipeline stage.
   ///
   /// Unless documented otherwise, all stages start with curren the same as root.
-  /// Current is modifiable. However, since $<field> is equivalent to $$CURRENT.<field>,
+  /// Current is modifiable. However, since $-field- is equivalent to $$CURRENT.-field-,
   /// rebinding CURRENT changes the meaning of $ accesses.
   static const current = Var('CURRENT');
 
@@ -225,9 +225,6 @@ abstract class AggregationStage implements AggregationExpr {
   AggregationStage(this._name, this._content);
 
   @override
-  Map<String, Object> build() => {
-        '\$$_name': _content is AggregationExpr
-            ? (_content as AggregationExpr).build()
-            : _content
-      };
+  Map<String, Object> build() =>
+      {'\$$_name': _content is AggregationExpr ? (_content).build() : _content};
 }

@@ -5,7 +5,7 @@ import 'aggregation_base.dart';
 /// Returns the absolute value of an [expr]
 class Abs extends Operator {
   /// Creates an `$abs` operator expression
-  Abs(expr) : super('abs', expr);
+  Abs(dynamic expr) : super('abs', expr);
 }
 
 /// `$add` operator
@@ -22,7 +22,7 @@ class Add extends Operator {
 /// Returns the smallest integer greater than or equal to the specified number.
 class Ceil extends Operator {
   /// Creates `$ceil` operator expression
-  Ceil(expr) : super('ceil', expr);
+  Ceil(dynamic expr) : super('ceil', expr);
 }
 
 /// `$divide` operator
@@ -30,7 +30,8 @@ class Ceil extends Operator {
 /// Divides one number by another and returns the result.
 class Divide extends Operator {
   /// Creates `$divide` operator expression
-  Divide(dividend, divisor) : super('divide', AEList([dividend, divisor]));
+  Divide(dynamic dividend, dynamic divisor)
+      : super('divide', AEList([dividend, divisor]));
 }
 
 /// `$exp` operator
@@ -39,7 +40,7 @@ class Divide extends Operator {
 /// result.
 class Exp extends Operator {
   /// Creates `$exp` operator expression
-  Exp(expr) : super('exp', expr);
+  Exp(dynamic expr) : super('exp', expr);
 }
 
 /// `$floor` operator
@@ -47,7 +48,7 @@ class Exp extends Operator {
 /// Returns the largest integer less than or equal to the specified number.
 class Floor extends Operator {
   /// Creates `$floor` operator expression
-  Floor(expr) : super('floor', expr);
+  Floor(dynamic expr) : super('floor', expr);
 }
 
 /// `$ln` operator
@@ -56,7 +57,7 @@ class Floor extends Operator {
 /// a double.
 class Ln extends Operator {
   /// Creates `$ln` operator expression
-  Ln(expr) : super('ln', expr);
+  Ln(dynamic expr) : super('ln', expr);
 }
 
 /// `$log` operator
@@ -65,7 +66,7 @@ class Ln extends Operator {
 /// result as a double.
 class Log extends Operator {
   /// Creates `$log` operator expression
-  Log(expr, base) : super('log', AEList([expr, base]));
+  Log(dynamic expr, base) : super('log', AEList([expr, base]));
 }
 
 /// `$log10` operator
@@ -74,7 +75,7 @@ class Log extends Operator {
 /// double.
 class Log10 extends Operator {
   /// Creates `$log10` operator expression
-  Log10(expr) : super('log10', expr);
+  Log10(dynamic expr) : super('log10', expr);
 }
 
 /// `$mod` operator
@@ -82,7 +83,8 @@ class Log10 extends Operator {
 /// Divides one number by another and returns the remainder.
 class Mod extends Operator {
   /// Creates `$mod` operator expression
-  Mod(dividend, divisor) : super('mod', AEList([dividend, divisor]));
+  Mod(dynamic dividend, dynamic divisor)
+      : super('mod', AEList([dividend, divisor]));
 }
 
 /// `$multiply` operator
@@ -99,7 +101,7 @@ class Multiply extends Operator {
 /// Raises an [expr] to the specified [exponent] and returns the result.
 class Pow extends Operator {
   /// Creates `$pow` operator expression
-  Pow(expr, exponent) : super('pow', AEList([expr, exponent]));
+  Pow(dynamic expr, dynamic exponent) : super('pow', AEList([expr, exponent]));
 }
 
 /// `$round` operator
@@ -107,7 +109,7 @@ class Pow extends Operator {
 /// Rounds an [expr] to to a whole integer or to a specified decimal [place].
 class Round extends Operator {
   /// Creates `$round` operator expression
-  Round(expr, [place]) : super('round', AEList([expr, place]));
+  Round(dynamic expr, [place]) : super('round', AEList([expr, place]));
 }
 
 /// `$sqrt` operator
@@ -116,7 +118,7 @@ class Round extends Operator {
 /// double.
 class Sqrt extends Operator {
   /// Creates `$sqrt` operator expression
-  Sqrt(expr) : super('sqrt', expr);
+  Sqrt(dynamic expr) : super('sqrt', expr);
 }
 
 /// `$subtract` operator
@@ -126,7 +128,7 @@ class Sqrt extends Operator {
 /// the resulting date.
 class Subtract extends Operator {
   /// Creates `$subtract` operator expression
-  Subtract(minuend, subtrahend)
+  Subtract(dynamic minuend, dynamic subtrahend)
       : super('subtract', AEList([minuend, subtrahend]));
 }
 
@@ -135,5 +137,5 @@ class Subtract extends Operator {
 /// Truncates an [expr] to a whole integer or to a specified decimal [place].
 class Trunc extends Operator {
   /// Creates `$trunc` operator expression
-  Trunc(expr, [place]) : super('trunc', AEList([expr, place]));
+  Trunc(dynamic expr, [place]) : super('trunc', AEList([expr, place]));
 }

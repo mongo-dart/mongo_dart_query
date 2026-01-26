@@ -1,4 +1,4 @@
-library test_lib;
+library;
 
 import 'package:test/test.dart';
 import 'package:bson/bson.dart';

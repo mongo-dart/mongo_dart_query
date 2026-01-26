@@ -11,7 +11,7 @@ import 'aggregation_base.dart';
 /// * 0 if the two values are equivalent.
 class Cmp extends Operator {
   /// Creates `$cmp` operator expression
-  Cmp(a, b) : super('cmp', AEList([a, b]));
+  Cmp(dynamic a, dynamic b) : super('cmp', AEList([a, b]));
 }
 
 /// `$eq` operator
@@ -22,7 +22,7 @@ class Cmp extends Operator {
 /// * `false` when the values are not equivalent.
 class Eq extends Operator {
   /// Creates `$eq` operator expression
-  Eq(a, b) : super('eq', AEList([a, b]));
+  Eq(dynamic a, b) : super('eq', AEList([a, b]));
 }
 
 /// `$gt` operator
@@ -34,7 +34,7 @@ class Eq extends Operator {
 /// value.
 class Gt extends Operator {
   /// Creates `$gt` operator expression
-  Gt(a, b) : super('gt', AEList([a, b]));
+  Gt(dynamic a, b) : super('gt', AEList([a, b]));
 }
 
 /// `$gte` operator
@@ -46,7 +46,7 @@ class Gt extends Operator {
 /// * `false` when the first value is less than the second value.
 class Gte extends Operator {
   /// Creates `$gte` operator expression
-  Gte(a, b) : super('gte', AEList([a, b]));
+  Gte(dynamic a, b) : super('gte', AEList([a, b]));
 }
 
 /// `$lt` operator
@@ -58,7 +58,7 @@ class Gte extends Operator {
 /// value.
 class Lt extends Operator {
   /// Creates `$lt` operator expression
-  Lt(a, b) : super('lt', AEList([a, b]));
+  Lt(dynamic a, b) : super('lt', AEList([a, b]));
 }
 
 /// `lte` operator
@@ -69,7 +69,7 @@ class Lt extends Operator {
 /// * `false` when the first value is greater than the second value.
 class Lte extends Operator {
   /// Creates `$lte` operator expression
-  Lte(a, b) : super('lte', AEList([a, b]));
+  Lte(dynamic a, b) : super('lte', AEList([a, b]));
 }
 
 /// `$ne` operator
@@ -80,7 +80,7 @@ class Lte extends Operator {
 /// * `false` when the values are equivalent.
 class Ne extends Operator {
   /// Creates `$ne` operator expression
-  Ne(a, b) : super('ne', AEList([a, b]));
+  Ne(dynamic a, b) : super('ne', AEList([a, b]));
 }
 
 /// `$cond` operator
@@ -91,7 +91,7 @@ class Ne extends Operator {
 /// The arguments can be any valid expression.
 class Cond extends Operator {
   /// Creates `$cond` operator expression
-  Cond({@required ifExpr, @required thenExpr, @required elseExpr})
+  Cond({required dynamic ifExpr, required thenExpr, required elseExpr})
       : super('cond', AEList([ifExpr, thenExpr, elseExpr]));
 }
 
@@ -103,7 +103,7 @@ class Cond extends Operator {
 /// returns the value of the [replacement] expression.
 class IfNull extends Operator {
   /// Creates `$ifNull` operator expression
-  IfNull(expression, replacement)
+  IfNull(dynamic expression, replacement)
       : super('ifNull', AEList([expression, replacement]));
 }
 
@@ -136,6 +136,6 @@ class Case extends AEObject {
   /// * [caseExpr] - Can be any valid expression that resolves to a boolean. If
   /// the result is not a boolean, it is coerced to a boolean value.
   /// * [thenExpr] - Can be any valid expression.
-  Case({required AggregationExpr caseExpr, @required thenExpr})
+  Case({required AggregationExpr caseExpr, required thenExpr})
       : super.internal({'case': caseExpr, 'then': thenExpr});
 }

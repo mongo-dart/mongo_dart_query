@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 import 'aggregation_base.dart';
 
 /// `$dateFromParts`
@@ -9,7 +7,14 @@ class DateFromParts extends Operator {
   /// Constructs and returns a Date object given the date’s constituent
   /// properties.
   DateFromParts(
-      {@required year, month, day, hour, minute, second, millisecond, timezone})
+      {required dynamic year,
+      month,
+      day,
+      hour,
+      minute,
+      second,
+      millisecond,
+      timezone})
       : super(
             'dateFromParts',
             AEObject({
@@ -32,7 +37,14 @@ class IsoDateFromParts extends Operator {
   ///
   /// Uses ISO Week Date fields to construct Date
   IsoDateFromParts(
-      {@required year, week, day, hour, minute, second, millisecond, timezone})
+      {required dynamic year,
+      week,
+      day,
+      hour,
+      minute,
+      second,
+      millisecond,
+      timezone})
       : super(
             'dateFromParts',
             AEObject({
@@ -67,7 +79,8 @@ class DateFromString extends Operator {
   /// `null` or missing, it outputs the result value of the provided [onNull]
   /// expression. This result value can be of any type. If you do not specify
   /// [onNull] and dateString is null or missing, then $dateFromString outputs null.
-  DateFromString({@required dateString, format, timezone, onError, onNull})
+  DateFromString(
+      {required dynamic dateString, format, timezone, onError, onNull})
       : super(
             'dateFromString',
             AEObject({
@@ -89,7 +102,7 @@ class DateToParts extends Operator {
   /// to true to return the parts representing an ISO week date instead. This will
   /// return a document where the properties are isoWeekYear, isoWeek,
   /// isoDayOfWeek, hour, minute, second and millisecond.
-  DateToParts(date, {timezone, bool iso8601 = false})
+  DateToParts(dynamic date, {timezone, bool iso8601 = false})
       : super('dateToParts',
             AEObject({'date': date, 'timezone': timezone, 'iso8601': iso8601}));
 }
@@ -106,7 +119,7 @@ class DayOfMonth extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  DayOfMonth(date, {timezone})
+  DayOfMonth(dynamic date, {timezone})
       : super('dayOfMonth', AEObject({'date': date, 'timezone': timezone}));
 }
 
@@ -123,7 +136,7 @@ class DayOfWeek extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  DayOfWeek(date, {timezone})
+  DayOfWeek(dynamic date, {timezone})
       : super('dayOfWeek', AEObject({'date': date, 'timezone': timezone}));
 }
 
@@ -139,7 +152,7 @@ class DayOfYear extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  DayOfYear(date, {timezone})
+  DayOfYear(dynamic date, {timezone})
       : super('dayOfYear', AEObject({'date': date, 'timezone': timezone}));
 }
 
@@ -155,7 +168,7 @@ class Hour extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  Hour(date, {timezone})
+  Hour(dynamic date, {timezone})
       : super('hour', AEObject({'date': date, 'timezone': timezone}));
 }
 
@@ -172,7 +185,7 @@ class IsoDayOfWeek extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  IsoDayOfWeek(date, {timezone})
+  IsoDayOfWeek(dynamic date, {timezone})
       : super('isoDayOfWeek', AEObject({'date': date, 'timezone': timezone}));
 }
 
@@ -190,7 +203,7 @@ class IsoWeek extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  IsoWeek(date, {timezone})
+  IsoWeek(dynamic date, {timezone})
       : super('isoWeek', AEObject({'date': date, 'timezone': timezone}));
 }
 
@@ -207,7 +220,7 @@ class IsoWeekYear extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  IsoWeekYear(date, {timezone})
+  IsoWeekYear(dynamic date, {timezone})
       : super('isoWeekYear', AEObject({'date': date, 'timezone': timezone}));
 }
 
@@ -223,7 +236,7 @@ class Millisecond extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  Millisecond(date, {timezone})
+  Millisecond(dynamic date, {timezone})
       : super('millisecond', AEObject({'date': date, 'timezone': timezone}));
 }
 
@@ -240,7 +253,7 @@ class Minute extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  Minute(date, {timezone})
+  Minute(dynamic date, {timezone})
       : super('minute', AEObject({'date': date, 'timezone': timezone}));
 }
 
@@ -256,7 +269,7 @@ class Month extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  Month(date, {timezone})
+  Month(dynamic date, {timezone})
       : super('month', AEObject({'date': date, 'timezone': timezone}));
 }
 
@@ -273,7 +286,7 @@ class Second extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  Second(date, {timezone})
+  Second(dynamic date, {timezone})
       : super('second', AEObject({'date': date, 'timezone': timezone}));
 }
 
@@ -283,7 +296,7 @@ class ToDate extends Operator {
   ///
   /// Converts a value to a date. If the value cannot be converted to a date,
   /// `$toDate` errors. If the value is `null` or missing, `$toDate` returns `null`.
-  ToDate(expr) : super('toDate', expr);
+  ToDate(dynamic expr) : super('toDate', expr);
 }
 
 /// `$week` operator
@@ -298,7 +311,7 @@ class Week extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  Week(date, {timezone})
+  Week(dynamic date, {timezone})
       : super('week', AEObject({'date': date, 'timezone': timezone}));
 }
 
@@ -314,6 +327,6 @@ class Year extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  Year(date, {timezone})
+  Year(dynamic date, {timezone})
       : super('year', AEObject({'date': date, 'timezone': timezone}));
 }

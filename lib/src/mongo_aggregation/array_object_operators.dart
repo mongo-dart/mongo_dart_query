@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 import 'aggregation_base.dart';
 
 /// `$arrayElemAt` operator
@@ -7,7 +5,8 @@ import 'aggregation_base.dart';
 /// Returns the element at the specified [array] [index].
 class ArrayElemAt extends Operator {
   /// Creates `$arrayToObject` operator expression
-  ArrayElemAt(array, index) : super('arrayElemAt', AEList([array, index]));
+  ArrayElemAt(dynamic array, index)
+      : super('arrayElemAt', AEList([array, index]));
 }
 
 /// `$arrayToObject` operator
@@ -27,7 +26,7 @@ class ArrayElemAt extends Operator {
 /// * The `v` field contains the value of the field.
 class ArrayToObject extends Operator {
   /// Creates `$arrayToObject` operator expression
-  ArrayToObject(array)
+  ArrayToObject(dynamic array)
       : super('arrayToObject', array is List ? AEList(array) : array);
 }
 
@@ -57,7 +56,7 @@ class Filter extends Operator {
   /// if an element should be included in the output array. The expression
   /// references each element of the input array individually with the variable
   /// name specified in [as].
-  Filter({required input, String? as, required cond})
+  Filter({required dynamic input, String? as, required cond})
       : super('filter',
             AEObject({'input': input, if (as != null) 'as': as, 'cond': cond}));
 }
@@ -67,7 +66,7 @@ class Filter extends Operator {
 /// Returns a boolean indicating whether a specified [value] is in an [array].
 class In extends Operator {
   /// Creates `$in` operator expression
-  In(value, array)
+  In(dynamic value, array)
       : super('in', AEList([value, array is List ? AEList(array) : array]));
 }
 
@@ -86,7 +85,7 @@ class IndexOfArray extends Operator {
   /// search. Can be any valid expression that resolves to a non-negative integral
   /// number. If unspecified, the starting index position for the search is the
   /// first element.
-  IndexOfArray(array, value, start, end)
+  IndexOfArray(dynamic array, value, start, end)
       : super('indexOfArray',
             AEList([array is List ? AEList(array) : array, value, start, end]));
 }
@@ -96,7 +95,7 @@ class IndexOfArray extends Operator {
 /// Determines if the operand is an array. Returns a boolean.
 class IsArray extends Operator {
   /// Creates `$isArray` operator expression
-  IsArray(expr) : super('isArray', expr);
+  IsArray(dynamic expr) : super('isArray', expr);
 }
 
 /// `$map` operator
@@ -113,7 +112,7 @@ class MapOp extends Operator {
   /// defaults to `this`.
   /// * [inExpr] - An expression that is applied to each element of the input
   /// array. The expression references each element individually with the variable
-  MapOp({@required input, String? as, @required inExpr})
+  MapOp({required dynamic input, String? as, required inExpr})
       : super(
             'map',
             AEObject({
@@ -133,7 +132,7 @@ class MapOp extends Operator {
 /// * The `v` field contains the value of the field in the original document.
 class ObjectToArray extends Operator {
   /// Creates `$objectToArray` operator expression
-  ObjectToArray(expr)
+  ObjectToArray(dynamic expr)
       : super('objectToArray',
             expr is Map<String, dynamic> ? AEObject(expr) : expr);
 }
@@ -153,7 +152,8 @@ class Range extends Operator {
   /// Can be any valid expression that resolves to an integer.
   /// * [step] - Optional. An integer that specifies the increment value. Can be
   /// any valid expression that resolves to a non-zero integer. Defaults to 1.
-  Range(start, end, [step]) : super('range', AEList([start, end, step]));
+  Range(dynamic start, end, [step])
+      : super('range', AEList([start, end, step]));
 }
 
 /// `$reduce` operator
@@ -176,7 +176,7 @@ class Reduce extends Operator {
   ///
   /// * `value` is the variable that represents the cumulative value of the expression.
   /// * `this` is the variable that refers to the element being processed.
-  Reduce({@required input, @required initialValue, @required inExpr})
+  Reduce({required dynamic input, required initialValue, required inExpr})
       : super(
             'reduce',
             AEObject(
@@ -189,7 +189,7 @@ class Reduce extends Operator {
 /// elements in reverse order.
 class ReverseArray extends Operator {
   /// Creates `$reverseArray` operator expression
-  ReverseArray(array)
+  ReverseArray(dynamic array)
       : super('reverseArray', array is List ? AEList(array) : array);
 }
 
@@ -198,7 +198,7 @@ class ReverseArray extends Operator {
 /// Counts and returns the total the number of items in an array.
 class Size extends Operator {
   /// Creates `$size` operator expression
-  Size(array) : super('size', array is List ? AEList(array) : array);
+  Size(dynamic array) : super('size', array is List ? AEList(array) : array);
 }
 
 /// `$slice` operator
@@ -225,7 +225,7 @@ class Slice extends Operator {
   /// from the position.
   ///   * If negative, `$slice` returns up to the last `n` elements in the array. [n]
   /// cannot resolve to a negative number if [position] is specified
-  Slice(array, n, [position])
+  Slice(dynamic array, n, [position])
       : super('slice',
             AEList([array is List ? AEList(array) : array, position, n]));
 }
@@ -283,10 +283,10 @@ class Zip extends Operator {
 /// ```
 /// { $mergeObjects: [ <document1>, <document2>, ... ] }
 /// ```
-/// The <document> can be any valid expression that resolves to a document.
+/// The -document- can be any valid expression that resolves to a document.
 class MergeObjects extends Accumulator {
   /// Creates `$mergeObjects` operator expression
-  MergeObjects(objects)
+  MergeObjects(dynamic objects)
       : super(
             'mergeObjects',
             objects is List

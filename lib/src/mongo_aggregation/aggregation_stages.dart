@@ -171,7 +171,7 @@ class SetWindowFields extends AggregationStage {
   ///   The field can either an Output object, a list of Output Objects or a
   ///   document containing the explicit description of the output required
   SetWindowFields({
-    partitionBy,
+    dynamic partitionBy,
     Map<String, int>? sortBy,
     defaultId,
     required dynamic output,
@@ -183,7 +183,7 @@ class SetWindowFields extends AggregationStage {
               'output': _getOutputDocument(output),
             }));
 
-  static AEObject _getOutputDocument(output) {
+  static AEObject _getOutputDocument(dynamic output) {
     if (output is Output) {
       return AEObject(output.build());
     } else if (output is List<Output>) {
@@ -624,7 +624,7 @@ class ReplaceRoot extends AggregationStage {
   /// The [replacement] document can be any valid expression that resolves to
   /// a document. The stage errors and fails if [replacement] is not
   /// a document.
-  ReplaceRoot(replacement)
+  ReplaceRoot(dynamic replacement)
       : super('replaceRoot', AEObject({'newRoot': replacement}));
 }
 
@@ -687,7 +687,7 @@ class ReplaceWith extends AggregationStage {
   ///
   /// The [replacement] document can be any valid expression that resolves to a
   /// document.
-  ReplaceWith(replacement) : super('replaceWith', replacement);
+  ReplaceWith(dynamic replacement) : super('replaceWith', replacement);
 }
 
 /// `$group` aggregation stage
@@ -817,7 +817,7 @@ class ReplaceWith extends AggregationStage {
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/group/
 class Group extends AggregationStage {
   /// Creates `$group` aggregation stage
-  Group({required id, Map<String, Accumulator> fields = const {}})
+  Group({required dynamic id, Map<String, Accumulator> fields = const {}})
       : super(
             'group',
             AEObject({'_id': id is Map<String, dynamic> ? AEObject(id) : id}
@@ -861,7 +861,7 @@ class Match extends AggregationStage {
   /// [query] can be either a [SelectorBuilder] query part
   /// (`selectorBuilder.map['\$query']`) or an aggregation expression wrapped
   /// in [Expr]
-  Match(query) : super('match', query);
+  Match(dynamic query) : super('match', query);
 }
 
 /// `$lookup` aggregation stage
@@ -1087,7 +1087,7 @@ class GraphLookup extends AggregationStage {
                     _getRestrictSearchWithMatch(restrictSearchWithMatch)
             }));
 
-  static AEObject _getRestrictSearchWithMatch(restrictSearchWithMatch) {
+  static AEObject _getRestrictSearchWithMatch(dynamic restrictSearchWithMatch) {
     if (restrictSearchWithMatch is SelectorBuilder) {
       return AEObject(restrictSearchWithMatch.map['\$query']);
     } else if (restrictSearchWithMatch is Map<String, dynamic>) {
@@ -1296,7 +1296,7 @@ class SortByCount extends AggregationStage {
   /// ```
   /// { $sortByCount: { $mergeObjects: [ "$employee", "$business" ] } }
   /// ```
-  SortByCount(expression) : super('sortByCount', expression);
+  SortByCount(dynamic expression) : super('sortByCount', expression);
 }
 
 /// `$geoNear`
@@ -1365,7 +1365,7 @@ class GeoNear extends AggregationStage {
               if (key != null) 'key': key
             }));
 
-  static AEObject _getQuery(query) {
+  static AEObject _getQuery(dynamic query) {
     if (query is SelectorBuilder) {
       return AEObject(query.map['\$query']);
     } else if (query is Map<String, dynamic>) {
